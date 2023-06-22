@@ -41,7 +41,7 @@ class SearchableCardList extends Component {
 
     const allCards = [...darkCards.cards, ...lightCards.cards]
       .map(c => new Card(c))
-      .filter(c => !c.title.includes('(AI)'))
+      .filter(c => !c.title.includes('(AI)') || !c.title.includes('(Holo AI)'))
       .filter(c => c.type != 'Game Aid')
       .sort((a, b) => (a.sortTitle > b.sortTitle) ? 1 : ((b.sortTitle > a.sortTitle) ? -1 : 0))
 
@@ -92,6 +92,9 @@ class SearchableCardList extends Component {
   };
 
   renderHeader = () => {
+    const lightColor = 'rgba(219, 227, 232, 1.0)';
+    const darkColor = `rgba(43, 47, 51, 1.0)`;
+
     return (
       <SearchBar
         placeholder={`Search by ${this.searchModes[this.state.searchMode]}`}
@@ -104,6 +107,7 @@ class SearchableCardList extends Component {
           <Icon
             name='search-outline'
             type='ionicon'
+            color={lightColor}
             onPress={() => {
               this.setState({ value: null });
               this.searchFilterFunction('');
