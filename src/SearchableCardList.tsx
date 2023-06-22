@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Modal, Pressable } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { View, FlatList, ActivityIndicator, Modal, Pressable, Text } from 'react-native';
+import { SearchBar, Icon } from 'react-native-elements';
 import FastImage from 'react-native-fast-image'
 import CardListItem from './components/CardListItem'
 
@@ -18,6 +18,8 @@ class SearchableCardList extends Component {
       error: null,
       modalVisible: false,
       currentCard: null,
+      searchMode: 0,
+      value: null,
     };
 
     this.currentCards = [];
@@ -27,12 +29,20 @@ class SearchableCardList extends Component {
     this.loadAllCards();
   }
 
+  readonly searchModes = {
+    0: 'title',
+    1: 'gametext',
+    2: 'lore',
+    3: 'title, gametext, or lore',
+  };
+
   loadAllCards = () => {
     this.setState({ loading: true });
 
     const allCards = [...darkCards.cards, ...lightCards.cards]
       .map(c => new Card(c))
       .filter(c => !c.title.includes('(AI)'))
+      .filter(c => c.type != 'Game Aid')
       .sort((a, b) => (a.sortTitle > b.sortTitle) ? 1 : ((b.sortTitle > a.sortTitle) ? -1 : 0))
 
     this.setState({
@@ -55,8 +65,24 @@ class SearchableCardList extends Component {
     });
 
     const newData = this.currentCards.filter(card => {
-      const itemData = `${card.sortTitle.toLowerCase()}`;
       const textData = text.toLowerCase();
+      let itemData;
+
+      switch (this.state.searchMode) {
+        case 0:
+          itemData = card.sortTitle;
+          break;
+        case 1:
+          itemData = card.gametext;
+          break;
+        case 2:
+          itemData = card.lore;
+          break;
+        case 3:
+          itemData = `${card.sortTitle} ${card.gametext} ${card.lore}`;
+          break;
+      }
+      itemData = itemData.toLowerCase();
 
       return itemData.indexOf(textData) > -1;
     });
@@ -68,12 +94,23 @@ class SearchableCardList extends Component {
   renderHeader = () => {
     return (
       <SearchBar
-        placeholder="Search"
+        placeholder={`Search by ${this.searchModes[this.state.searchMode]}`}
         darkTheme
         round
         onChangeText={text => this.searchFilterFunction(text)}
         autoCorrect={false}
         value={this.state.value}
+        searchIcon={
+          <Icon
+            name='search-outline'
+            type='ionicon'
+            onPress={() => {
+              this.setState({ value: null });
+              this.searchFilterFunction('');
+              this.setState({ searchMode: (this.state.searchMode + 1) % 4 });
+            }}
+          />
+        }
       />
     );
   };
