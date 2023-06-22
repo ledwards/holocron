@@ -20,6 +20,7 @@ class Card {
   offsetHeight: number;
   sideways: boolean;
   combo: boolean;
+  twoSided: boolean;
 
   constructor(object) {
     this.id = object.id.toString();
@@ -37,6 +38,7 @@ class Card {
     this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
     this.sideways = this.subType == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
     this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
+    this.twoSided = this.backImageUrl != null;
 
     this.displayTitle = this.title
       .replaceAll('<>', '◇')

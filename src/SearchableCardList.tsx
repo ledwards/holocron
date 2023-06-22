@@ -120,20 +120,41 @@ class SearchableCardList extends Component {
             height: '100%',
             backgroundColor: 'rgba(0, 0, 0, 0.80)',
           }}>
-            <Pressable style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            <Pressable style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
               onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}>
-              <FastImage
-                source={{ uri: this.state.currentCard ? this.state.currentCard.imageUrl : '' }}
-                style={{
-                  width: '100%',
-                  aspectRatio: this.state.currentCard && this.state.currentCard.sideways ? 1.3937 : 0.7136,
-                  borderRadius: 15,
-                }}
-              />
+              {(this.state.currentCard && !this.state.currentCard.twoSided &&
+                <FastImage
+                  source={{ uri: this.state.currentCard.imageUrl }}
+                  style={{
+                    width: '100%',
+                    aspectRatio: this.state.currentCard.sideways ? 1.3937 : 0.7136,
+                    borderRadius: 15,
+                  }}
+                />) || (this.state.currentCard &&
+                  <>
+                    <FastImage
+                      source={{ uri: this.state.currentCard.imageUrl }}
+                      style={{
+                        height: '49%',
+                        aspectRatio: 0.7136,
+                        borderRadius: 15,
+                      }}
+                    />
+                    <FastImage
+                      source={{ uri: this.state.currentCard.backImageUrl }}
+                      style={{
+                        height: '49%',
+                        aspectRatio: 0.7136,
+                        borderRadius: 15,
+                      }}
+                    />
+                  </>
+                )
+              }
             </Pressable>
           </View>
-        </Modal>
-      </View>
+        </Modal >
+      </View >
     );
   }
 }
