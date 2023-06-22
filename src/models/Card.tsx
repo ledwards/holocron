@@ -13,6 +13,8 @@ class Card {
   setNumber: string;
   set: string;
   rarity: string;
+  gametext: string;
+  lore: string;
   imageUrl: string;
   backImageUrl: string;
   displayImageUrl: string;
@@ -33,6 +35,8 @@ class Card {
     this.setNumber = object.set;
     this.set = ExpansionSets[object.set];
     this.rarity = object.rarity;
+    this.gametext = [object.front?.gametext, object.back?.gametext].join(' / ');
+    this.lore = [object.front?.lore, object.back?.lore].join(' / ');
     this.imageUrl = object.front.imageUrl;
     this.backImageUrl = object.back && object.back.imageUrl;
     this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
