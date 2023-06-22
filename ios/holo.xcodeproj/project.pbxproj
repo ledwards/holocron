@@ -542,11 +542,13 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 6NW646Y6R5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = holo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Holo: SWCCG";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -574,11 +576,13 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 6NW646Y6R5;
 				INFOPLIST_FILE = holo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Holo: SWCCG";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
