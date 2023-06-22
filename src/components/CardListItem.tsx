@@ -50,7 +50,7 @@ class CardListItem extends PureComponent {
             fontSize: this.props.item.displayTitle.includes('\n') ? 8 : 12
           }}
           >
-            {`${this.props.item.set} • ${this.props.item.side} • ${this.props.item.rarity}`}
+            {`${this.props.item.set} • ${this.props.item.type}`}
           </ListItem.Subtitle>
         </ListItem.Content>
 
