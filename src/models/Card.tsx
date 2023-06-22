@@ -47,7 +47,8 @@ class Card {
     this.displayTitle = this.title
       .replaceAll('<>', '◇')
       .replace('(Tatooine)', '')
-      .replace('(Coruscant)', '');
+      .replace('(Coruscant)', '')
+      .replace('(Death Star II)', '');
 
     if (this.displayTitle.split(' / ')[0] == this.displayTitle.split(' / ')[1]) {
       this.displayTitle = this.displayTitle.split(' / ')[0];
