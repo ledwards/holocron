@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Modal, Pressable, Text } from 'react-native';
-import { SearchBar, Icon } from 'react-native-elements';
+import { View, FlatList, ActivityIndicator, Modal, Pressable, Text, StyleSheet } from 'react-native';
+import { SearchBar, Icon, Chip } from 'react-native-elements';
 import FastImage from 'react-native-fast-image'
 import CardListItem from './components/CardListItem'
 
 import Card from './models/Card'
+import FilterQuery from './models/FilterQuery'
+
 import darkCards from '../data/Dark.json';
 import lightCards from '../data/Light.json';
 
@@ -18,11 +20,11 @@ class SearchableCardList extends Component {
       error: null,
       modalVisible: false,
       currentCard: null,
+      allCards: [],
       searchMode: 0,
-      value: null,
+      queryValue: null,
+      filterQuery: new FilterQuery(''),
     };
-
-    this.currentCards = [];
   }
 
   componentDidMount() {
@@ -30,10 +32,9 @@ class SearchableCardList extends Component {
   }
 
   readonly searchModes = {
-    0: 'title',
-    1: 'gametext',
-    2: 'lore',
-    3: 'title, gametext, or lore',
+    0: 'title or natural language query',
+    1: 'title',
+    2: 'natural language query',
   };
 
   loadAllCards = () => {
@@ -41,7 +42,7 @@ class SearchableCardList extends Component {
 
     const allCards = [...darkCards.cards, ...lightCards.cards]
       .map(c => new Card(c))
-      .filter(c => !c.title.includes('(AI)') || !c.title.includes('(Holo AI)'))
+      .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
       .filter(c => c.type != 'Game Aid')
       .sort((a, b) => (a.sortTitle > b.sortTitle) ? 1 : ((b.sortTitle > a.sortTitle) ? -1 : 0))
 
@@ -50,42 +51,61 @@ class SearchableCardList extends Component {
       error: null,
       loading: false,
     });
-    this.currentCards = allCards;
+    this.state.allCards = allCards;
   };
 
   renderSeparator = () => {
     return (
-      <View style={{ height: 1, backgroundColor: '#000000' }} />
+      <View style={{ height: 2, backgroundColor: '#000000' }} />
     );
   };
 
-  searchFilterFunction = text => {
+  searchRouter = text => {
+    text = text.toLowerCase();
     this.setState({
-      value: text,
+      queryValue: text,
     });
 
-    const newData = this.currentCards.filter(card => {
-      const textData = text.toLowerCase();
-      let itemData;
+    switch (this.state.searchMode) {
+      case 0:
+        this.queryFilterFunction(text) || this.searchFilterFunction(text);
+        break;
+      case 1:
+        this.searchFilterFunction(text);
+        break;
+      case 2:
+        this.queryFilterFunction(text);
+        break;
+    }
+  }
 
-      switch (this.state.searchMode) {
-        case 0:
-          itemData = card.sortTitle;
-          break;
-        case 1:
-          itemData = card.gametext;
-          break;
-        case 2:
-          itemData = card.lore;
-          break;
-        case 3:
-          itemData = `${card.sortTitle} ${card.gametext} ${card.lore}`;
-          break;
-      }
-      itemData = itemData.toLowerCase();
+  queryFilterFunction = (text) => {
+    const filterQuery = new FilterQuery(text);
+
+    this.setState({
+      queryValue: text,
+      filterQuery: filterQuery,
+    });
+
+    if (filterQuery.valid()) {
+      const newData = filterQuery.select(this.state.allCards);
+
+      this.setState({
+        data: newData,
+      });
+    }
+
+    return filterQuery.valid();
+  }
+
+  searchFilterFunction = text => {
+    const newData = this.state.allCards.filter(card => {
+      const textData = text;
+      const itemData = card.sortTitle;
 
       return itemData.indexOf(textData) > -1;
     });
+
     this.setState({
       data: newData,
     });
@@ -96,26 +116,61 @@ class SearchableCardList extends Component {
     const darkColor = `rgba(43, 47, 51, 1.0)`;
 
     return (
-      <SearchBar
-        placeholder={`Search by ${this.searchModes[this.state.searchMode]}`}
-        darkTheme
-        round
-        onChangeText={text => this.searchFilterFunction(text)}
-        autoCorrect={false}
-        value={this.state.value}
-        searchIcon={
-          <Icon
-            name='search-outline'
-            type='ionicon'
-            color={lightColor}
-            onPress={() => {
-              this.setState({ value: null });
-              this.searchFilterFunction('');
-              this.setState({ searchMode: (this.state.searchMode + 1) % 4 });
-            }}
-          />
-        }
-      />
+      <View style={{ height: 100 }}>
+        <SearchBar
+          placeholder={`Search by ${this.searchModes[this.state.searchMode]}`}
+          darkTheme
+          round
+          onChangeText={text => this.searchRouter(text)}
+          autoCorrect={false}
+          value={this.state.queryValue}
+          style={{ fontSize: 16 }}
+          searchIcon={
+            <Icon
+              name='search-outline'
+              type='ionicon'
+              color={lightColor}
+              onPress={() => {
+                this.setState({ queryValue: null });
+                this.searchRouter('');
+                this.setState({ searchMode: (this.state.searchMode + 1) % 3 });
+              }}
+            />
+          }
+        />
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+          {this.state.filterQuery.field &&
+            <Chip
+              title={this.state.filterQuery.field}
+              key={'field'}
+              type='outline'
+              buttonStyle={this.state.filterQuery.validField() ? styles.chipButtonWithMatch : styles.chipButton}
+              titleStyle={this.state.filterQuery.validField() ? styles.chipTitleWithMatch : styles.chipTitle}
+              containerStyle={styles.chipContainer}>
+            </Chip>}
+          {this.state.filterQuery.comparator &&
+            <Chip
+              title={this.state.filterQuery.comparator}
+              key={'comparator'}
+              type='outline'
+              buttonStyle={styles.chipButtonWithMatch}
+              titleStyle={styles.chipTitleWithMatch}
+              containerStyle={styles.chipContainer}>
+            </Chip>}
+          {this.state.filterQuery.value &&
+            <Chip
+              title={this.state.filterQuery.value}
+              key={'value'}
+              type='outline'
+              buttonStyle={styles.chipButtonWithMatch}
+              titleStyle={styles.chipTitleWithMatch}
+              containerStyle={styles.chipContainer}>
+            </Chip>}
+          <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
+            {this.state.queryValue ? `(${this.state.data.length} results)` : ''}
+          </Text>
+        </View>
+      </View >
     );
   };
 
@@ -128,28 +183,42 @@ class SearchableCardList extends Component {
       );
     }
 
+    // TODO: Overlay!
     const toggleModalForCard = (card) => {
       return () => this.setState({ modalVisible: !this.state.modalVisible, currentCard: card });
     }
 
     return (
       <View style={{ flex: 1, overflow: 'hidden', backgroundColor: 'black' }}>
-        <FlatList
-          data={this.state.data}
-          renderItem={({ item }) =>
-            <CardListItem item={item} callback={toggleModalForCard(item)} />
-          }
-          keyExtractor={item => item.id}
-          ItemSeparatorComponent={this.renderSeparator}
-          ListHeaderComponent={this.renderHeader}
+        {this.renderHeader()}
+        {this.state.queryValue &&
+          <FlatList
+            data={this.state.data}
+            renderItem={({ item }) =>
+              <CardListItem item={item} callback={toggleModalForCard(item)} />
+            }
+            keyExtractor={item => item.id}
+            ItemSeparatorComponent={this.renderSeparator}
 
-          // Performance settings
-          initialNumToRender={10} // Reduce initial render amount
-          removeClippedSubviews={true} // Unmount components when outside of window
-          maxToRenderPerBatch={10} // Reduce number in each render batch
-          updateCellsBatchingPeriod={100} // Increase time between renders
-          windowSize={10} // Reduce the window size
-        />
+            // Performance settings
+            initialNumToRender={10} // Reduce initial render amount
+            removeClippedSubviews={true} // Unmount components when outside of window
+            maxToRenderPerBatch={10} // Reduce number in each render batch
+            updateCellsBatchingPeriod={100} // Increase time between renders
+            windowSize={10} // Reduce the window size
+          /> ||
+          <Text style={{ color: '#ffffff', padding: 18, textAlign: 'center' }}>
+            Search by title, or by natural language query. Try:
+            {'\n\n'}{'\n\n'}
+            Title: {'\n\n'}
+            comlink {'\n\n'} farm {'\n\n'} chimaera
+            {'\n\n'} {'\n\n'}
+            Natural language query: {'\n\n'}
+            lore matches ISB {'\n\n'} power &gt; 5 {'\n\n'} icons include pilot
+            {'\n\n'} {'\n\n'}
+            Coming soon: {'\n\n'} is leader {'\n\n'} ability = 2 AND is imperial
+          </Text>
+        }
         <Modal
           animationType="fade"
           transparent={true}
@@ -199,5 +268,37 @@ class SearchableCardList extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  chipButton: {
+    borderColor: 'red',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 4,
+    margin: 4,
+  },
+  chipButtonWithMatch: {
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 0,
+    margin: 0,
+    backgroundColor: 'transparent',
+  },
+  chipContainer: {
+    marginHorizontal: 0,
+  },
+  chipTitle:
+  {
+    color: 'red',
+    fontSize: 10,
+  },
+  chipTitleWithMatch:
+  {
+    color: 'white',
+    fontSize: 14,
+  },
+});
 
 export default SearchableCardList;

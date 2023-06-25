@@ -3,21 +3,59 @@ import ExpansionSets from '../../data/ExpansionSets.json'
 class Card {
   id: string;
   title: string;
-  displayTitle: string;
-  sortTitle: string;
   type: string;
-  displayType: string;
   subType: string;
-  displaySubType: string;
   side: string;
   setNumber: string;
-  set: string;
-  rarity: string;
-  gametext: string;
-  lore: string;
   imageUrl: string;
   backImageUrl: string;
+
+  ability: number;
+  armor: number;
+  darkSideIcons: number;
+  deploy: number;
+  destiny: number;
+  ferocity: number;
+  forfeit: number;
+  hyperspeed: number;
+  landspeed: number;
+  lightSideIcons: number;
+  maneuver: number;
+  parsec: number;
+  politics: number;
+  power: number;
+
+  extraText: string;
+  gametext: string;
+  lore: string;
+  title: string;
+  type: string;
+
+  characteristics: string[];
+  icons: string[];
+  rarity: string;
+  set: string;
+  side: string;
+  subType: string;
+  uniqueness: string;
+
+  // canceledBy - is canceled by Y
+  // cancels - cancels Y
+  // counterpart - [Dark/Light] counterpart to Y
+  // matching - matches Y
+  // matchingWeapon - matches Y / matching weapon Y
+  // pulledBy - is pulled by Y
+  // pulls - pulls Y
+  // underlyingCardFor
+
+  sortTitle: string;
+
+  displayTitle: string;
+  displayType: string;
+  displaySubType: string;
   displayImageUrl: string;
+  displaySet: string;
+
   offsetY: number;
   offsetHeight: number;
   sideways: boolean;
@@ -28,21 +66,44 @@ class Card {
     this.id = object.id.toString();
     this.title = object.front.title;
     this.type = object.front.type;
-    this.displayType = this.type.split(' #')[0];
     this.subType = object.front.subType;
-    this.displaySubType = this.subType ? this.subType.split(': ')[0] : '';
     this.side = object.side;
     this.setNumber = object.set;
-    this.set = ExpansionSets[object.set];
-    this.rarity = object.rarity;
-    this.gametext = [object.front?.gametext, object.back?.gametext].join(' / ');
-    this.lore = [object.front?.lore, object.back?.lore].join(' / ');
     this.imageUrl = object.front.imageUrl;
     this.backImageUrl = object.back && object.back.imageUrl;
-    this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
-    this.sideways = this.subType == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
-    this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
-    this.twoSided = this.backImageUrl != null;
+
+    this.ability = object.front.ability;
+    this.armor = object.front.armor;
+    this.darkSideIcons = object.front.darkSideIcons;
+    this.deploy = object.front.deploy;
+    this.destiny = object.front.destiny;
+    this.ferocity = object.front.ferocity;
+    this.forfeit = object.front.forfeit;
+    this.hyperspeed = object.front.hyperspeed;
+    this.landspeed = object.front.landspeed;
+    this.lightSideIcons = object.front.lightSideIcons;
+    this.maneuver = object.front.maneuver;
+    this.parsec = object.front.parsec;
+    this.politics = object.front.politics;
+    this.power = object.front.power;
+
+    this.extraText = object.front.extraText;
+    this.gametext = [object.front.gametext, object.back?.gametext].join(' / ');
+    this.lore = object.front.lore;
+    this.title = object.front.title;
+    this.type = object.front.type;
+
+    this.characteristics = object.front.characteristics;
+    this.icons = object.front.icons;
+    this.rarity = object.rarity;
+    this.set = object.set;
+    this.side = object.side;
+    this.subType = object.front.subType;
+    this.uniqueness = object.front.uniqueness;
+
+    this.sortTitle = this.title
+      // .replaceAll(/['"•<>:\\n]/g, '') // TODO: Get this to work...
+      .toLowerCase();
 
     this.displayTitle = this.title
       .replaceAll('<>', '◇')
@@ -62,9 +123,10 @@ class Card {
         .split(' & ').join(' &\n');
     }
 
-    this.sortTitle = this.displayTitle
-      .replaceAll('•', '')
-      .replace('\n', '');
+    this.displayType = this.type.split(' #')[0];
+    this.displaySubType = this.subType ? this.subType.split(': ')[0] : '';
+    this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
+    this.displaySet = ExpansionSets[object.set];
 
     if (this.displayType == 'Jedi Test') {
       this.offsetY = 0;
@@ -85,6 +147,14 @@ class Card {
       this.offsetY = 0;
       this.offsetHeight = 0;
     }
+    this.sideways = this.subType == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
+    this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
+    this.twoSided = this.backImageUrl != null;
+  }
+
+  get(attributeName: string) {
+    // TODO: Aliases for attributes
+    return (this as any)[attributeName];
   }
 }
 
