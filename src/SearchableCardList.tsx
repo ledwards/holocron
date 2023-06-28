@@ -10,19 +10,20 @@ import FilterQuery from './models/FilterQuery'
 import darkCards from '../data/Dark.json';
 import lightCards from '../data/Light.json';
 
+
 class SearchableCardList extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       loading: false,
-      data: [],
       error: null,
+      allCards: [],
+      data: [],
       modalVisible: false,
       currentCard: null,
-      allCards: [],
       searchMode: 0,
-      queryValue: null,
+      query: null,
       filterQuery: new FilterQuery(''),
     };
   }
@@ -62,13 +63,14 @@ class SearchableCardList extends Component {
 
   searchRouter = text => {
     text = text.toLowerCase();
+
     this.setState({
-      queryValue: text,
+      query: text,
     });
 
     switch (this.state.searchMode) {
       case 0:
-        this.queryFilterFunction(text) || this.searchFilterFunction(text);
+        this.queryFilterFunction(text);// || this.searchFilterFunction(text);
         break;
       case 1:
         this.searchFilterFunction(text);
@@ -83,12 +85,13 @@ class SearchableCardList extends Component {
     const filterQuery = new FilterQuery(text);
 
     this.setState({
-      queryValue: text,
+      query: text,
       filterQuery: filterQuery,
     });
 
+
     if (filterQuery.valid()) {
-      const newData = filterQuery.select(this.state.allCards);
+      const newData = filterQuery.execute(this.state.allCards);
 
       this.setState({
         data: newData,
@@ -111,9 +114,30 @@ class SearchableCardList extends Component {
     });
   };
 
+  partialFieldName() {
+    return this.state.query.split(' ')[0];
+  }
+
+  partialComparatorName() {
+    // look through entire valid list maybe?
+    if (this.state.filterQuery.fieldValid()) {
+      return this.state.query.replace(this.state.filterQuery.field.name, '');
+    } else {
+      return this.state.query.split(' ')[1];
+    }
+  }
+
+  partialValue() {
+    if (this.state.filterQuery.fieldValid() && this.state.filterQuery.comparatorValid()) {
+      return this.state.query.replace(this.state.filterQuery.field.name, '').replace(this.state.filterQuery.comparator.name, '').trim();
+    } else {
+      return '';
+    }
+  }
+
   renderHeader = () => {
     const lightColor = 'rgba(219, 227, 232, 1.0)';
-    const darkColor = `rgba(43, 47, 51, 1.0)`;
+    const darkColor = 'rgba(43, 47, 51, 1.0)';
 
     return (
       <View style={{ height: 100 }}>
@@ -123,7 +147,7 @@ class SearchableCardList extends Component {
           round
           onChangeText={text => this.searchRouter(text)}
           autoCorrect={false}
-          value={this.state.queryValue}
+          value={this.state.query}
           style={{ fontSize: 16 }}
           searchIcon={
             <Icon
@@ -131,7 +155,7 @@ class SearchableCardList extends Component {
               type='ionicon'
               color={lightColor}
               onPress={() => {
-                this.setState({ queryValue: null });
+                this.setState({ query: null });
                 this.searchRouter('');
                 this.setState({ searchMode: (this.state.searchMode + 1) % 3 });
               }}
@@ -139,9 +163,9 @@ class SearchableCardList extends Component {
           }
         />
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          {this.state.filterQuery.field &&
+          {this.state.query &&
             <Chip
-              title={this.state.filterQuery.field}
+              title={this.state.filterQuery.validField() ? this.state.filterQuery.field.name : this.partialFieldName()}
               key={'field'}
               type='outline'
               buttonStyle={this.state.filterQuery.validField() ? styles.chipButtonWithMatch : styles.chipButton}
@@ -150,16 +174,16 @@ class SearchableCardList extends Component {
             </Chip>}
           {this.state.filterQuery.comparator &&
             <Chip
-              title={this.state.filterQuery.comparator}
+              title={this.state.filterQuery.validComparator() ? this.state.filterQuery.comparator.name : this.partialComparatorName}
               key={'comparator'}
               type='outline'
-              buttonStyle={styles.chipButtonWithMatch}
-              titleStyle={styles.chipTitleWithMatch}
+              buttonStyle={this.state.filterQuery.validComparator() ? styles.chipButtonWithMatch : styles.chipButton}
+              titleStyle={this.state.filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
           {this.state.filterQuery.value &&
             <Chip
-              title={this.state.filterQuery.value}
+              title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
               key={'value'}
               type='outline'
               buttonStyle={styles.chipButtonWithMatch}
@@ -167,7 +191,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
           <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
-            {this.state.queryValue ? `(${this.state.data.length} results)` : ''}
+            {this.state.query ? `(${this.state.data.length} results)` : ''}
           </Text>
         </View>
       </View >
@@ -191,7 +215,7 @@ class SearchableCardList extends Component {
     return (
       <View style={{ flex: 1, overflow: 'hidden', backgroundColor: 'black' }}>
         {this.renderHeader()}
-        {this.state.queryValue &&
+        {this.state.query &&
           <FlatList
             data={this.state.data}
             renderItem={({ item }) =>
@@ -214,7 +238,7 @@ class SearchableCardList extends Component {
             comlink {'\n\n'} farm {'\n\n'} chimaera
             {'\n\n'} {'\n\n'}
             Natural language query: {'\n\n'}
-            lore matches ISB {'\n\n'} power &gt; 5 {'\n\n'} icons include pilot
+            lore contains ISB {'\n\n'} power &gt; 5 {'\n\n'} icons include pilot
             {'\n\n'} {'\n\n'}
             Coming soon: {'\n\n'} is leader {'\n\n'} ability = 2 AND is imperial
           </Text>
