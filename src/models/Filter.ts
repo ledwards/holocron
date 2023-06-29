@@ -13,8 +13,8 @@ class Filter {
     this.value = value;
   }
 
-  execute(cards: Card[], comparator: Comparator) {
-    return cards.filter(c => comparator.execute(c, this.field.name, this.value));
+  execute(cards: Card[]) {
+    return cards.filter(c => this.comparator.execute(c, this.field, this.value));
   }
 }
 

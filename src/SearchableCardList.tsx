@@ -10,7 +10,6 @@ import FilterQuery from './models/FilterQuery'
 import darkCards from '../data/Dark.json';
 import lightCards from '../data/Light.json';
 
-
 class SearchableCardList extends Component {
   constructor(props) {
     super(props);
@@ -181,7 +180,8 @@ class SearchableCardList extends Component {
               titleStyle={this.state.filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
-          {this.state.filterQuery.value &&
+          {
+            this.state.filterQuery.value &&
             <Chip
               title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
               key={'value'}
@@ -189,11 +189,12 @@ class SearchableCardList extends Component {
               buttonStyle={styles.chipButtonWithMatch}
               titleStyle={styles.chipTitleWithMatch}
               containerStyle={styles.chipContainer}>
-            </Chip>}
+            </Chip>
+          }
           <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
             {this.state.query ? `(${this.state.data.length} results)` : ''}
           </Text>
-        </View>
+        </View >
       </View >
     );
   };

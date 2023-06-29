@@ -4,7 +4,6 @@ import Filter from './Filter';
 import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 
-
 // this concept might be wrong? Maybe FilterQuery only exists if there is a valid query and otherwise its display logic?
 // or its all here and the couple view helpers in the tsx file are not needed
 class FilterQuery {
@@ -20,41 +19,50 @@ class FilterQuery {
     this.query = query.trim();
 
     // iterate through all field + field's comparators combo to find the first match
-    FIELDS.map(f => {
-      const re = new RegExp(`^${f.name}`);
-      if (query.match(re)) {
-        this.field = f;
-        this.unaliasedField = f.name;
-      }
+    // needs to be the longest match, not first match
 
-      f.comparators.map(c => {
-        const re = new RegExp(`^${f.name}\\s*${c.name}`);
-        if (this.query.match(re)) { // TODO: aliases, TODO: spacing
-          this.comparator = c;
-          this.unaliasedComparator = c.name;
-          this.value = this.query.replace(re, '').trim();
+    if (this.query) {
+      FIELDS.map(f => {
+        const fieldRe = new RegExp(`^(${([f.name].concat(f.aliases).join('|'))})`);
+        const fMatches = this.query.match(fieldRe);
 
-          if (this.value) {
-            this.filter = new Filter(f, c, this.value);
-          }
+        if (fMatches && fMatches.length > 0) {
+          this.field = f;
+          this.unaliasedField = fMatches[0];
+
+          f.comparators.map(c => {
+            const compRe = new RegExp(`^${this.unaliasedField}\\s*(${c.name})`);
+            const cMatches = this.query.match(compRe); // [1] is the match group
+
+            if (cMatches && cMatches.length > 1) { // TODO: aliases
+              this.comparator = c;
+              this.unaliasedComparator = cMatches[1];
+              const vMatches = this.query.match(`^${this.unaliasedField}\\s*${this.unaliasedComparator}(.*)`); // [1] is the match group
+              this.value = vMatches ? vMatches[1]?.trim() : '';
+
+              if (this.value) {
+                this.filter = new Filter(f, c, this.value);
+              }
+            }
+          });
         }
       });
-    });
+    }
   }
 
   valid() {
     return this.validField() &&
       this.validComparator() &&
       this.validValue() &&
-      typeof this.filter !== 'undefined';// && Object.keys(this.filter.comparators).includes(this.comparator);
+      typeof this.filter !== 'undefined';
   }
 
   validField() {
     return typeof this.field !== 'undefined';
   }
 
-  validComparator() { // necessary? I think this is just true
-    return typeof this.comparator !== 'undefined';    // return this.filter ? this.filter.comparators.includes(this.comparator) : false;
+  validComparator() {
+    return typeof this.comparator !== 'undefined';
   }
 
   validValue() {
@@ -69,7 +77,7 @@ class FilterQuery {
       return cards;
     }
 
-    return this.filter.execute(cards, this.comparator, this.value);
+    return this.filter.execute(cards);
   }
 }
 
