@@ -3,7 +3,7 @@ import Field from "./Field";
 
 class Comparator {
   name: string;
-  fn: Function; // (card: Card, field: Field, value: string) => boolean;
+  fn: Function; // (card: Card, fieldName: string, value: string) => boolean;
   aliases: string[];
 
   constructor(name: string, fn: Function, aliases: string[] = []) {
@@ -13,7 +13,7 @@ class Comparator {
   }
 
   execute(card: Card, field: Field, value: string) {
-    return this.fn(card, field, value);
+    return this.fn(card, field.name, value);
   }
 }
 
