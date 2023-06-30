@@ -43,15 +43,26 @@ const LTE_COMPARATOR = new Comparator(
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase().includes(value.toLowerCase()),
-  ['contains', 'has', 'includes', 'matches', 'is', 'is exactly']
+  ['contains', 'has', 'includes', 'matches']
 );
 
 const NOT_SUBSTR_COMPARATOR = new Comparator(
   'does not match',
-  (card: Card, attribute: string, value: string) => !card.get(attribute)?.toLowerCase().includes(value.toLowerCase()),
-  ['does not contain', 'does not have', 'does not include', 'does not match', 'is not', 'is not exactly']
+  (card: Card, attribute: string, value: string) => !(card.get(attribute)?.toLowerCase().includes(value.toLowerCase())),
+  ['does not contain', 'does not have', 'does not include', 'does not match']
 );
 
+const STRING_EQUALS_COMPARATOR = new Comparator(
+  '=',
+  (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() == value.toLowerCase(),
+  ['equals', 'eq', 'is', 'is exactly']
+);
+
+const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
+  '≠',
+  (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() !== value.toLowerCase(),
+  ['not equals', 'neq', 'is not', 'is not exactly', `isn't`, `isn't exactly`]
+);
 
 // ARRAY
 const INCLUDES_COMPARATOR = new Comparator(
@@ -66,51 +77,12 @@ const NOT_INCLUDES_COMPARATOR = new Comparator(
   ['do not include', 'does not have', 'does not contain', 'does not match', 'is not', 'is not exactly']
 );
 
-
-// ARRAY_OR_STRING
-// may not be necessary anymore?
-const CONTAINS_COMPARATOR = new Comparator(
-  'contains',
-  (card: Card, attribute: string, value: string) => {
-    let attr = card.get(attribute);
-    if (typeof (attr) === 'string') {
-      attr = attr.toLowerCase();
-    } else if (Array.isArray(attr)) {
-      attr = attr.map(a => a.toLowerCase()).join(' ');
-    }
-    return attr?.includes(value.toLowerCase());
-  },
-  ['contain', 'include', 'includes', 'has', 'have'],
-);
-
-const NOT_CONTAINS_COMPARATOR = new Comparator(
-  'does not contain',
-  (card: Card, attribute: string, value: string) => {
-    let attr = card.get(attribute);
-    if (typeof (attr) === 'string') {
-      attr = attr.toLowerCase();
-    } else if (Array.isArray(attr)) {
-      attr = attr.map(a => a.toLowerCase()).join(' ');
-    }
-    return !attr?.includes(value.toLowerCase());
-  },
-  ['do not contain', 'do not include', 'does not include', 'do not have', 'does not have'],
-
-);
-
-// const NUMERIC_COMPARATORS = { ...EQ_COMPARATOR, ...NEQ_COMPARATOR, ...GT_COMPARATOR, ...LT_COMPARATOR, ...GTE_COMPARATOR, ...LTE_COMPARATOR };
-// const STRING_COMPARATORS = { ...SUBSTR_COMPARATOR, ...NOT_SUBSTR_COMPARATOR };
-// const ARRAY_COMPARATORS = { ...INCLUDES_COMPARATOR, ...NOT_INCLUDES_COMPARATOR };
-// const ARRAY_OR_STRING_COMPARATORS = { ...CONTAINS_COMPARATOR, ...NOT_CONTAINS_COMPARATOR };
-
 const NUMERIC_COMPARATORS = [EQ_COMPARATOR, NEQ_COMPARATOR, GT_COMPARATOR, LT_COMPARATOR, GTE_COMPARATOR, LTE_COMPARATOR];
-const STRING_COMPARATORS = [SUBSTR_COMPARATOR, NOT_SUBSTR_COMPARATOR];
+const STRING_COMPARATORS = [SUBSTR_COMPARATOR, NOT_SUBSTR_COMPARATOR, STRING_EQUALS_COMPARATOR, STRING_NOT_EQUALS_COMPARATOR];
 const ARRAY_COMPARATORS = [INCLUDES_COMPARATOR, NOT_INCLUDES_COMPARATOR];
-const ARRAY_OR_STRING_COMPARATORS = [CONTAINS_COMPARATOR, NOT_CONTAINS_COMPARATOR];
 
 export {
   NUMERIC_COMPARATORS,
   STRING_COMPARATORS,
   ARRAY_COMPARATORS,
-  ARRAY_OR_STRING_COMPARATORS,
 }

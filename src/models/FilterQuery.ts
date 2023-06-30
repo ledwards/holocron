@@ -19,8 +19,6 @@ class FilterQuery {
     this.query = query.trim();
 
     // iterate through all field + field's comparators combo to find the first match
-    // needs to be the longest match, not first match
-
     if (this.query) {
       FIELDS.map(f => {
         const fieldRe = new RegExp(`^(${([f.name].concat(f.aliases).join('|'))})`);
@@ -31,7 +29,7 @@ class FilterQuery {
           this.unaliasedField = fMatches[0];
 
           f.comparators.map(c => {
-            const compRe = new RegExp(`^${this.unaliasedField}\\s*(${c.name})`);
+            const compRe = new RegExp(`^${this.unaliasedField}\\s*(${[c.name].concat(c.aliases).join('|')})`);
             const cMatches = this.query.match(compRe); // [1] is the match group
 
             if (cMatches && cMatches.length > 1) { // TODO: aliases
