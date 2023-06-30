@@ -32,9 +32,8 @@ class SearchableCardList extends Component {
   }
 
   readonly searchModes = {
-    0: 'title or natural language query',
-    1: 'title',
-    2: 'natural language query',
+    0: 'title',
+    1: 'natural language query',
   };
 
   loadAllCards = () => {
@@ -69,12 +68,9 @@ class SearchableCardList extends Component {
 
     switch (this.state.searchMode) {
       case 0:
-        this.queryFilterFunction(text);// || this.searchFilterFunction(text);
-        break;
-      case 1:
         this.searchFilterFunction(text);
         break;
-      case 2:
+      case 1:
         this.queryFilterFunction(text);
         break;
     }
@@ -150,19 +146,19 @@ class SearchableCardList extends Component {
           style={{ fontSize: 16 }}
           searchIcon={
             <Icon
-              name='search-outline'
+              name={this.state.searchMode == 0 ? 'search-outline' : 'color-filter-outline'}
               type='ionicon'
               color={lightColor}
               onPress={() => {
                 this.setState({ query: null });
                 this.searchRouter('');
-                this.setState({ searchMode: (this.state.searchMode + 1) % 3 });
+                this.setState({ searchMode: (this.state.searchMode + 1) % 2 });
               }}
             />
           }
         />
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          {this.state.query &&
+          {this.state.searchMode == 1 && this.state.query &&
             <Chip
               title={this.state.filterQuery.validField() ? this.state.filterQuery.field.name : this.partialFieldName()}
               key={'field'}
@@ -171,7 +167,7 @@ class SearchableCardList extends Component {
               titleStyle={this.state.filterQuery.validField() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
-          {this.state.filterQuery.comparator &&
+          {this.state.searchMode == 1 && this.state.filterQuery.comparator &&
             <Chip
               title={this.state.filterQuery.validComparator() ? this.state.filterQuery.comparator.name : this.partialComparatorName}
               key={'comparator'}
@@ -180,8 +176,7 @@ class SearchableCardList extends Component {
               titleStyle={this.state.filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
-          {
-            this.state.filterQuery.value &&
+          {this.state.searchMode == 1 && this.state.filterQuery.value &&
             <Chip
               title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
               key={'value'}
@@ -189,13 +184,21 @@ class SearchableCardList extends Component {
               buttonStyle={styles.chipButtonWithMatch}
               titleStyle={styles.chipTitleWithMatch}
               containerStyle={styles.chipContainer}>
-            </Chip>
-          }
+            </Chip>}
+          {this.state.searchMode == 0 &&
+            <Chip
+              title={this.state.query}
+              key={'value'}
+              type='outline'
+              buttonStyle={styles.chipButtonWithMatch}
+              titleStyle={styles.chipTitleWithMatch}
+              containerStyle={styles.chipContainer}>
+            </Chip>}
           <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
             {this.state.query ? `(${this.state.data.length} results)` : ''}
           </Text>
-        </View >
-      </View >
+        </View>
+      </View>
     );
   };
 
