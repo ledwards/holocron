@@ -96,7 +96,7 @@ class Card {
     this.characteristics = object.front.characteristics;
     this.icons = object.front.icons;
     this.rarity = object.rarity;
-    this.set = object.set;
+    this.set = (ExpansionSets as any)[object.set];
     this.side = object.side;
     this.subType = object.front.subType;
     this.uniqueness = object.front.uniqueness;
