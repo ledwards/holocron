@@ -54,6 +54,7 @@ class Card {
   displayType: string;
   displaySubType: string;
   displayImageUrl: string;
+  displayBackImageUrl: string;
   displaySet: string;
 
   offsetY: number;
@@ -126,6 +127,7 @@ class Card {
     this.displayType = this.type.split(' #')[0];
     this.displaySubType = this.subType ? this.subType.split(': ')[0] : '';
     this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
+    this.displayBackImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.imageUrl : this.backImageUrl;
     this.displaySet = ExpansionSets[object.set];
 
     if (this.displayType == 'Jedi Test') {

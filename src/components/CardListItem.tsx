@@ -7,30 +7,73 @@ import { ListItem } from 'react-native-elements';
 class CardListItem extends PureComponent {
   constructor(props) {
     super(props);
+
+    this.state = {
+      expanded: false,
+      showingBack: false,
+    }
+  }
+
+  toggleExpanded = () => {
+    this.setState({
+      showingBack: this.props.item.twoSided && this.state.expanded && !this.state.showingBack,
+      expanded: (this.props.item.twoSided && this.state.expanded && this.state.showingBack)
+        || (!this.props.item.twoSided && this.state.expanded) ? false : true,
+    });
+
+    // TODO: Animate the change?
+    // TODO: ScrollTo this location
   }
 
   render() {
     const lightColor = 'rgba(219, 227, 232, 1.0)';
     const darkColor = `rgba(43, 47, 51, 1.0)`;
     const alpha = '0.3';
-    const lightAlphaColor = lightColor.replace('1.0', alpha)
-    const darkAlphaColor = darkColor.replace('1.0', alpha)
+    const lightAlphaColor = lightColor.replace('1.0', alpha);
+    const darkAlphaColor = darkColor.replace('1.0', alpha);
 
     return (
       <ListItem
-        style={{ marginLeft: -15 }}
+        style={this.props.expanded ? {
+          marginLeft: -15,
+        } : {
+          marginLeft: 0
+        }}
         button
-        onPress={this.props.callback}
-        containerStyle={{ backgroundColor: this.props.item.side == 'Dark' ? darkColor : lightColor, overflow: 'hidden' }}>
-        <View style={{ position: 'absolute', top: 0 + this.props.item.offsetY, right: -60, width: '60%', height: 120 + this.props.item.offsetHeight, overflow: 'hidden' }}>
+        onPress={this.toggleExpanded}
+        containerStyle={!this.state.expanded ? {
+          backgroundColor: this.props.item.side == 'Dark' ? darkColor : lightColor,
+          overflow: 'hidden'
+        } : {
+          backgroundColor: 'black',
+          width: '100%',
+        }}>
+        <View style={!this.state.expanded ? {
+          position: 'absolute',
+          top: 0 + this.props.item.offsetY,
+          right: -60,
+          width: '60%',
+          height: 120 + this.props.item.offsetHeight,
+          overflow: 'hidden'
+        } : {
+          height: '100%',
+          width: '100%',
+        }}>
           <FastImage
-            source={{ uri: this.props.item.displayImageUrl }}
-            style={{
+            source={{
+              uri: this.state.showingBack ?
+                this.props.item.displayBackImageUrl :
+                this.props.item.displayImageUrl
+            }}
+            style={!this.state.expanded ? {
               position: 'relative',
               left: -30,
               top: 0,
               width: '100%',
               height: '100%',
+            } : {
+              height: this.props.item.sideways ? 250 : 500,
+              borderRadius: 10,
             }}
           />
         </View>
