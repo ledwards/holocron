@@ -49,6 +49,7 @@ class Card {
   // underlyingCardFor
 
   sortTitle: string;
+  abbreviationTitle: string;
 
   displayTitle: string;
   displayType: string;
@@ -101,9 +102,10 @@ class Card {
     this.side = object.side;
     this.subType = object.front.subType;
     this.uniqueness = object.front.uniqueness;
+    this.abbreviationTitle = object.abbr;
 
     this.sortTitle = this.title
-      // .replaceAll(/['"•<>:\\n]/g, '') // TODO: Get this to work...
+      .replaceAll(/[^a-zA-Z0-9 -]/g, '')
       .toLowerCase();
 
     this.displayTitle = this.title
