@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Pressable, Text, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { SearchBar, Icon, Chip } from 'react-native-elements';
-import FastImage from 'react-native-fast-image'
-import CardListItem from './components/CardListItem'
+import CardListItem from './CardListItem'
 
-import Card from './models/Card'
-import FilterQuery from './models/FilterQuery'
+import Card from '../models/Card'
+import FilterQuery from '../models/FilterQuery'
 
-import darkCards from '../data/Dark.json';
-import lightCards from '../data/Light.json';
+import darkCards from '../../data/Dark.json';
+import lightCards from '../../data/Light.json';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -53,7 +52,7 @@ class SearchableCardList extends Component {
 
   renderSeparator = () => {
     return (
-      <View style={{ height: 2, backgroundColor: '#000000' }} />
+      <View style={{ height: 2, backgroundColor: 'black' }} />
     );
   };
 
@@ -234,7 +233,7 @@ class SearchableCardList extends Component {
             updateCellsBatchingPeriod={100} // Increase time between renders
             windowSize={10} // Reduce the window size
           /> ||
-          <Text style={{ color: '#ffffff', padding: 18, textAlign: 'center' }}>
+          <Text style={{ color: 'white', padding: 18, textAlign: 'center' }}>
             Tap the icon to switch between search modes. {'\n\n\n'}
             Search by title: {'\n\n'}
             comlink {'\n\n'} farm {'\n\n'} chimaera
