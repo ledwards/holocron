@@ -18,7 +18,7 @@ class SearchableCardList extends Component {
       error: null,
       allCards: [],
       data: [],
-      searchMode: 0,
+      searchModeIndex: 0,
       query: null,
       filterQuery: new FilterQuery(''),
     };
@@ -29,9 +29,21 @@ class SearchableCardList extends Component {
   }
 
   readonly searchModes = {
-    0: 'title',
-    1: 'natural language query',
+    0: {
+      label: 'title',
+      icon: 'search-outline',
+      description: 'Search all cards by title. Try: \n\ncomlink \n\n farm \n\n chimaera'
+    },
+    1: {
+      label: 'natural language query',
+      icon: 'color-filter-outline',
+      description: 'Search all cards with English language queries. Try: \n\n lore contains ISB \n\n power > 5 \n\n icons include pilot',
+    },
   };
+
+  currentSearchMode() {
+    return this.searchModes[this.state.searchModeIndex] || 0;
+  }
 
   loadAllCards = () => {
     this.setState({ loading: true });
@@ -63,7 +75,7 @@ class SearchableCardList extends Component {
       query: text,
     });
 
-    switch (this.state.searchMode) {
+    switch (this.state.searchModeIndex) {
       case 0:
         this.searchFilterFunction(text);
         break;
@@ -81,7 +93,6 @@ class SearchableCardList extends Component {
       filterQuery: filterQuery,
     });
 
-
     if (filterQuery.valid()) {
       const newData = filterQuery.execute(this.state.allCards);
 
@@ -97,10 +108,18 @@ class SearchableCardList extends Component {
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
       const textData = text.replaceAll(/[^a-zA-Z0-9 -]/g, '');
-      const itemData = card.sortTitle.replaceAll(/[^a-zA-Z0-9 -]/g, '');
+      const itemData = `${card.sortTitle} ${card.abbreviationTitle || ' '}`
+        .replaceAll(/[^a-zA-Z0-9 -]/g, '')
+        .toLowerCase()
+        .trim();
 
-      // TODO: Allow partial matches
-      return itemData.indexOf(textData) > -1;
+      // Allow for partial matches
+      const textDataList = textData.split(' ');
+      const itemDataList = itemData.split(' ');
+
+      const matches = textDataList.filter((w: string) => itemData.indexOf(w) > -1);
+
+      return matches.length === textDataList.length;
     });
 
     this.setState({
@@ -136,7 +155,7 @@ class SearchableCardList extends Component {
     return (
       <View style={{ height: 100 }}>
         <SearchBar
-          placeholder={`Search by ${this.searchModes[this.state.searchMode]}`}
+          placeholder={`Search by ${this.currentSearchMode().label}`}
           darkTheme
           round
           onChangeText={text => this.searchRouter(text)}
@@ -145,19 +164,19 @@ class SearchableCardList extends Component {
           style={{ fontSize: 16 }}
           searchIcon={
             <Icon
-              name={this.state.searchMode == 0 ? 'search-outline' : 'color-filter-outline'}
+              name={this.currentSearchMode().icon}
               type='ionicon'
               color={lightColor}
               onPress={() => {
                 this.setState({ query: null });
                 this.searchRouter('');
-                this.setState({ searchMode: (this.state.searchMode + 1) % 2 });
+                this.setState({ searchModeIndex: (this.state.searchModeIndex + 1) % 2 });
               }}
             />
           }
         />
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          {this.state.searchMode == 1 && this.state.query &&
+          {this.state.searchModeIndex == 1 && this.state.query &&
             <Chip
               title={this.state.filterQuery.validField() ? this.state.filterQuery.field.name : this.partialFieldName()}
               key={'field'}
@@ -167,7 +186,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          {this.state.searchMode == 1 && this.state.filterQuery.comparator &&
+          {this.state.searchModeIndex == 1 && this.state.filterQuery.comparator &&
             <Chip
               title={this.state.filterQuery.validComparator() ? this.state.filterQuery.comparator.name : this.partialComparatorName}
               key={'comparator'}
@@ -177,7 +196,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          {this.state.searchMode == 1 && this.state.filterQuery.value &&
+          {this.state.searchModeIndex == 1 && this.state.filterQuery.value &&
             <Chip
               title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
               key={'value'}
@@ -187,7 +206,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          {this.state.searchMode == 0 &&
+          {this.state.searchModeIndex == 0 &&
             <Chip
               title={this.state.query}
               key={'value'}
@@ -232,17 +251,28 @@ class SearchableCardList extends Component {
             maxToRenderPerBatch={10} // Reduce number in each render batch
             updateCellsBatchingPeriod={100} // Increase time between renders
             windowSize={10} // Reduce the window size
-          /> ||
-          <Text style={{ color: 'white', padding: 18, textAlign: 'center' }}>
-            Tap the icon to switch between search modes. {'\n\n\n'}
-            Search by title: {'\n\n'}
-            comlink {'\n\n'} farm {'\n\n'} chimaera
-            {'\n\n\n\n'}
-            Search by natural language query: {'\n\n'}
-            lore contains ISB {'\n\n'} power &gt; 5 {'\n\n'} icons include pilot
-            {'\n\n\n\n'}
-            Coming soon: {'\n\n'} is leader {'\n\n'} ability = 2 AND is imperial
-          </Text>
+          /> || <>
+            <Text style={{ color: 'white', padding: 18, textAlign: 'center' }}>
+              {this.currentSearchMode().description}
+            </Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 40 }}>
+              <Text style={{ color: 'white', }}>
+                Tap the
+              </Text>
+
+              <Icon
+                name={this.currentSearchMode().icon}
+                type='ionicon'
+                color='white'
+                size={16}
+                style={{ marginLeft: 5, marginRight: 5 }}
+              />
+
+              <Text style={{ color: 'white', }}>
+                icon to switch between search modes. {'\n\n\n'}
+              </Text>
+            </View>
+          </>
         }
       </View >
     );
