@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Modal, Pressable, Text, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, Pressable, Text, StyleSheet } from 'react-native';
 import { SearchBar, Icon, Chip } from 'react-native-elements';
 import FastImage from 'react-native-fast-image'
 import CardListItem from './components/CardListItem'
@@ -19,8 +19,6 @@ class SearchableCardList extends Component {
       error: null,
       allCards: [],
       data: [],
-      modalVisible: false,
-      currentCard: null,
       searchMode: 0,
       query: null,
       filterQuery: new FilterQuery(''),
@@ -90,6 +88,7 @@ class SearchableCardList extends Component {
 
       this.setState({
         data: newData,
+        expandedCard: newData[0],
       });
     }
 
@@ -98,9 +97,10 @@ class SearchableCardList extends Component {
 
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
-      const textData = text;
-      const itemData = card.sortTitle;
+      const textData = text.replaceAll(/[^a-zA-Z0-9 -]/g, '');
+      const itemData = card.sortTitle.replaceAll(/[^a-zA-Z0-9 -]/g, '');
 
+      // TODO: Allow partial matches
       return itemData.indexOf(textData) > -1;
     });
 
@@ -167,6 +167,7 @@ class SearchableCardList extends Component {
               titleStyle={this.state.filterQuery.validField() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
+
           {this.state.searchMode == 1 && this.state.filterQuery.comparator &&
             <Chip
               title={this.state.filterQuery.validComparator() ? this.state.filterQuery.comparator.name : this.partialComparatorName}
@@ -176,6 +177,7 @@ class SearchableCardList extends Component {
               titleStyle={this.state.filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
+
           {this.state.searchMode == 1 && this.state.filterQuery.value &&
             <Chip
               title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
@@ -185,6 +187,7 @@ class SearchableCardList extends Component {
               titleStyle={styles.chipTitleWithMatch}
               containerStyle={styles.chipContainer}>
             </Chip>}
+
           {this.state.searchMode == 0 &&
             <Chip
               title={this.state.query}
@@ -194,6 +197,7 @@ class SearchableCardList extends Component {
               titleStyle={styles.chipTitleWithMatch}
               containerStyle={styles.chipContainer}>
             </Chip>}
+
           <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
             {this.state.query ? `(${this.state.data.length} results)` : ''}
           </Text>
@@ -211,11 +215,6 @@ class SearchableCardList extends Component {
       );
     }
 
-    // TODO: Overlay!
-    const toggleModalForCard = (card) => {
-      return () => this.setState({ modalVisible: !this.state.modalVisible, currentCard: card });
-    }
-
     return (
       <View style={{ flex: 1, overflow: 'hidden', backgroundColor: 'black' }}>
         {this.renderHeader()}
@@ -223,7 +222,7 @@ class SearchableCardList extends Component {
           <FlatList
             data={this.state.data}
             renderItem={({ item }) =>
-              <CardListItem item={item} callback={toggleModalForCard(item)} />
+              <CardListItem item={item} />
             }
             keyExtractor={item => item.id}
             ItemSeparatorComponent={this.renderSeparator}
@@ -236,62 +235,16 @@ class SearchableCardList extends Component {
             windowSize={10} // Reduce the window size
           /> ||
           <Text style={{ color: '#ffffff', padding: 18, textAlign: 'center' }}>
-            Search by title, or by natural language query. Try:
-            {'\n\n'}{'\n\n'}
-            Title: {'\n\n'}
+            Tap the icon to switch between search modes. {'\n\n\n'}
+            Search by title: {'\n\n'}
             comlink {'\n\n'} farm {'\n\n'} chimaera
-            {'\n\n'} {'\n\n'}
-            Natural language query: {'\n\n'}
+            {'\n\n\n\n'}
+            Search by natural language query: {'\n\n'}
             lore contains ISB {'\n\n'} power &gt; 5 {'\n\n'} icons include pilot
-            {'\n\n'} {'\n\n'}
+            {'\n\n\n\n'}
             Coming soon: {'\n\n'} is leader {'\n\n'} ability = 2 AND is imperial
           </Text>
         }
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={this.state.modalVisible}
-          style={{ alignItems: 'center', elevation: 5 }}
-          onRequestClose={() => { this.setState({ modalVisible: !this.state.modalVisible, currentCard: null }); }}>
-          <View style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.80)',
-          }}>
-            <Pressable style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}>
-              {(this.state.currentCard && !this.state.currentCard.twoSided &&
-                <FastImage
-                  source={{ uri: this.state.currentCard.imageUrl }}
-                  style={{
-                    width: '100%',
-                    aspectRatio: this.state.currentCard.sideways ? 1.3937 : 0.7136,
-                    borderRadius: 15,
-                  }}
-                />) || (this.state.currentCard &&
-                  <>
-                    <FastImage
-                      source={{ uri: this.state.currentCard.imageUrl }}
-                      style={{
-                        height: '49%',
-                        aspectRatio: 0.7136,
-                        borderRadius: 15,
-                      }}
-                    />
-                    <FastImage
-                      source={{ uri: this.state.currentCard.backImageUrl }}
-                      style={{
-                        height: '49%',
-                        aspectRatio: 0.7136,
-                        borderRadius: 15,
-                      }}
-                    />
-                  </>
-                )
-              }
-            </Pressable>
-          </View>
-        </Modal >
       </View >
     );
   }

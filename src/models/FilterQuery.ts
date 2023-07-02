@@ -69,6 +69,7 @@ class FilterQuery {
 
   // TODO: Add aliases for values e.g. abbreviations?
   // Handle aliases consistently for all types of aliases?
+  // Right now, aliases don't work, for matching e.g. pwr < 5
 
   execute(cards: Card[]) {
     if (!this.valid()) {
