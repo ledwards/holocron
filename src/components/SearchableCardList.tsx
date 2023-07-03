@@ -60,6 +60,7 @@ class SearchableCardList extends Component {
       error: null,
       loading: false,
     });
+
     this.state.allCards = allCards;
   };
 
@@ -133,7 +134,6 @@ class SearchableCardList extends Component {
   }
 
   partialComparatorName() {
-    // look through entire valid list maybe?
     if (this.state.filterQuery.fieldValid()) {
       return this.state.query.replace(this.state.filterQuery.field.name, '');
     } else {

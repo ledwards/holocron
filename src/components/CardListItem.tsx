@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, Animated, Easing, Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image'
 
 import { ListItem } from 'react-native-elements';
@@ -8,9 +8,17 @@ class CardListItem extends PureComponent {
   constructor(props) {
     super(props);
 
+    const windowWidth = Dimensions.get('window').width
+
     this.state = {
       expanded: false,
       showingBack: false,
+      heightAnim: new Animated.Value(120),
+      widthAnim: new Animated.Value(windowWidth * 0.60),
+      minHeight: 120,
+      maxHeight: this.props.item.sideways ? 275 : 550,
+      minWidth: windowWidth * 0.60,
+      maxWidth: windowWidth,
     }
   }
 
@@ -21,10 +29,27 @@ class CardListItem extends PureComponent {
         || (!this.props.item.twoSided && this.state.expanded) ? false : true,
     });
 
-    this.props.flatListRef.scrollToIndex({ animated: true, index: this.props.index });
-
-    // TODO: Animate the change?
-    // TODO: ScrollTo this location
+    // TODO: native driver:
+    // https://stackoverflow.com/questions/63976219/style-property-width-is-not-supported-by-native-animated-module-need-advice-f
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(this.state.heightAnim, {
+          toValue: this.state.expanded ? this.state.minHeight : this.state.maxHeight,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.linear,
+        }),
+        Animated.timing(this.state.widthAnim, {
+          toValue: this.state.expanded ? this.state.minWidth : this.state.maxWidth,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.linear,
+        }),
+      ]),
+    ])
+      .start(() => {
+        this.props.flatListRef.scrollToIndex({ index: this.props.index });
+      });
   }
 
   render() {
@@ -37,51 +62,52 @@ class CardListItem extends PureComponent {
     return (
       <ListItem
         id={this.props.index}
-        style={this.props.expanded ? {
-          marginLeft: -15,
-        } : {
-          marginLeft: 0
-        }}
+        style={{ marginLeft: -15 }}
         button
         onPress={this.toggleExpanded}
-        containerStyle={!this.state.expanded ? {
+        containerStyle={{
           backgroundColor: this.props.item.side == 'Dark' ? darkColor : lightColor,
-          overflow: 'hidden'
-        } : {
-          backgroundColor: 'black',
-          width: '100%',
+          overflow: 'hidden',
+          height: this.state.expanded ? this.state.maxHeight : this.state.minHeight / 2,
         }}>
-        <View style={!this.state.expanded ? {
-          position: 'absolute',
-          top: 0 + this.props.item.offsetY,
-          right: -60,
-          width: '60%',
-          height: 120 + this.props.item.offsetHeight,
-          overflow: 'hidden'
-        } : {
-          height: '100%',
-          width: '100%',
-        }}>
+
+        <Animated.View
+          style={!this.state.expanded ? {
+            position: 'absolute',
+            top: 0 + this.props.item.offsetY,
+            right: -60, // TODO: scale?
+            width: this.state.widthAnim,
+            height: this.state.heightAnim,
+            overflow: 'hidden',
+          } : {
+            position: 'absolute',
+            // TODO: this anaimation begins at top of card instead of middle
+            right: 0,
+            height: this.state.heightAnim,
+            width: this.state.widthAnim,
+          }}>
           <FastImage
             source={{
               uri: this.state.showingBack ?
                 this.props.item.displayBackImageUrl :
                 this.props.item.displayImageUrl
             }}
+            resizeMode={FastImage.resizeMode.cover}
             style={!this.state.expanded ? {
               position: 'relative',
               left: -30,
               top: 0,
-              width: '100%',
               height: '100%',
             } : {
-              height: this.props.item.sideways ? 275 : 550,
-              borderRadius: 10,
+              height: '100%',
+              left: 0,
             }}
           />
-        </View>
+        </Animated.View>
 
-        <ListItem.Content style={{}}>
+        <ListItem.Content style={{
+          opacity: !this.state.expanded ? 1.0 : 0
+        }}>
           <ListItem.Title style={{
             backgroundColor: this.props.item.side == 'Light' ? lightAlphaColor : darkAlphaColor,
             color: this.props.item.side == 'Light' ? darkColor : lightColor,
