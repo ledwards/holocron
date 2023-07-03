@@ -21,6 +21,8 @@ class CardListItem extends PureComponent {
         || (!this.props.item.twoSided && this.state.expanded) ? false : true,
     });
 
+    this.props.flatListRef.scrollToIndex({ animated: true, index: this.props.index });
+
     // TODO: Animate the change?
     // TODO: ScrollTo this location
   }
@@ -34,6 +36,7 @@ class CardListItem extends PureComponent {
 
     return (
       <ListItem
+        id={this.props.index}
         style={this.props.expanded ? {
           marginLeft: -15,
         } : {
@@ -72,7 +75,7 @@ class CardListItem extends PureComponent {
               width: '100%',
               height: '100%',
             } : {
-              height: this.props.item.sideways ? 250 : 500,
+              height: this.props.item.sideways ? 275 : 550,
               borderRadius: 10,
             }}
           />
