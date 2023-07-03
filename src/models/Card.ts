@@ -139,7 +139,7 @@ class Card {
       this.offsetY = -10;
       this.offsetHeight = 60;
     } else if (this.subType == 'Site') {
-      this.offsetY = -40;
+      this.offsetY = -30;
       this.offsetHeight = 30;
     } else if (this.sideways && (this.type == 'Starship' || this.type == 'Weapon')) {
       this.offsetY = -74;
