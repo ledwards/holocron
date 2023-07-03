@@ -93,7 +93,7 @@ class CardListItem extends PureComponent {
             fontSize: this.props.item.displayTitle.includes('\n') ? 8 : 12
           }}
           >
-            {`${this.props.item.displaySet} • ${this.props.item.type} • ${this.props.item.set < 200 ? this.props.item.rarity : 'Virtual'}`}
+            {`${this.props.item.displaySet} • ${this.props.item.type} • ${parseInt(this.props.item.setNumber) < 200 ? this.props.item.rarity : 'V'}`}
           </ListItem.Subtitle>
         </ListItem.Content>
 
