@@ -21,6 +21,7 @@ class SearchableCardList extends Component {
       searchModeIndex: 0,
       query: null,
       filterQuery: new FilterQuery(''),
+      flatListRef: null,
     };
   }
 
@@ -238,9 +239,10 @@ class SearchableCardList extends Component {
         {this.renderHeader()}
         {this.state.query &&
           <FlatList
+            ref={(ref) => { this.state.flatListRef = ref; }}
             data={this.state.data}
-            renderItem={({ item }) =>
-              <CardListItem item={item} />
+            renderItem={({ item, index }) =>
+              <CardListItem item={item} index={index} flatListRef={this.state.flatListRef} />
             }
             keyExtractor={item => item.id}
             ItemSeparatorComponent={this.renderSeparator}
