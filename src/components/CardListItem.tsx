@@ -15,6 +15,8 @@ class CardListItem extends PureComponent {
       showingBack: false,
       heightAnim: new Animated.Value(120),
       widthAnim: new Animated.Value(windowWidth * 0.60),
+      containerHeightAnim: new Animated.Value(60),
+      labelOpacityAnim: new Animated.Value(1.0),
       minHeight: 120,
       maxHeight: this.props.item.sideways ? 275 : 550,
       minWidth: windowWidth * 0.60,
@@ -23,6 +25,8 @@ class CardListItem extends PureComponent {
   }
 
   toggleExpanded = () => {
+    //TODO: hide keyboard
+
     this.setState({
       showingBack: this.props.item.twoSided && this.state.expanded && !this.state.showingBack,
       expanded: (this.props.item.twoSided && this.state.expanded && this.state.showingBack)
@@ -31,6 +35,7 @@ class CardListItem extends PureComponent {
 
     // TODO: native driver:
     // https://stackoverflow.com/questions/63976219/style-property-width-is-not-supported-by-native-animated-module-need-advice-f
+
     Animated.sequence([
       Animated.parallel([
         Animated.timing(this.state.heightAnim, {
@@ -41,6 +46,18 @@ class CardListItem extends PureComponent {
         }),
         Animated.timing(this.state.widthAnim, {
           toValue: this.state.expanded ? this.state.minWidth : this.state.maxWidth,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.linear,
+        }),
+        Animated.timing(this.state.containerHeightAnim, {
+          toValue: this.state.expanded ? this.state.minHeight / 2 : this.state.maxHeight,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.linear,
+        }),
+        Animated.timing(this.state.labelOpacityAnim, {
+          toValue: this.state.expanded ? 1.0 : 0.0,
           duration: 250,
           useNativeDriver: false,
           easing: Easing.linear,
@@ -60,73 +77,77 @@ class CardListItem extends PureComponent {
     const darkAlphaColor = darkColor.replace('1.0', alpha);
 
     return (
-      <ListItem
-        id={this.props.index}
-        style={{ marginLeft: -15 }}
-        button
-        onPress={this.toggleExpanded}
-        containerStyle={{
-          backgroundColor: this.props.item.side == 'Dark' ? darkColor : lightColor,
-          overflow: 'hidden',
-          height: this.state.expanded ? this.state.maxHeight : this.state.minHeight / 2,
+      <Animated.View
+        style={{
+          height: this.state.containerHeightAnim,
         }}>
-
-        <Animated.View
-          style={!this.state.expanded ? {
-            position: 'absolute',
-            top: 0 + this.props.item.offsetY,
-            right: -60, // TODO: scale?
-            width: this.state.widthAnim,
-            height: this.state.heightAnim,
+        <ListItem
+          id={this.props.index}
+          style={{ marginLeft: -15 }}
+          button
+          onPress={this.toggleExpanded}
+          containerStyle={{
+            backgroundColor: this.props.item.side == 'Dark' ? darkColor : lightColor,
             overflow: 'hidden',
-          } : {
-            position: 'absolute',
-            // TODO: this anaimation begins at top of card instead of middle
-            right: 0,
-            height: this.state.heightAnim,
-            width: this.state.widthAnim,
+            height: '100%',
           }}>
-          <FastImage
-            source={{
-              uri: this.state.showingBack ?
-                this.props.item.displayBackImageUrl :
-                this.props.item.displayImageUrl
-            }}
-            resizeMode={FastImage.resizeMode.cover}
+
+          <Animated.View
             style={!this.state.expanded ? {
-              position: 'relative',
-              left: -30,
-              top: 0,
-              height: '100%',
+              position: 'absolute',
+              top: 0 + this.props.item.offsetY,
+              right: -60,
+              width: this.state.widthAnim,
+              height: this.state.heightAnim,
+              overflow: 'hidden',
             } : {
-              height: '100%',
-              left: 0,
-            }}
-          />
-        </Animated.View>
-
-        <ListItem.Content style={{
-          opacity: !this.state.expanded ? 1.0 : 0
-        }}>
-          <ListItem.Title style={{
-            backgroundColor: this.props.item.side == 'Light' ? lightAlphaColor : darkAlphaColor,
-            color: this.props.item.side == 'Light' ? darkColor : lightColor,
-            fontWeight: 'bold',
-            fontSize: this.props.item.displayTitle.includes('\n') ? 10 : 16
+              position: 'absolute',
+              right: 0,
+              height: this.state.heightAnim,
+              width: this.state.widthAnim,
+            }}>
+            <FastImage
+              source={{
+                uri: this.state.showingBack ?
+                  this.props.item.displayBackImageUrl :
+                  this.props.item.displayImageUrl
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+              style={!this.state.expanded ? {
+                position: 'relative',
+                left: -30,
+                top: 0,
+                height: '100%',
+              } : {
+                height: '100%',
+                left: 0,
+              }}
+            />
+          </Animated.View>
+          <Animated.View style={{
+            opacity: this.state.labelOpacityAnim,
           }}>
-            {`${this.props.item.displayTitle}`}
-          </ListItem.Title>
-          <ListItem.Subtitle style={{
-            backgroundColor: this.props.item.side == 'Light' ? lightAlphaColor : darkAlphaColor,
-            color: this.props.item.side == 'Light' ? darkColor : lightColor,
-            fontSize: this.props.item.displayTitle.includes('\n') ? 8 : 12
-          }}
-          >
-            {`${this.props.item.displaySet} • ${this.props.item.type} • ${parseInt(this.props.item.setNumber) < 200 ? this.props.item.rarity : 'V'}`}
-          </ListItem.Subtitle>
-        </ListItem.Content>
-
-      </ListItem >
+            <ListItem.Content style={{}}>
+              <ListItem.Title style={{
+                backgroundColor: this.props.item.side == 'Light' ? lightAlphaColor : darkAlphaColor,
+                color: this.props.item.side == 'Light' ? darkColor : lightColor,
+                fontWeight: 'bold',
+                fontSize: this.props.item.displayTitle.includes('\n') ? 10 : 16
+              }}>
+                {`${this.props.item.displayTitle}`}
+              </ListItem.Title>
+              <ListItem.Subtitle style={{
+                backgroundColor: this.props.item.side == 'Light' ? lightAlphaColor : darkAlphaColor,
+                color: this.props.item.side == 'Light' ? darkColor : lightColor,
+                fontSize: this.props.item.displayTitle.includes('\n') ? 8 : 12
+              }}
+              >
+                {`${this.props.item.displaySet} • ${this.props.item.type} • ${parseInt(this.props.item.setNumber) < 200 ? this.props.item.rarity : 'V'}`}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+          </Animated.View>
+        </ListItem >
+      </Animated.View>
     );
   }
 }
