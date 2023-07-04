@@ -158,9 +158,10 @@ class SearchableCardList extends Component {
   renderHeader = () => {
     return (
       <View style={{
-        height: 120,
-        backgroundColor: grayColor,
-        paddingBottom: 10,
+        height: 100,
+        backgroundColor: blackColor,
+        borderBottomColor: this.state.query === null || this.state.query == '' ? 'transparent' : blackColor,
+        borderBottomWidth: 2,
       }}>
         <SearchBar
           placeholder={`Search by ${this.currentSearchMode().label}`}
@@ -246,6 +247,7 @@ class SearchableCardList extends Component {
 
     return (
       <View style={{ flex: 1, overflow: 'hidden', backgroundColor: blackColor }}>
+        {this.renderHeader()}
         {this.state.query &&
           <Animated.FlatList
             ref={(ref) => { this.state.flatListRef = ref; }}
@@ -264,7 +266,7 @@ class SearchableCardList extends Component {
             updateCellsBatchingPeriod={100} // Increase time between renders
             windowSize={10} // Reduce the window size
           /> || <>
-            <Text style={{ color: 'white', paddingTop: 80, textAlign: 'center' }}>
+            <Text style={{ color: 'white', padding: 18, textAlign: 'center' }}>
               {this.currentSearchMode().description}
             </Text>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 40 }}>
@@ -286,7 +288,6 @@ class SearchableCardList extends Component {
             </View>
           </>
         }
-        {this.renderHeader()}
       </View >
     );
   }
@@ -298,13 +299,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 4,
-    margin: 8,
+    margin: 4,
   },
   chipButtonWithMatch: {
     borderColor: 'transparent',
     borderWidth: 1,
     borderRadius: 10,
-    paddingVertical: 12,
+    paddingVertical: 6,
     paddingHorizontal: 0,
     margin: 0,
     backgroundColor: 'transparent',
