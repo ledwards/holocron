@@ -23,6 +23,15 @@ const FIELDS = [
   new Field('title', STRING_COMPARATORS, ['t']),
   new Field('type', STRING_COMPARATORS, []),
 
+  // canceledBy - is canceled by Y
+  // cancels - cancels Y
+  // counterpart - [Dark/Light] counterpart to Y
+  // matching - matches Y
+  // matchingWeapon - matches Y / matching weapon Y
+  // pulledBy - is pulled by Y
+  // pulls - pulls Y
+  // underlyingCardFor
+
   new Field('characteristics', ARRAY_COMPARATORS, ['characteristic']),
   new Field('icons', ARRAY_COMPARATORS, ['i']),
   new Field('rarity', STRING_COMPARATORS, ['r']),
