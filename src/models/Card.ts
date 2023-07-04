@@ -60,6 +60,7 @@ class Card {
 
   offsetY: number;
   offsetHeight: number;
+  aspectRatio: number;
   sideways: boolean;
   combo: boolean;
   twoSided: boolean;
@@ -154,6 +155,7 @@ class Card {
     this.sideways = this.subType == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
     this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
     this.twoSided = this.backImageUrl != null;
+    this.aspectRatio = this.sideways ? 339 / 475 : 475 / 339;
   }
 
   get(attributeName: string) {

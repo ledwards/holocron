@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet, Animated } from 'react-native';
 import { SearchBar, Icon, Chip } from 'react-native-elements';
 import CardListItem from './CardListItem'
 
@@ -8,6 +8,12 @@ import FilterQuery from '../models/FilterQuery'
 
 import darkCards from '../../data/Dark.json';
 import lightCards from '../../data/Light.json';
+
+const lightColor = 'rgba(219, 227, 232, 1.0)';
+const darkColor = 'rgba(43, 47, 51, 1.0)';
+const grayColor = 'rgba(58, 62, 66, 1.0)';
+const blackColor = 'rgba(0, 0, 0, 1.0)';
+const whiteColor = 'rgba(255, 255, 255, 1.0)';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -150,14 +156,15 @@ class SearchableCardList extends Component {
   }
 
   renderHeader = () => {
-    const lightColor = 'rgba(219, 227, 232, 1.0)';
-    const darkColor = 'rgba(43, 47, 51, 1.0)';
-
     return (
-      <View style={{ height: 100 }}>
+      <View style={{
+        height: 100,
+        backgroundColor: grayColor,
+        borderBottomColor: this.state.query === null || this.state.query == '' ? 'transparent' : blackColor,
+        borderBottomWidth: 2,
+      }}>
         <SearchBar
           placeholder={`Search by ${this.currentSearchMode().label}`}
-          darkTheme
           round
           onChangeText={text => this.searchRouter(text)}
           autoCorrect={false}
@@ -176,7 +183,11 @@ class SearchableCardList extends Component {
             />
           }
         />
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'center'
+        }}>
           {this.state.searchModeIndex == 1 && this.state.query &&
             <Chip
               title={this.state.filterQuery.validField() ? this.state.filterQuery.field.name : this.partialFieldName()}
@@ -235,10 +246,10 @@ class SearchableCardList extends Component {
     }
 
     return (
-      <View style={{ flex: 1, overflow: 'hidden', backgroundColor: 'black' }}>
+      <View style={{ flex: 1, overflow: 'hidden', backgroundColor: grayColor }}>
         {this.renderHeader()}
         {this.state.query &&
-          <FlatList
+          <Animated.FlatList
             ref={(ref) => { this.state.flatListRef = ref; }}
             data={this.state.data}
             renderItem={({ item, index }) =>
