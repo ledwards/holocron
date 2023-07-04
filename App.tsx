@@ -3,13 +3,14 @@
  */
 
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, View, StatusBar } from 'react-native';
 import SearchableCardList from './src/components/SearchableCardList';
 
 const App = () => (
-  <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+  <View style={{ flex: 1, backgroundColor: 'black' }}>
+    <StatusBar hidden />
     <SearchableCardList />
-  </SafeAreaView>
+  </View>
 );
 
 export default App;
