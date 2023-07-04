@@ -8,25 +8,29 @@ class CardListItem extends PureComponent {
   constructor(props) {
     super(props);
 
-    const windowWidth = Dimensions.get('window').width
+    const windowWidth = Dimensions.get('window').width;
+    const fillPercent = 0.55;
+
+    const startingHeight = this.props.item.sideways ?
+      windowWidth / this.props.item.aspectRatio * fillPercent / 2.5
+      : windowWidth * this.props.item.aspectRatio * fillPercent / 2.5;
 
     this.state = {
       expanded: false,
       showingBack: false,
-      heightAnim: new Animated.Value(120),
-      widthAnim: new Animated.Value(windowWidth * 0.60),
-      containerHeightAnim: new Animated.Value(60),
+      screenWidth: windowWidth,
+      heightAnim: new Animated.Value(startingHeight),
+      widthAnim: new Animated.Value(windowWidth * fillPercent),
+      containerHeightAnim: new Animated.Value(startingHeight / 2),
       labelOpacityAnim: new Animated.Value(1.0),
-      minHeight: 120,
-      maxHeight: this.props.item.sideways ? 275 : 550,
-      minWidth: windowWidth * 0.60,
+      minHeight: startingHeight,
+      maxHeight: windowWidth * this.props.item.aspectRatio,
+      minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth,
     }
   }
 
   toggleExpanded = () => {
-    //TODO: hide keyboard
-
     this.setState({
       showingBack: this.props.item.twoSided && this.state.expanded && !this.state.showingBack,
       expanded: (this.props.item.twoSided && this.state.expanded && this.state.showingBack)
@@ -94,6 +98,7 @@ class CardListItem extends PureComponent {
 
           <Animated.View
             style={!this.state.expanded ? {
+              backgroundColor: 'black',
               position: 'absolute',
               top: 0 + this.props.item.offsetY,
               right: -60,
@@ -101,6 +106,7 @@ class CardListItem extends PureComponent {
               height: this.state.heightAnim,
               overflow: 'hidden',
             } : {
+              backgroundColor: 'black',
               position: 'absolute',
               right: 0,
               height: this.state.heightAnim,
@@ -117,8 +123,10 @@ class CardListItem extends PureComponent {
                 position: 'relative',
                 left: -30,
                 top: 0,
+                borderRadius: 14,
                 height: '100%',
               } : {
+                borderRadius: 14,
                 height: '100%',
                 left: 0,
               }}
