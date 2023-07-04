@@ -13,6 +13,7 @@ const lightColor = 'rgba(219, 227, 232, 1.0)';
 const darkColor = 'rgba(43, 47, 51, 1.0)';
 const grayColor = 'rgba(58, 62, 66, 1.0)';
 const blackColor = 'rgba(0, 0, 0, 1.0)';
+const translucentBlackColor = 'rgba(0, 0, 0, 0.1)';
 const whiteColor = 'rgba(255, 255, 255, 1.0)';
 
 class SearchableCardList extends Component {
@@ -159,7 +160,6 @@ class SearchableCardList extends Component {
     return (
       <View style={{
         height: 100,
-        backgroundColor: blackColor,
         borderBottomColor: this.state.query === null || this.state.query == '' ? 'transparent' : blackColor,
         borderBottomWidth: 2,
       }}>
@@ -186,7 +186,7 @@ class SearchableCardList extends Component {
         <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}>
           {this.state.searchModeIndex == 1 && this.state.query &&
             <Chip
@@ -228,7 +228,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', marginLeft: 5 }}>
+          <Text style={{ fontSize: 14, color: whiteColor, alignSelf: 'center', marginLeft: 5 }}>
             {this.state.query ? `(${this.state.data.length} results)` : ''}
           </Text>
         </View>
@@ -253,11 +253,11 @@ class SearchableCardList extends Component {
             ref={(ref) => { this.state.flatListRef = ref; }}
             data={this.state.data}
             renderItem={({ item, index }) =>
-              <CardListItem item={item} index={index} flatListRef={this.state.flatListRef} />
+              <CardListItem item={item} index={index} flatListRef={this.state.flatListRef} scrollToIndex={(i: number) => this.state.flatListRef.scrollToIndex({ animated: true, index: i })} />
             }
             keyExtractor={item => item.id}
             ItemSeparatorComponent={this.renderSeparator}
-            keyboardShouldPersistTaps='handled'
+            keyboardShouldPersistTaps='never'
 
             // Performance settings
             initialNumToRender={10} // Reduce initial render amount

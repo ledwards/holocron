@@ -27,50 +27,61 @@ class CardListItem extends PureComponent {
       maxHeight: windowWidth * this.props.item.aspectRatio,
       minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth,
+      posY: 0,
     }
   }
 
   toggleExpanded = () => {
-    this.setState({
-      showingBack: this.props.item.twoSided && this.state.expanded && !this.state.showingBack,
-      expanded: (this.props.item.twoSided && this.state.expanded && this.state.showingBack)
-        || (!this.props.item.twoSided && this.state.expanded) ? false : true,
-    });
+    const needsToExpand = !this.state.expanded;
+    const needsToFlip = this.props.item.twoSided && this.state.expanded && !this.state.showingBack;
+    const needsToCollapse = (this.props.item.twoSided && this.state.expanded && this.state.showingBack)
+      || (!this.props.item.twoSided && this.state.expanded);
 
     // TODO: native driver:
     // https://stackoverflow.com/questions/63976219/style-property-width-is-not-supported-by-native-animated-module-need-advice-f
 
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(this.state.heightAnim, {
-          toValue: this.state.expanded ? this.state.minHeight : this.state.maxHeight,
-          duration: 250,
-          useNativeDriver: false,
-          easing: Easing.linear,
-        }),
-        Animated.timing(this.state.widthAnim, {
-          toValue: this.state.expanded ? this.state.minWidth : this.state.maxWidth,
-          duration: 250,
-          useNativeDriver: false,
-          easing: Easing.linear,
-        }),
-        Animated.timing(this.state.containerHeightAnim, {
-          toValue: this.state.expanded ? this.state.minHeight / 2 : this.state.maxHeight,
-          duration: 250,
-          useNativeDriver: false,
-          easing: Easing.linear,
-        }),
-        Animated.timing(this.state.labelOpacityAnim, {
-          toValue: this.state.expanded ? 1.0 : 0.0,
-          duration: 250,
-          useNativeDriver: false,
-          easing: Easing.linear,
-        }),
-      ]),
-    ])
-      .start(() => {
-        this.props.flatListRef.scrollToIndex({ index: this.props.index });
-      });
+    this.props.scrollToIndex(this.props.index);
+
+    const t = 300;
+    const easing = Easing.elastic(0);
+
+    if (needsToExpand || needsToCollapse) {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(this.state.heightAnim, {
+            toValue: this.state.expanded ? this.state.minHeight : this.state.maxHeight,
+            duration: t,
+            useNativeDriver: false,
+            easing: easing,
+          }),
+          Animated.timing(this.state.widthAnim, {
+            toValue: this.state.expanded ? this.state.minWidth : this.state.maxWidth,
+            duration: t,
+            useNativeDriver: false,
+            easing: easing,
+          }),
+          Animated.timing(this.state.containerHeightAnim, {
+            toValue: this.state.expanded ? this.state.minHeight / 2 : this.state.maxHeight,
+            duration: t,
+            useNativeDriver: false,
+            easing: easing,
+          }),
+          Animated.timing(this.state.labelOpacityAnim, {
+            toValue: this.state.expanded ? 1.0 : 0.0,
+            duration: t,
+            useNativeDriver: false,
+            easing: easing,
+          }),
+        ]),
+      ])
+        // We scroll a second time, because items at the bottom of the list require it
+        .start(() => this.props.scrollToIndex(this.props.index));
+    }
+
+    this.setState({
+      showingBack: needsToFlip,
+      expanded: !needsToCollapse,
+    });
   }
 
   render() {
@@ -84,7 +95,8 @@ class CardListItem extends PureComponent {
       <Animated.View
         style={{
           height: this.state.containerHeightAnim,
-        }}>
+        }}
+      >
         <ListItem
           id={this.props.index}
           style={{ marginLeft: -15 }}
