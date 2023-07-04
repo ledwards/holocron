@@ -72,7 +72,7 @@ class SearchableCardList extends Component {
 
   renderSeparator = () => {
     return (
-      <View style={{ height: 2, backgroundColor: 'black' }} />
+      <View style={{ height: 2, backgroundColor: blackColor }} />
     );
   };
 
@@ -159,7 +159,7 @@ class SearchableCardList extends Component {
     return (
       <View style={{
         height: 100,
-        backgroundColor: grayColor,
+        backgroundColor: blackColor,
         borderBottomColor: this.state.query === null || this.state.query == '' ? 'transparent' : blackColor,
         borderBottomWidth: 2,
       }}>
@@ -246,7 +246,7 @@ class SearchableCardList extends Component {
     }
 
     return (
-      <View style={{ flex: 1, overflow: 'hidden', backgroundColor: grayColor }}>
+      <View style={{ flex: 1, overflow: 'hidden', backgroundColor: blackColor }}>
         {this.renderHeader()}
         {this.state.query &&
           <Animated.FlatList
@@ -257,6 +257,7 @@ class SearchableCardList extends Component {
             }
             keyExtractor={item => item.id}
             ItemSeparatorComponent={this.renderSeparator}
+            keyboardShouldPersistTaps='handled'
 
             // Performance settings
             initialNumToRender={10} // Reduce initial render amount
