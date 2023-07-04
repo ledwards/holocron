@@ -1,6 +1,6 @@
 {
   "name": "holo",
-  "version": "0.3.3",
+  "version": "0.3.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
