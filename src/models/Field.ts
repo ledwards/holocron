@@ -10,6 +10,10 @@ class Field {
     this.comparators = comparators;
     this.aliases = aliases;
   }
+
+  nameAndAliases() {
+    return [this.name].concat(this.aliases).sort((a, b) => b.length - a.length);
+  }
 }
 
 export default Field;
