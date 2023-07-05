@@ -15,6 +15,7 @@ const grayColor = 'rgba(58, 62, 66, 1.0)';
 const blackColor = 'rgba(0, 0, 0, 1.0)';
 const translucentBlackColor = 'rgba(0, 0, 0, 0.1)';
 const whiteColor = 'rgba(255, 255, 255, 1.0)';
+const terminalGreen = 'rgba(74, 246, 38, 1.0)';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class SearchableCardList extends Component {
       allCards: [],
       data: [],
       searchModeIndex: 0,
-      query: null,
+      query: '',
       filterQuery: new FilterQuery(''),
       flatListRef: null,
     };
@@ -102,12 +103,26 @@ class SearchableCardList extends Component {
       filterQuery: filterQuery,
     });
 
+    console.log(text)
+    console.log('---')
+    console.log('field: ', filterQuery.field?.name)
+    console.log('rawField', filterQuery.rawField)
+    console.log('comparator: ', filterQuery.comparator?.name)
+    console.log('rawComparator', filterQuery.rawComparator)
+    console.log('value: ', filterQuery.value)
+    console.log('filter: ', typeof filterQuery.filter)
+    console.log('valid?: ', filterQuery.valid())
+    console.log('\n')
+
     if (filterQuery.valid()) {
       const newData = filterQuery.execute(this.state.allCards);
 
       this.setState({
         data: newData,
-        expandedCard: newData[0],
+      });
+    } else {
+      this.setState({
+        data: [],
       });
     }
 
@@ -122,7 +137,7 @@ class SearchableCardList extends Component {
         .toLowerCase()
         .trim();
 
-      // Allow for partial matches
+      // Allow for unorderd word matches
       const textDataList = textData.split(' ');
       const itemDataList = itemData.split(' ');
 
@@ -135,26 +150,6 @@ class SearchableCardList extends Component {
       data: newData,
     });
   };
-
-  partialFieldName() {
-    return this.state.query.split(' ')[0];
-  }
-
-  partialComparatorName() {
-    if (this.state.filterQuery.fieldValid()) {
-      return this.state.query.replace(this.state.filterQuery.field.name, '');
-    } else {
-      return this.state.query.split(' ')[1];
-    }
-  }
-
-  partialValue() {
-    if (this.state.filterQuery.fieldValid() && this.state.filterQuery.comparatorValid()) {
-      return this.state.query.replace(this.state.filterQuery.field.name, '').replace(this.state.filterQuery.comparator.name, '').trim();
-    } else {
-      return '';
-    }
-  }
 
   renderHeader = () => {
     return (
@@ -190,7 +185,7 @@ class SearchableCardList extends Component {
         }}>
           {this.state.searchModeIndex == 1 && this.state.query &&
             <Chip
-              title={this.state.filterQuery.validField() ? this.state.filterQuery.field.name : this.partialFieldName()}
+              title={this.state.filterQuery.displayFieldName()}
               key={'field'}
               type='outline'
               buttonStyle={this.state.filterQuery.validField() ? styles.chipButtonWithMatch : styles.chipButton}
@@ -200,7 +195,7 @@ class SearchableCardList extends Component {
 
           {this.state.searchModeIndex == 1 && this.state.filterQuery.comparator &&
             <Chip
-              title={this.state.filterQuery.validComparator() ? this.state.filterQuery.comparator.name : this.partialComparatorName}
+              title={this.state.filterQuery.displayComparatorName()}
               key={'comparator'}
               type='outline'
               buttonStyle={this.state.filterQuery.validComparator() ? styles.chipButtonWithMatch : styles.chipButton}
@@ -210,15 +205,15 @@ class SearchableCardList extends Component {
 
           {this.state.searchModeIndex == 1 && this.state.filterQuery.value &&
             <Chip
-              title={this.state.filterQuery.validValue() ? this.state.filterQuery.value : this.partialValue()}
+              title={this.state.filterQuery.value}
               key={'value'}
               type='outline'
-              buttonStyle={styles.chipButtonWithMatch}
-              titleStyle={styles.chipTitleWithMatch}
+              buttonStyle={this.state.filterQuery.validValue() && this.state.data.length > 0 ? styles.chipButtonWithMatch : styles.chipButton}
+              titleStyle={this.state.filterQuery.validValue() && this.state.data.length > 0 ? styles.chipTitleWithMatch : styles.chipTitle}
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          {this.state.searchModeIndex == 0 &&
+          {this.state.query != '' && this.state.searchModeIndex == 0 &&
             <Chip
               title={this.state.query}
               key={'value'}
@@ -298,17 +293,19 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     borderWidth: 1,
     borderRadius: 10,
-    padding: 4,
-    margin: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 0,
+    marginTop: 6,
+    marginHorizontal: 2,
   },
   chipButtonWithMatch: {
-    borderColor: 'transparent',
+    borderColor: terminalGreen,
     borderWidth: 1,
     borderRadius: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 0,
-    margin: 0,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 4,
+    paddingVertical: 0,
+    marginTop: 6,
+    marginHorizontal: 2,
   },
   chipContainer: {
     marginHorizontal: 0,
@@ -316,11 +313,11 @@ const styles = StyleSheet.create({
   chipTitle:
   {
     color: 'red',
-    fontSize: 10,
+    fontSize: 14,
   },
   chipTitleWithMatch:
   {
-    color: 'white',
+    color: terminalGreen,
     fontSize: 14,
   },
 });

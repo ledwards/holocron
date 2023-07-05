@@ -12,8 +12,12 @@ class Comparator {
     this.aliases = aliases;
   }
 
+  nameAndAliases() {
+    return [this.name].concat(this.aliases).sort((a, b) => b.length - a.length);
+  }
+
   execute(card: Card, field: Field, value: string) {
-    return this.fn(card, field.name, value);
+    return this.fn(card, field?.name, value);
   }
 }
 
