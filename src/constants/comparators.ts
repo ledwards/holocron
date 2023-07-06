@@ -55,7 +55,7 @@ const NOT_SUBSTR_COMPARATOR = new Comparator(
 const STRING_EQUALS_COMPARATOR = new Comparator(
   '=',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() == value.toLowerCase(),
-  ['equals', 'eq', 'is', 'is exactly']
+  ['equals', 'eq', 'exactly', 'is exactly'] // 'is' breaks things
 );
 
 const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
@@ -68,7 +68,7 @@ const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
 const INCLUDES_COMPARATOR = new Comparator(
   'includes',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['include', 'has', 'contains', 'matches', 'is', 'is exactly']
+  ['include', 'has', 'contains', 'matches', 'exactly', 'is exactly'] // 'is' breaks things
 );
 
 const NOT_INCLUDES_COMPARATOR = new Comparator(
@@ -77,15 +77,24 @@ const NOT_INCLUDES_COMPARATOR = new Comparator(
   ['do not include', 'does not have', 'does not contain', 'does not match', 'is not', 'is not exactly']
 );
 
+// IDENTITY e.g. is a rebel
+const IDENTITY_COMPARATOR = new Comparator(
+  'is a',
+  (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
+  ['is an', 'a', 'an', 'includes', 'include', 'identifies as', 'identifies as a', 'identifies as an']
+);
+
 const NUMERIC_COMPARATORS = [EQ_COMPARATOR, NEQ_COMPARATOR, GT_COMPARATOR, LT_COMPARATOR, GTE_COMPARATOR, LTE_COMPARATOR];
 const STRING_COMPARATORS = [SUBSTR_COMPARATOR, NOT_SUBSTR_COMPARATOR, STRING_EQUALS_COMPARATOR, STRING_NOT_EQUALS_COMPARATOR];
 const ARRAY_COMPARATORS = [INCLUDES_COMPARATOR, NOT_INCLUDES_COMPARATOR];
+const IDENTITY_COMPARATORS = [IDENTITY_COMPARATOR];
 
-const ALL_COMPARATORS = NUMERIC_COMPARATORS.concat(STRING_COMPARATORS).concat(ARRAY_COMPARATORS);
+const ALL_COMPARATORS = NUMERIC_COMPARATORS.concat(STRING_COMPARATORS).concat(ARRAY_COMPARATORS).concat(IDENTITY_COMPARATORS);
 
 export {
   NUMERIC_COMPARATORS,
   STRING_COMPARATORS,
   ARRAY_COMPARATORS,
+  IDENTITY_COMPARATORS,
   ALL_COMPARATORS,
 }

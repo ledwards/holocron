@@ -35,6 +35,8 @@ class Card {
   set: string;
   uniqueness: string;
 
+  identities: string[];
+
   // canceledBy - is canceled by Y
   // cancels - cancels Y
   // counterpart - [Dark/Light] counterpart to Y
@@ -100,8 +102,9 @@ class Card {
     this.set = (ExpansionSets as any)[object.set];
     this.side = object.side;
     this.subtype = object.front.subType;
-    this.uniqueness = object.front.uniqueness;
+    this.uniqueness = object.front.uniqueness || 'none';
     this.abbr = object.abbr;
+    this.identities = [object.front.characteristics, object.front.type, object.front.subType, object.front.icons].flat();
 
     this.sortTitle = this.title
       .replaceAll(/[^a-zA-Z0-9 -]/g, '')

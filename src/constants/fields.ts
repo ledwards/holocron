@@ -1,5 +1,5 @@
 import Field from '../models/Field';
-import { ARRAY_COMPARATORS, STRING_COMPARATORS, NUMERIC_COMPARATORS } from './comparators';
+import { ARRAY_COMPARATORS, STRING_COMPARATORS, NUMERIC_COMPARATORS, IDENTITY_COMPARATORS } from './comparators';
 
 const FIELDS = [
   new Field('ability', NUMERIC_COMPARATORS, ['a', 'ab']),
@@ -23,13 +23,15 @@ const FIELDS = [
   new Field('title', STRING_COMPARATORS, ['t', 'name']),
   new Field('type', STRING_COMPARATORS, []),
 
-  new Field('characteristics', ARRAY_COMPARATORS, ['characteristic']),
+  new Field('characteristics', ARRAY_COMPARATORS, ['characteristic', 'chars', 'char']),
   new Field('icons', ARRAY_COMPARATORS, ['i']),
   new Field('rarity', STRING_COMPARATORS, ['r']),
   new Field('set', STRING_COMPARATORS, []),
   new Field('side', STRING_COMPARATORS, []),
   new Field('subtype', STRING_COMPARATORS, ['sub-type', 'sub type']),
   new Field('uniqueness', STRING_COMPARATORS, []),
+
+  new Field('identities', IDENTITY_COMPARATORS, ['', 'identity', 'ident', 'id']),
 ];
 
 export default FIELDS;
