@@ -268,7 +268,6 @@ class SearchableCardList extends Component {
               <Text style={{ color: 'white', }}>
                 Tap the
               </Text>
-
               <Icon
                 name={this.currentSearchMode().icon}
                 type='ionicon'
@@ -276,7 +275,6 @@ class SearchableCardList extends Component {
                 size={16}
                 style={{ marginLeft: 5, marginRight: 5 }}
               />
-
               <Text style={{ color: 'white', }}>
                 icon to switch between search modes. {'\n\n\n'}
               </Text>

@@ -4,7 +4,7 @@ class Card {
   id: string;
   title: string;
   type: string;
-  subType: string;
+  subtype: string;
   side: string;
   setNumber: string;
   imageUrl: string;
@@ -12,31 +12,27 @@ class Card {
 
   ability: number;
   armor: number;
-  darkSideIcons: number;
+  dsicons: number;
   deploy: number;
   destiny: number;
   ferocity: number;
   forfeit: number;
   hyperspeed: number;
   landspeed: number;
-  lightSideIcons: number;
+  lsicons: number;
   maneuver: number;
   parsec: number;
   politics: number;
   power: number;
 
-  extraText: string;
+  extratext: string;
   gametext: string;
   lore: string;
-  title: string;
-  type: string;
 
   characteristics: string[];
   icons: string[];
   rarity: string;
   set: string;
-  side: string;
-  subType: string;
   uniqueness: string;
 
   // canceledBy - is canceled by Y
@@ -49,11 +45,11 @@ class Card {
   // underlyingCardFor
 
   sortTitle: string;
-  abbreviationTitle: string;
+  abbr: string;
 
   displayTitle: string;
   displayType: string;
-  displaySubType: string;
+  displaySubtype: string;
   displayImageUrl: string;
   displayBackImageUrl: string;
   displaySet: string;
@@ -71,7 +67,7 @@ class Card {
     this.id = object.id.toString();
     this.title = object.front.title;
     this.type = object.front.type;
-    this.subType = object.front.subType;
+    this.subtype = object.front.subType;
     this.side = object.side;
     this.setNumber = object.set;
     this.imageUrl = object.front.imageUrl;
@@ -79,20 +75,20 @@ class Card {
 
     this.ability = object.front.ability;
     this.armor = object.front.armor;
-    this.darkSideIcons = object.front.darkSideIcons;
+    this.dsicons = object.front.darkSideIcons;
     this.deploy = object.front.deploy;
     this.destiny = object.front.destiny;
     this.ferocity = object.front.ferocity;
     this.forfeit = object.front.forfeit;
     this.hyperspeed = object.front.hyperspeed;
     this.landspeed = object.front.landspeed;
-    this.lightSideIcons = object.front.lightSideIcons;
+    this.lsicons = object.front.lightSideIcons;
     this.maneuver = object.front.maneuver;
     this.parsec = object.front.parsec;
     this.politics = object.front.politics;
     this.power = object.front.power;
 
-    this.extraText = `${object.front.extraText?.join(' ')}${object.back ? ' / ' : ''}${object.back?.extraText?.join(' ')}`;
+    this.extratext = `${object.front.extraText?.join(' ')}${object?.back?.extratext ? ' / ' + object.back.extraText.join(' ') : ''}`;
     this.gametext = [object.front.gametext, object.back?.gametext].join(' / ');
     this.lore = object.front.lore;
     this.title = object.front.title;
@@ -103,9 +99,9 @@ class Card {
     this.rarity = object.rarity;
     this.set = (ExpansionSets as any)[object.set];
     this.side = object.side;
-    this.subType = object.front.subType;
+    this.subtype = object.front.subType;
     this.uniqueness = object.front.uniqueness;
-    this.abbreviationTitle = object.abbr;
+    this.abbr = object.abbr;
 
     this.sortTitle = this.title
       .replaceAll(/[^a-zA-Z0-9 -]/g, '')
@@ -130,10 +126,17 @@ class Card {
     }
 
     this.displayType = this.type.split(' #')[0];
-    this.displaySubType = this.subType ? this.subType.split(': ')[0] : '';
+    this.displaySubtype = this.subtype ? this.subtype.split(': ')[0] : '';
     this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
     this.displayBackImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.imageUrl : this.backImageUrl;
     this.displaySet = ExpansionSets[object.set];
+
+    this.sideways = this.subtype == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
+    this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
+    this.twoSided = this.backImageUrl != null;
+    this.height = this.sideways ? 339 : 475;
+    this.width = this.sideways ? 475 : 339;
+    this.aspectRatio = this.sideways ? 339 / 475 : 475 / 339;
 
     if (this.displayType == 'Jedi Test') {
       this.offsetY = 0;
@@ -141,7 +144,7 @@ class Card {
     } else if (this.type == 'Objective') {
       this.offsetY = -10;
       this.offsetHeight = 60;
-    } else if (this.subType == 'Site') {
+    } else if (this.subtype == 'Site') {
       this.offsetY = -30;
       this.offsetHeight = 30;
     } else if (this.sideways && (this.type == 'Starship' || this.type == 'Weapon')) {
@@ -154,12 +157,6 @@ class Card {
       this.offsetY = 0;
       this.offsetHeight = 0;
     }
-    this.sideways = this.subType == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
-    this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
-    this.twoSided = this.backImageUrl != null;
-    this.height = this.sideways ? 339 : 475;
-    this.width = this.sideways ? 475 : 339;
-    this.aspectRatio = this.sideways ? 339 / 475 : 475 / 339;
   }
 
   get(attributeName: string) {
