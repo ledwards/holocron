@@ -4,14 +4,14 @@ import { ARRAY_COMPARATORS, STRING_COMPARATORS, NUMERIC_COMPARATORS } from './co
 const FIELDS = [
   new Field('ability', NUMERIC_COMPARATORS, ['a', 'ab']),
   new Field('armor', NUMERIC_COMPARATORS, ['arm']),
-  new Field('darksideicons', NUMERIC_COMPARATORS, ['dark side icons', 'ds icons', 'dsicons', 'dsi']),
+  new Field('darkSideIcons', NUMERIC_COMPARATORS, ['darksideicons', 'dark side icons', 'ds icons', 'dsicons', 'dsi', 'ds force icons', 'dsforceicons', 'dark force icons', 'darkforceicons', 'dsforce', 'darksideforce', 'darkforce']),
   new Field('deploy', NUMERIC_COMPARATORS, ['d', 'dep']),
   new Field('destiny', NUMERIC_COMPARATORS, ['dest', 'des', 'destiny number', 'destiny value']),
   new Field('ferocity', NUMERIC_COMPARATORS, ['fer']),
   new Field('forfeit', NUMERIC_COMPARATORS, ['ff']),
   new Field('hyperspeed', NUMERIC_COMPARATORS, ['hs']),
   new Field('landspeed', NUMERIC_COMPARATORS, ['ls']),
-  new Field('lightsideicons', NUMERIC_COMPARATORS, ['light side icons', 'ls icons', 'lsicons', 'lsi']),
+  new Field('lightSideIcons', NUMERIC_COMPARATORS, ['light side icons', 'ls icons', 'lsicons', 'lsi', 'ls force icons', 'lsforceicons', 'light force icons', 'lightforceicons', 'lsforce', 'lightsideforce', 'lightforce']),
   new Field('maneuver', NUMERIC_COMPARATORS, ['man']),
   new Field('parsec', NUMERIC_COMPARATORS, ['parsec number', 'par']),
   new Field('politics', NUMERIC_COMPARATORS, ['pol']),
@@ -28,7 +28,7 @@ const FIELDS = [
   new Field('rarity', STRING_COMPARATORS, ['r']),
   new Field('set', STRING_COMPARATORS, []),
   new Field('side', STRING_COMPARATORS, []),
-  new Field('subtype', STRING_COMPARATORS, ['sub-type']),
+  new Field('subType', STRING_COMPARATORS, ['sub-type', 'subtype', 'sub type']),
   new Field('uniqueness', STRING_COMPARATORS, []),
 ];
 
