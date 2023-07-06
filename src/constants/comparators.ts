@@ -79,9 +79,9 @@ const NOT_INCLUDES_COMPARATOR = new Comparator(
 
 // IDENTITY e.g. is a rebel
 const IDENTITY_COMPARATOR = new Comparator(
-  'is a',
+  'a',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['is an', 'a', 'an', 'includes', 'include', 'identifies as', 'identifies as a', 'identifies as an']
+  ['an', 'includes', 'include', 'identifies as', 'identifies as a', 'identifies as an', 'contain', 'contains']
 );
 
 const NUMERIC_COMPARATORS = [EQ_COMPARATOR, NEQ_COMPARATOR, GT_COMPARATOR, LT_COMPARATOR, GTE_COMPARATOR, LTE_COMPARATOR];

@@ -37,6 +37,7 @@ class Card {
 
   identities: string[];
 
+  // TOOD: "is" should be a FIELD, so that a and canceledBy, etc. can be handlded
   // canceledBy - is canceled by Y
   // cancels - cancels Y
   // counterpart - [Dark/Light] counterpart to Y

@@ -31,7 +31,7 @@ const FIELDS = [
   new Field('subtype', STRING_COMPARATORS, ['sub-type', 'sub type']),
   new Field('uniqueness', STRING_COMPARATORS, []),
 
-  new Field('identities', IDENTITY_COMPARATORS, ['', 'identity', 'ident', 'id']),
+  new Field('identities', IDENTITY_COMPARATORS, ['is', 'identity', 'ident', 'id', 'ids']),
 ];
 
 export default FIELDS;
