@@ -17,7 +17,15 @@ class Comparator {
   }
 
   execute(card: Card, field: Field, value: string) {
-    return this.fn(card, field?.name, value);
+    let val = false;
+
+    try {
+      val = this.fn(card, field?.name, value);
+    } catch (e) {
+      // This can happen with a type mismatch... ugly way to fix it I guess
+    }
+
+    return val;
   }
 }
 

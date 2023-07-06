@@ -92,7 +92,7 @@ class Card {
     this.politics = object.front.politics;
     this.power = object.front.power;
 
-    this.extraText = object.front.extraText;
+    this.extraText = `${object.front.extraText?.join(' ')}${object.back ? ' / ' : ''}${object.back?.extraText?.join(' ')}`;
     this.gametext = [object.front.gametext, object.back?.gametext].join(' / ');
     this.lore = object.front.lore;
     this.title = object.front.title;
