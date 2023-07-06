@@ -38,7 +38,7 @@ class FilterQuery {
               return {
                 comparator: c,
                 rawComparator: cMatches[1],
-                value: cMatches[2],
+                value: cMatches[2]?.trim(),
               };
             }
           }).filter(el => el);
@@ -65,7 +65,7 @@ class FilterQuery {
               comparator: c,
               rawField: rawField,
               rawComparator: rawComparator,
-              value: value
+              value: value?.trim(),
             };
           }
         }).filter(el => el);
