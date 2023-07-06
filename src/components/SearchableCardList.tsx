@@ -183,7 +183,7 @@ class SearchableCardList extends Component {
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
-          {this.state.searchModeIndex == 1 && this.state.query &&
+          {this.state.searchModeIndex == 1 && this.state.query && !this.state?.filterQuery?.filter?.name == 'identity' &&
             <Chip
               title={this.state.filterQuery.displayFieldName()}
               key={'field'}
