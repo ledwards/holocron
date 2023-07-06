@@ -78,7 +78,7 @@ class Card {
     this.dsicons = object.front.darkSideIcons;
     this.deploy = object.front.deploy;
     this.destiny = object.front.destiny;
-    this.ferocity = object.front.ferocity;
+    this.ferocity = parseInt(object.front.ferocity);
     this.forfeit = object.front.forfeit;
     this.hyperspeed = object.front.hyperspeed;
     this.landspeed = object.front.landspeed;
