@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet, Animated } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet, Animated } from 'react-native';
 import { SearchBar, Icon, Chip } from 'react-native-elements';
 import CardListItem from './CardListItem'
 

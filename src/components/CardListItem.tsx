@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, Animated, Easing, Dimensions } from 'react-native';
+import { Animated, Easing, Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image'
 
 import { ListItem } from 'react-native-elements';

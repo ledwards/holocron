@@ -21,7 +21,6 @@ class FilterQuery {
 
     if (this.query) {
       const validSeparators = ['\\s+', '$'].concat(ALL_COMPARATORS.map(c => c.nameAndAliases()).flat());
-      const validFields = FIELDS.map(f => f.nameAndAliases()).flat();
 
       FIELDS.map(f => {
         const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s*(${validSeparators.join('|')})`);
@@ -31,35 +30,53 @@ class FilterQuery {
           this.field = f;
           this.rawField = fMatches[1]; // [1] is the match group
 
-          f.comparators.map(c => {
-            const compRe = new RegExp(`^.+\\s*(${c.nameAndAliases().join('|')})(.+)`);
+          const allMatches = f.comparators.map(c => {
+            const compRe = new RegExp(`^.+?\\s*(${c.nameAndAliases().join('|')})(.+)`);
             const cMatches = this.query.match(compRe); // [1] is the match group
 
             if (cMatches && cMatches.length > 1) { // comparator for the given field found
-              this.comparator = c;
-              this.rawComparator = cMatches[1];
-              this.value = cMatches[2];
-              // TODO: Some values should have aliases...though I can't think of an example rn
+              return {
+                comparator: c,
+                rawComparator: cMatches[1],
+                value: cMatches[2],
+              };
             }
-          });
+          }).filter(el => el);
+
+          const bestMatch = allMatches[0]; // dubious! What's the actual best way to know?
+
+          this.comparator = bestMatch?.comparator;
+          this.rawComparator = bestMatch?.rawComparator;
+          this.value = bestMatch?.value;
         }
       });
 
       if (this.query && !this.validField()) { // no field matches
-        ALL_COMPARATORS.map(c => {
-          const compRe = new RegExp(`^(.+)\\s*(${c.nameAndAliases().join('|')})`);
+        const allMatches = ALL_COMPARATORS.map(c => {
+          const compRe = new RegExp(`^(.+?)\\s*(${c.nameAndAliases().join('|')})\\s*(.+)`);
           const cMatches = this.query.match(compRe); // [1] is the match group for the field, [2] is the match group for the comparator
 
           if (cMatches && cMatches.length > 1) { // comparator for an errored found
-            this.comparator = c;
-            this.rawField = cMatches[1];
-            this.rawComparator = cMatches[2];
+            const rawField = cMatches[1];
+            const rawComparator = cMatches[2];
+            const value = cMatches[3];
 
-            // TODO: Some values should have aliases...though I can't think of an example rn
-            const vMatches = this.query.match(`^${this.rawField}\\s*${this.rawComparator}(.*)`); // [1] is the match group
-            this.value = vMatches ? vMatches[1]?.trim() : '';
+            return {
+              comparator: c,
+              rawField: rawField,
+              rawComparator: rawComparator,
+              value: value
+            };
           }
-        });
+        }).filter(el => el);
+
+        const bestMatch = allMatches[0]; // dubious! What's the actual best way to know?
+
+        // this.field should be null
+        this.comparator = bestMatch?.comparator;
+        this.rawField = bestMatch?.rawField;
+        this.rawComparator = bestMatch?.rawComparator;
+        this.value = bestMatch?.value;
       }
 
       if (this.query && !this.validField() && !this.validComparator()) { // no field or comparator matches
