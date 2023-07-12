@@ -103,7 +103,7 @@ class SearchableCardList extends Component {
       filterQuery: filterQuery,
     });
 
-    console.log(text)
+    console.log('text entry: ', text)
     console.log('---')
     console.log('field: ', filterQuery.field?.name)
     console.log('rawField', filterQuery.rawField)
@@ -183,7 +183,7 @@ class SearchableCardList extends Component {
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
-          {this.state.searchModeIndex == 1 && this.state.query && !this.state?.filterQuery?.filter?.name == 'identity' &&
+          {this.state.searchModeIndex == 1 && this.state.query &&
             <Chip
               title={this.state.filterQuery.displayFieldName()}
               key={'field'}
@@ -193,7 +193,7 @@ class SearchableCardList extends Component {
               containerStyle={styles.chipContainer}>
             </Chip>}
 
-          {this.state.searchModeIndex == 1 && this.state.filterQuery.comparator &&
+          {this.state.searchModeIndex == 1 && (this.state.filterQuery.comparator || this.state.filterQuery.partiallyValidComparator()) && !(this.state.filterQuery.usingDefaultComparator() && this.state.filterQuery.comparator.name == 'includes') &&
             <Chip
               title={this.state.filterQuery.displayComparatorName()}
               key={'comparator'}

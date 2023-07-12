@@ -1,8 +1,12 @@
 import Card from '../models/Card';
 import Comparator from '../models/Comparator';
 
-// NUMERIC
-// TODO: first two are 'numeric or enum'?
+// TODO: type checking
+// TODO: enums?
+// TODO: array inclusion using substrings?
+// TODO: contains any of (eg multiple words in a lore/gametext)
+// TODO: aliases for values, e.g. dvdlots, remove commas
+
 const EQ_COMPARATOR = new Comparator(
   '=',
   (card: Card, attribute: string, value: string) => card.get(attribute) == parseFloat(value),
@@ -43,19 +47,19 @@ const LTE_COMPARATOR = new Comparator(
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase().includes(value.toLowerCase()),
-  ['contains', 'has', 'includes', 'matches']
+  ['m', 'contains', 'has', 'includes', 'matches', 'c', 'co', 'con', 'substr', 'substring']
 );
 
 const NOT_SUBSTR_COMPARATOR = new Comparator(
   'does not match',
   (card: Card, attribute: string, value: string) => !(card.get(attribute)?.toLowerCase().includes(value.toLowerCase())),
-  ['does not contain', 'does not have', 'does not include', 'does not match']
+  ['nm', 'does not contain', 'does not have', 'does not include', 'does not match', 'nc', 'nco', 'ncon', 'nsubstr', 'not substring']
 );
 
 const STRING_EQUALS_COMPARATOR = new Comparator(
   '=',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() == value.toLowerCase(),
-  ['equals', 'eq', 'exactly', 'is exactly'] // 'is' breaks things
+  ['equals', 'eq', 'exactly', 'is exactly']
 );
 
 const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
@@ -68,7 +72,7 @@ const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
 const INCLUDES_COMPARATOR = new Comparator(
   'includes',
   (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['include', 'has', 'contains', 'matches', 'exactly', 'is exactly'] // 'is' breaks things
+  ['include', 'has', 'contains', 'co', 'con', 'matches', 'exactly', 'is exactly']
 );
 
 const NOT_INCLUDES_COMPARATOR = new Comparator(
@@ -77,24 +81,19 @@ const NOT_INCLUDES_COMPARATOR = new Comparator(
   ['do not include', 'does not have', 'does not contain', 'does not match', 'is not', 'is not exactly']
 );
 
-// IDENTITY e.g. is a rebel
-const IDENTITY_COMPARATOR = new Comparator(
-  'a',
-  (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['an', 'includes', 'include', 'identifies as', 'identifies as a', 'identifies as an', 'contain', 'contains']
-);
-
 const NUMERIC_COMPARATORS = [EQ_COMPARATOR, NEQ_COMPARATOR, GT_COMPARATOR, LT_COMPARATOR, GTE_COMPARATOR, LTE_COMPARATOR];
 const STRING_COMPARATORS = [SUBSTR_COMPARATOR, NOT_SUBSTR_COMPARATOR, STRING_EQUALS_COMPARATOR, STRING_NOT_EQUALS_COMPARATOR];
 const ARRAY_COMPARATORS = [INCLUDES_COMPARATOR, NOT_INCLUDES_COMPARATOR];
-const IDENTITY_COMPARATORS = [IDENTITY_COMPARATOR];
 
-const ALL_COMPARATORS = NUMERIC_COMPARATORS.concat(STRING_COMPARATORS).concat(ARRAY_COMPARATORS).concat(IDENTITY_COMPARATORS);
+const ALL_COMPARATORS = NUMERIC_COMPARATORS.concat(STRING_COMPARATORS).concat(ARRAY_COMPARATORS);
 
 export {
   NUMERIC_COMPARATORS,
   STRING_COMPARATORS,
   ARRAY_COMPARATORS,
-  IDENTITY_COMPARATORS,
   ALL_COMPARATORS,
+  EQ_COMPARATOR,
+  INCLUDES_COMPARATOR,
+  STRING_EQUALS_COMPARATOR,
+  SUBSTR_COMPARATOR,
 }
