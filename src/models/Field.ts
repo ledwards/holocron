@@ -1,6 +1,7 @@
 import Comparator from './Comparator';
 
 class Field {
+  // TODO: field name vs. display name, e.g. underlyingCardFor vs undercard
   name: string;
   comparators: Comparator[];
   aliases: string[];

@@ -41,12 +41,12 @@ class SearchableCardList extends Component {
     0: {
       label: 'title',
       icon: 'search-outline',
-      description: 'Search all cards by title. Try: \n\ncomlink \n\n farm \n\n chimaera'
+      description: 'Search all cards by title. e.g.: \n\ncomlink \n\n farm \n\n chimaera \n\n destroyer'
     },
     1: {
       label: 'natural language query',
       icon: 'color-filter-outline',
-      description: 'Search all cards with English language queries. Try: \n\n lore contains ISB \n\n power > 5 \n\n icons include pilot',
+      description: 'Search all cards with English language queries. e.g.: \n\n lore contains ISB \n\n power > 5 \n\n icons include pilot \n\n is a leader \n\n set = virtual set 20 \n\n underlying card for third sister',
     },
   };
 
@@ -261,10 +261,7 @@ class SearchableCardList extends Component {
             updateCellsBatchingPeriod={100} // Increase time between renders
             windowSize={10} // Reduce the window size
           /> || <>
-            <Text style={{ color: 'white', padding: 18, textAlign: 'center' }}>
-              {this.currentSearchMode().description}
-            </Text>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 40 }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 0 }}>
               <Text style={{ color: 'white', }}>
                 Tap the
               </Text>
@@ -279,6 +276,9 @@ class SearchableCardList extends Component {
                 icon to switch between search modes. {'\n\n\n'}
               </Text>
             </View>
+            <Text style={{ color: 'white', padding: 18, textAlign: 'center', marginBottom: 40 }}>
+              {this.currentSearchMode().description}
+            </Text>
           </>
         }
       </View >
