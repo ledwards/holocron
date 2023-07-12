@@ -36,19 +36,16 @@ class Card {
   uniqueness: string;
 
   identities: string[];
-
-  // TOOD: "is" should be a FIELD, so that a and canceledBy, etc. can be handlded
-  // canceledBy - is canceled by Y
-  // cancels - cancels Y
-  // counterpart - [Dark/Light] counterpart to Y
-  // matching - matches Y
-  // matchingWeapon - matches Y / matching weapon Y
-  // pulledBy - is pulled by Y
-  // pulls - pulls Y
-  // underlyingCardFor
+  cancels: string[];
+  canceledby: string[];
+  matching: string[];
+  matchingweapon: string[];
+  pulledby: string[];
+  pulls: string[];
+  underlyingcardfor: string[];
+  abbr: string;
 
   sortTitle: string;
-  abbr: string;
 
   displayTitle: string;
   displayType: string;
@@ -106,6 +103,13 @@ class Card {
     this.uniqueness = object.front.uniqueness || 'none';
     this.abbr = object.abbr;
     this.identities = [object.front.characteristics, object.front.type, object.front.subType, object.front.icons].flat();
+    this.cancels = object.cancels;
+    this.canceledby = object.canceledBy;
+    this.matching = object.matching;
+    this.matchingweapon = object.matchingWeapon;
+    this.pulledby = object.pulledBy;
+    this.pulls = object.pulls;
+    this.underlyingcardfor = object.underlyingCardFor;
 
     this.sortTitle = this.title
       .replaceAll(/[^a-zA-Z0-9 -]/g, '')
