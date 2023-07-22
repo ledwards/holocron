@@ -6,21 +6,21 @@ import {
 
 const FIELDS = [
   new Field('ability', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['a', 'ab']),
-  new Field('armor', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['arm']),
+  new Field('armor', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['ar', 'arm']),
   new Field('dsicons', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['darksideicons', 'dark side icons', 'ds icons', 'dsi', 'ds force icons', 'dsforceicons', 'dark force icons', 'darkforceicons', 'dsforce', 'darksideforce', 'darkforce']),
   new Field('deploy', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['d', 'dep']),
   new Field('destiny', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['dest', 'des', 'destiny number', 'destiny value']),
   new Field('ferocity', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['fer']),
-  new Field('forfeit', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['ff']),
-  new Field('hyperspeed', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['hs']),
-  new Field('landspeed', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['ls']),
+  new Field('forfeit', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['f', 'ff']),
+  new Field('hyperspeed', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['h', 'hs', 'hyp']),
+  new Field('landspeed', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['ls', 'land', 'lsp', 'lspd']),
   new Field('lsicons', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['light side icons', 'ls icons', 'lsi', 'ls force icons', 'lsforceicons', 'light force icons', 'lightforceicons', 'lsforce', 'lightsideforce', 'lightforce']),
-  new Field('maneuver', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['man']),
-  new Field('parsec', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['parsec number', 'par']),
+  new Field('maneuver', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['m', 'man', 'mvr']),
+  new Field('parsec', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['parsec number', 'par', 'ps']),
   new Field('politics', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['pol']),
   new Field('power', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['p', 'pow', 'pwr']),
 
-  new Field('extratext', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['extra text']),
+  new Field('extratext', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['extra text', 'xtra', 'xt']),
   new Field('gametext', STRING_COMPARATORS, null, ['game text', 'gt', 'txt', 'text']),
   new Field('lore', STRING_COMPARATORS, null, ['l']),
   new Field('title', STRING_COMPARATORS, null, ['t', 'name']),
@@ -50,6 +50,8 @@ const FIELDS = [
   // pulls anakin's lightsaber
   new Field('underlyingcardfor', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['is underlying card for', 'underlying card for', 'underlyingcardfor', 'underlying card', 'underlyingcard', 'underlying', 'undercard', 'uc']),
   // underlying card for kylo ren
+
+  // TODO: counterpart
 ];
 
 export default FIELDS;
