@@ -35,21 +35,13 @@ const FIELDS = [
   new Field('uniqueness', STRING_COMPARATORS, STRING_EQUALS_COMPARATOR, []),
 
   new Field('identities', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['is', 'is a', 'is an', 'identity', 'ident', 'id', 'ids']),
-  // is a pilot
   new Field('cancels', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['cancels', 'cancel', 'is canceler for', 'iscancelerfor', 'iscancellerfor', 'is canceller for']),
-  // cancels Sense
   new Field('canceledby', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['canceled by', 'cancelled by', 'cancels by', 'cancelsby', 'cancel by', 'cancelby', 'is canceled by', 'iscanceledby', 'is cancelled by', 'iscancelledby']),
-  // is canceled by Sense
   new Field('matching', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['matches', 'match', 'm', 'is matching for', 'is match for']),
-  // matches red 5
   new Field('matchingweapon', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['matching weapon', 'matchingweapon', 'is matching weapon for']),
-  // matches anakin's lightsaber
   new Field('pulledby', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['pulled by', 'pulledby', 'is pulled by']),
-  // pulled by son of skywalker
   new Field('pulls', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['pull', 'pulls', 'is puller for', 'ispullerfor']),
-  // pulls anakin's lightsaber
   new Field('underlyingcardfor', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['is underlying card for', 'underlying card for', 'underlyingcardfor', 'underlying card', 'underlyingcard', 'underlying', 'undercard', 'uc']),
-  // underlying card for kylo ren
 
   // TODO: counterpart
 ];
