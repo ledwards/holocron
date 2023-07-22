@@ -23,6 +23,8 @@ class FilterQuery {
       rawComparator: null,
     }
 
+    // TRY: First, attempt a default query?
+
     params = this.parseThreePartQuery() || params;
     console.log('<three-part query>: ', params)
 
@@ -73,7 +75,7 @@ class FilterQuery {
             return {
               field: f,
               comparator: c,
-              value: cMatches[2]?.trim(),
+              value: fMatches[3]?.trim(),
               rawField: fMatches[1],
               rawComparator: cMatches[1],
             };
