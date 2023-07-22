@@ -71,14 +71,14 @@ const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
 // ARRAY
 const INCLUDES_COMPARATOR = new Comparator(
   'includes',
-  (card: Card, attribute: string, value: string) => card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['include', 'has', 'contains', 'co', 'con', 'matches', 'exactly', 'is exactly']
+  (card: Card, attribute: string, value: string) => card.get(attribute)?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1).length > 0,
+  ['c', 'include', 'has', 'contains', 'matches']
 );
 
 const NOT_INCLUDES_COMPARATOR = new Comparator(
-  'does not include',
-  (card: Card, attribute: string, value: string) => !card.get(attribute)?.map(a => a.toLowerCase()).includes(value.toLowerCase()),
-  ['do not include', 'does not have', 'does not contain', 'does not match', 'is not', 'is not exactly']
+  'not includes',
+  (card: Card, attribute: string, value: string) => card.get(attribute)?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1).length == 0,
+  ['nc', 'not include', 'not has', 'not contains', 'not matches', 'not includes', 'not have', 'not contain', 'not match']
 );
 
 const NUMERIC_COMPARATORS = [EQ_COMPARATOR, NEQ_COMPARATOR, GT_COMPARATOR, LT_COMPARATOR, GTE_COMPARATOR, LTE_COMPARATOR];

@@ -24,20 +24,21 @@ class FilterQuery {
     }
 
     params = this.parseThreePartQuery() || params;
-    console.log('tpq: ', params)
+    console.log('<three-part query>: ', params)
 
     if (!params.field) {
       params = this.parseValidComparatorInvalidField() || params;
-      console.log('vcif: ', params)
+      console.log('<valid comparator, invalid field>: ', params)
     }
 
     if (params.field && !params.comparator && !this.partiallyValidComparator()) {
       params = this.parseDefaultComparator() || params;
-      console.log('dc: ', params)
+      console.log('<default comparator>: ', params)
     }
 
     if (!params.field && !params.comparator) { // no field or comparator matches
       params.rawField = params.query;
+      console.log('<whole query>: ', params)
     }
 
     if (params.value) {
