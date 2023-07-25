@@ -1,10 +1,11 @@
 import Card from "./Card";
 import Field from "./Field";
+import alias from '../constants/aliases'; // value aliases, e.g. SOS
 
 class Comparator {
   name: string;
   fn: Function; // (card: Card, fieldName: string, value: string) => boolean;
-  aliases: string[];
+  aliases: string[]; // comparator aliases e.g. "eq" is the same as "="
 
   constructor(name: string, fn: Function, aliases: string[] = []) {
     this.name = name;
@@ -20,7 +21,7 @@ class Comparator {
     let val = false;
 
     try {
-      val = this.fn(card, field?.name, value);
+      val = this.fn(card, field?.name, alias(value));
     } catch (e) {
       // This can happen with a type mismatch... ugly way to fix it I guess
     }
