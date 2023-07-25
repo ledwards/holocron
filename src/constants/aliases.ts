@@ -10,8 +10,7 @@ allCards.forEach(card => {
   const abbrs = card.abbr || [];
   abbrs.forEach(a => {
     const key = a.split('/')[0].replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase();
-    aliases[key] = card.title.replaceAll(/[^a-zA-Z0-9 -]/g, '')
-      .toLowerCase()
+    aliases[key] = card.title.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase();
   }); // should this actually be an array? Can two aliases go to the same thing?
 });
 

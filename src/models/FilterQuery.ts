@@ -4,10 +4,12 @@ import Filter from './Filter';
 import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 import { ALL_COMPARATORS } from '../constants/comparators';
+import alias from '../constants/aliases';
 
 // KNOWN BUGS: (great place to keep these, I know)
 // pwr3
 // title = son of skywalker
+// title = hdadtj
 
 class FilterQuery {
   query: string;
@@ -17,6 +19,7 @@ class FilterQuery {
   filter: Filter;
   rawField: string;
   rawComparator: string;
+  rawValue: string;
 
   parseQuery() {
     let params = {
@@ -25,6 +28,7 @@ class FilterQuery {
       value: null,
       rawField: null,
       rawComparator: null,
+      rawValue: null,
     }
 
     params = this.parseThreePartQuery() || params;
@@ -77,7 +81,8 @@ class FilterQuery {
             return {
               field: f,
               comparator: c,
-              value: fMatches[3]?.trim(),
+              value: alias(fMatches[3]?.trim()),
+              rawValue: fMatches[3]?.trim(),
               rawField: fMatches[1],
               rawComparator: cMatches[1],
             };
@@ -108,12 +113,14 @@ class FilterQuery {
       if (cMatches && cMatches.length > 1) {
         const rawField = cMatches[1];
         const rawComparator = cMatches[2];
-        const value = cMatches[3];
+        const rawValue = cMatches[3];
+        const value = alias(cMatches[3]);
 
         return {
           field: null,
           comparator: c,
           value: value?.trim(),
+          rawValue: rawValue?.trim(),
           rawField: rawField,
           rawComparator: rawComparator,
         };
@@ -135,7 +142,8 @@ class FilterQuery {
         return {
           field: f,
           comparator: f.defaultComparator,
-          value: fMatches[2]?.trim(),
+          value: alias(fMatches[2]?.trim()),
+          rawValue: fMatches[2]?.trim(),
           rawField: fMatches[1],
           rawComparator: '',
         }
@@ -154,6 +162,7 @@ class FilterQuery {
       this.field = obj?.field;
       this.comparator = obj?.comparator;
       this.value = obj?.value;
+      this.rawValue = obj?.rawValue;
       this.rawField = obj?.rawField;
       this.rawComparator = obj?.rawComparator;
 

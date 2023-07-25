@@ -111,7 +111,7 @@ class SearchableCardList extends Component {
     console.log('comparator: ', filterQuery.comparator?.name)
     console.log('rawComparator', filterQuery.rawComparator)
     console.log('value: ', filterQuery.value)
-    console.log('value alias: ', alias(filterQuery.value))
+    console.log('rawValue: ', filterQuery.rawValue)
     console.log('filter: ', typeof filterQuery.filter)
     console.log('valid?: ', filterQuery.valid())
     console.log('\n')
@@ -133,8 +133,8 @@ class SearchableCardList extends Component {
 
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
-      const textData = alias(text.replaceAll(/[^a-zA-Z0-9 -]/g, '')); // TODO use the alias
-      const itemData = `${card.sortTitle} ${card.abbreviationTitle || ' '}`
+      const textData = text;
+      const itemData = `${card.sortTitle} ${card.abbr || ' '}`
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
         .trim();
