@@ -8,6 +8,7 @@ import FilterQuery from '../models/FilterQuery'
 
 import darkCards from '../../data/Dark.json';
 import lightCards from '../../data/Light.json';
+import alias from '../constants/aliases';
 
 const lightColor = 'rgba(219, 227, 232, 1.0)';
 const darkColor = 'rgba(43, 47, 51, 1.0)';
@@ -110,6 +111,7 @@ class SearchableCardList extends Component {
     console.log('comparator: ', filterQuery.comparator?.name)
     console.log('rawComparator', filterQuery.rawComparator)
     console.log('value: ', filterQuery.value)
+    console.log('value alias: ', alias(filterQuery.value))
     console.log('filter: ', typeof filterQuery.filter)
     console.log('valid?: ', filterQuery.valid())
     console.log('\n')
@@ -131,7 +133,7 @@ class SearchableCardList extends Component {
 
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
-      const textData = text.replaceAll(/[^a-zA-Z0-9 -]/g, '');
+      const textData = alias(text.replaceAll(/[^a-zA-Z0-9 -]/g, '')); // TODO use the alias
       const itemData = `${card.sortTitle} ${card.abbreviationTitle || ' '}`
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()

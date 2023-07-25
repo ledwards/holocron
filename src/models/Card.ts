@@ -43,6 +43,7 @@ class Card {
   pulledby: string[];
   pulls: string[];
   underlyingcardfor: string[];
+  counterpart: string;
   abbr: string;
 
   sortTitle: string;
@@ -110,6 +111,7 @@ class Card {
     this.pulledby = object.pulledBy;
     this.pulls = object.pulls;
     this.underlyingcardfor = object.underlyingCardFor;
+    this.counterpart = object.counterpart;
 
     this.sortTitle = this.title
       .replaceAll(/[^a-zA-Z0-9 -]/g, '')

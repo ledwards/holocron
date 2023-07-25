@@ -3,9 +3,8 @@ import Comparator from '../models/Comparator';
 
 // TODO: type checking
 // TODO: enums?
-// TODO: array inclusion using substrings?
 // TODO: contains any of (eg multiple words in a lore/gametext)
-// TODO: aliases for values, e.g. dvdlots, remove commas
+// TODO: remove commas
 
 const EQ_COMPARATOR = new Comparator(
   '=',

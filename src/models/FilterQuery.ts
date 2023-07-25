@@ -5,6 +5,10 @@ import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 import { ALL_COMPARATORS } from '../constants/comparators';
 
+// KNOWN BUGS: (great place to keep these, I know)
+// pwr3
+// title = son of skywalker
+
 class FilterQuery {
   query: string;
   field: Field;
@@ -22,8 +26,6 @@ class FilterQuery {
       rawField: null,
       rawComparator: null,
     }
-
-    // TRY: First, attempt a default query?
 
     params = this.parseThreePartQuery() || params;
     console.log('<three-part query>: ', params)
