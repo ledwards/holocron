@@ -142,7 +142,7 @@ class SearchableCardList extends Component {
       const textDataList = textData.split(' ');
       const itemDataList = itemData.split(' ');
 
-      const matches = textDataList.filter((w: string) => itemData.indexOf(w) > -1);
+      const matches = textDataList.filter((w: string) => itemDataList.indexOf(w) > -1);
 
       return matches.length === textDataList.length;
     });
