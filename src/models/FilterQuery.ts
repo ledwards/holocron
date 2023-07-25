@@ -7,9 +7,8 @@ import { ALL_COMPARATORS } from '../constants/comparators';
 import alias from '../constants/aliases';
 
 // KNOWN BUGS: (great place to keep these, I know)
-// pwr3
-// title = son of skywalker
-// title = hdadtj
+// pwr3 (default comparator doesn't trigger)
+// Look at matching/matching weapon
 
 class FilterQuery {
   query: string;
@@ -87,11 +86,15 @@ class FilterQuery {
               rawComparator: cMatches[1],
             };
           }
-        }).filter(el => el);
+        }).filter(el => el)
+          .sort((a, b) => b.rawComparator.length - a.rawComparator.length);
       }
 
       if (allMatches.length > 0) {
-        return allMatches[0];  // sketchy! What's the actual best way to know?
+        if (allMatches.length > 1) {
+          console.log('Found multiple matches! Using the first of ', allMatches.map(m => [m.field.name, m.comparator.name]))
+        }
+        return allMatches[0];
       } else {
         return params;
       }
@@ -125,7 +128,12 @@ class FilterQuery {
           rawComparator: rawComparator,
         };
       }
-    }).filter(el => el);
+    }).filter(el => el)
+      .sort((a, b) => b.rawComparator.length - a.rawComparator.length);
+
+    if (allMatches.length > 1) {
+      console.log('Found multiple matches! Using the first of ', allMatches.map(m => m.comparator.name))
+    }
 
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
