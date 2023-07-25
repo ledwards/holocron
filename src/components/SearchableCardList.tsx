@@ -6,6 +6,8 @@ import CardListItem from './CardListItem'
 import Card from '../models/Card'
 import FilterQuery from '../models/FilterQuery'
 
+import alias from '../constants/aliases';
+
 import darkCards from '../../data/Dark.json';
 import lightCards from '../../data/Light.json';
 
@@ -41,12 +43,12 @@ class SearchableCardList extends Component {
     0: {
       label: 'title',
       icon: 'search-outline',
-      description: 'Search all cards by title. e.g.: \n\ncomlink \n\n farm \n\n chimaera \n\n destroyer'
+      description: 'Search all cards by title. e.g.: \n\n\n quick draw \n\n farm \n\n chimaera \n\n destroyer \n\n dvdlots \n\n hdadtj'
     },
     1: {
       label: 'natural language query',
       icon: 'color-filter-outline',
-      description: 'Search all cards with English language queries. e.g.: \n\n lore contains ISB \n\n power > 5 \n\n icons include pilot \n\n is a leader \n\n set = virtual set 20 \n\n underlying card for third sister',
+      description: `Search all cards with natural language. e.g.: \n\n\n gametext contains bad feeling (gt c bfhi) \n\n lore matches isb (l m isb) \n\n power = 9 (p 9) \n\n pulls falcon \n\n pulled by sos \n\n is a leader \n\n subtype contains starting \n\n icons includes pilot \n\n\n Also try shortcuts e.g. \n\n gt c ychf`,
     },
   };
 
@@ -132,7 +134,7 @@ class SearchableCardList extends Component {
 
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
-      const textData = text;
+      const textData = alias(text);
       const itemData = `${card.sortTitle} ${card.abbr || ' '}`
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
@@ -262,7 +264,7 @@ class SearchableCardList extends Component {
             updateCellsBatchingPeriod={100} // Increase time between renders
             windowSize={10} // Reduce the window size
           /> || <>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 0 }}>
+            <View style={{ alignSelf: 'flex-start', flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 0 }}>
               <Text style={{ color: 'white', }}>
                 Tap the
               </Text>
