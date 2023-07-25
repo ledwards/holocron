@@ -1,4 +1,5 @@
 import ExpansionSets from '../../data/ExpansionSets.json'
+import { alias } from '../constants/aliases'
 
 class Card {
   id: string;
@@ -170,8 +171,15 @@ class Card {
   }
 
   get(attributeName: string) {
-    // TODO: Aliases for attributes
     return (this as any)[attributeName];
+  }
+
+  getSanitized(attributeName: string) {
+    // TODO: make sanitize fn
+    // make a functions dir for this and aliases
+    // use this every place i do the dumb regex
+    const val = this.get(attributeName);
+    return (typeof val == 'string' ? val.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim() : val);
   }
 }
 

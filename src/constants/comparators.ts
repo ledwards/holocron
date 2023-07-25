@@ -57,7 +57,7 @@ const NOT_SUBSTR_COMPARATOR = new Comparator(
 
 const STRING_EQUALS_COMPARATOR = new Comparator(
   '=',
-  (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() == value.toLowerCase(),
+  (card: Card, attribute: string, value: string) => card.getSanitized(attribute)?.toLowerCase() == value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim(),
   ['equals', 'eq', 'exactly', 'is exactly']
 );
 
