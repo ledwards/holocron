@@ -5,6 +5,7 @@ import Comparator from '../models/Comparator';
 // TODO: enums?
 // TODO: contains any of (eg multiple words in a lore/gametext)
 // TODO: remove commas
+// TODO: the replaceAlls should refactor into a function
 
 const EQ_COMPARATOR = new Comparator(
   '=',
@@ -45,25 +46,25 @@ const LTE_COMPARATOR = new Comparator(
 // STRING
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
-  (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase().includes(value.toLowerCase()),
+  (card: Card, attribute: string, value: string) => card.getSanitized(attribute).includes(value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim()),
   ['m', 'contains', 'has', 'includes', 'matches', 'c', 'co', 'con', 'substr', 'substring']
 );
 
 const NOT_SUBSTR_COMPARATOR = new Comparator(
   'does not match',
-  (card: Card, attribute: string, value: string) => !(card.get(attribute)?.toLowerCase().includes(value.toLowerCase())),
+  (card: Card, attribute: string, value: string) => !(card.getSanitized(attribute)?.includes(value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim())),
   ['nm', 'does not contain', 'does not have', 'does not include', 'does not match', 'nc', 'nco', 'ncon', 'nsubstr', 'not substring']
 );
 
 const STRING_EQUALS_COMPARATOR = new Comparator(
   '=',
-  (card: Card, attribute: string, value: string) => card.getSanitized(attribute)?.toLowerCase() == value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim(),
+  (card: Card, attribute: string, value: string) => card.getSanitized(attribute) == value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim(),
   ['equals', 'eq', 'exactly', 'is exactly']
 );
 
 const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
   '≠',
-  (card: Card, attribute: string, value: string) => card.get(attribute)?.toLowerCase() !== value.toLowerCase(),
+  (card: Card, attribute: string, value: string) => card.getSanitized(attribute) !== value.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim(),
   ['not equals', 'neq', 'is not', 'is not exactly', `isn't`, `isn't exactly`]
 );
 

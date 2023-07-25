@@ -1,5 +1,4 @@
 import ExpansionSets from '../../data/ExpansionSets.json'
-import { alias } from '../constants/aliases'
 
 class Card {
   id: string;

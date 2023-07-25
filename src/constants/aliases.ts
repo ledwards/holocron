@@ -2,6 +2,10 @@ import Card from '../models/Card'
 import darkCards from '../../data/Dark.json'
 import lightCards from '../../data/Light.json'
 
+// TODO: add aliases for e.g. virtual sets from ../../data/ExpansionSets.json file
+// TODO: "unique", "non-unique"
+// TODO: array of aliases, e.g. BF = Babu Frik and Boba Fett
+
 const allCards = [...darkCards.cards, ...lightCards.cards].map(c => new Card(c))
 
 const aliases = {};

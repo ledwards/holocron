@@ -8,7 +8,6 @@ import FilterQuery from '../models/FilterQuery'
 
 import darkCards from '../../data/Dark.json';
 import lightCards from '../../data/Light.json';
-import alias from '../constants/aliases';
 
 const lightColor = 'rgba(219, 227, 232, 1.0)';
 const darkColor = 'rgba(43, 47, 51, 1.0)';
@@ -207,7 +206,7 @@ class SearchableCardList extends Component {
 
           {this.state.searchModeIndex == 1 && this.state.filterQuery.value &&
             <Chip
-              title={this.state.filterQuery.value}
+              title={this.state.filterQuery.rawValue}
               key={'value'}
               type='outline'
               buttonStyle={this.state.filterQuery.validValue() && this.state.data.length > 0 ? styles.chipButtonWithMatch : styles.chipButton}
