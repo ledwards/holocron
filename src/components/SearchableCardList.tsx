@@ -134,7 +134,7 @@ class SearchableCardList extends Component {
 
   searchFilterFunction = text => {
     const newData = this.state.allCards.filter(card => {
-      const textData = alias(text);
+      const textData = text;
       const itemData = `${card.sortTitle} ${card.abbr || ' '}`
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
@@ -142,9 +142,7 @@ class SearchableCardList extends Component {
 
       // Allow for unorderd word matches
       const textDataList = textData.split(' ');
-      const itemDataList = itemData.split(' ');
-
-      const matches = textDataList.filter((w: string) => itemDataList.indexOf(w) > -1);
+      const matches = textDataList.filter((w: string) => itemData.indexOf(w) > -1);
 
       return matches.length === textDataList.length;
     });
