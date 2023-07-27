@@ -8,17 +8,38 @@ import alias from '../constants/aliases';
 
 // KNOWN BUGS: (great place to keep these, I know)
 // pwr3 (default comparator doesn't trigger)
-// Look at matching/matching weapon
+// todo: Look at matching/matching weapon
+// title = search destroy => uses match instead of =
+// title matches search and destroy => triggers AND...
 
 class FilterQuery {
   query: string;
-  field: Field;
-  comparator: Comparator;
-  value: string;
-  filter: Filter;
-  rawField: string;
-  rawComparator: string;
-  rawValue: string;
+  field?: Field;
+  comparator?: Comparator;
+  value?: string;
+  filter?: Filter;
+  rawField?: string;
+  rawComparator?: string;
+  rawValue?: string;
+
+  constructor(query: string) {
+    this.query = query.trim();
+
+    if (this.query) {
+      const obj = this.parseQuery();
+
+      this.field = obj?.field;
+      this.comparator = obj?.comparator;
+      this.value = obj?.value;
+      this.rawValue = obj?.rawValue;
+      this.rawField = obj?.rawField;
+      this.rawComparator = obj?.rawComparator;
+
+      if (this.value) {
+        this.filter = new Filter(this.field, this.comparator, this.value);
+      }
+    }
+  }
 
   parseQuery() {
     let params = {
@@ -161,25 +182,6 @@ class FilterQuery {
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
 
-  constructor(query: string) {
-    this.query = query.trim();
-
-    if (this.query) {
-      const obj = this.parseQuery();
-
-      this.field = obj?.field;
-      this.comparator = obj?.comparator;
-      this.value = obj?.value;
-      this.rawValue = obj?.rawValue;
-      this.rawField = obj?.rawField;
-      this.rawComparator = obj?.rawComparator;
-
-      if (this.value) {
-        this.filter = new Filter(this.field, this.comparator, this.value);
-      }
-    }
-  }
-
   valid() {
     return this.validField() &&
       this.validComparator() &&
@@ -234,6 +236,10 @@ class FilterQuery {
     }
 
     return this.filter.execute(cards);
+  }
+
+  length(cards: Card[]) {
+    return this.execute(cards).length;
   }
 }
 

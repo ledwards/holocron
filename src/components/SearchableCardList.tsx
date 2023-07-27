@@ -4,7 +4,8 @@ import { SearchBar, Icon, Chip } from 'react-native-elements';
 import CardListItem from './CardListItem'
 
 import Card from '../models/Card'
-import FilterQuery from '../models/FilterQuery'
+import FilterQuerySet from '../models/FilterQuerySet'
+import FilterQuery from '../models/FilterQuery';
 
 import alias from '../constants/aliases';
 
@@ -30,7 +31,7 @@ class SearchableCardList extends Component {
       data: [],
       searchModeIndex: 0,
       query: '',
-      filterQuery: new FilterQuery(''),
+      filterQuerySet: new FilterQuerySet(''),
       flatListRef: null,
     };
   }
@@ -80,7 +81,7 @@ class SearchableCardList extends Component {
     );
   };
 
-  searchRouter = text => {
+  searchRouter = (text: string) => {
     text = text.toLowerCase();
 
     this.setState({
@@ -97,28 +98,34 @@ class SearchableCardList extends Component {
     }
   }
 
-  queryFilterFunction = (text) => {
-    const filterQuery = new FilterQuery(text);
+  queryFilterFunction = (text: string) => {
+    const filterQuerySet = new FilterQuerySet(text);
 
     this.setState({
       query: text,
-      filterQuery: filterQuery,
+      filterQuerySet: filterQuerySet,
     });
 
     console.log('text entry: ', text)
-    console.log('---')
-    console.log('field: ', filterQuery.field?.name)
-    console.log('rawField', filterQuery.rawField)
-    console.log('comparator: ', filterQuery.comparator?.name)
-    console.log('rawComparator', filterQuery.rawComparator)
-    console.log('value: ', filterQuery.value)
-    console.log('rawValue: ', filterQuery.rawValue)
-    console.log('filter: ', typeof filterQuery.filter)
-    console.log('valid?: ', filterQuery.valid())
+    console.log('====')
+    filterQuerySet.filterQueries.forEach(filterQuery => {
+      console.log('field: ', filterQuery.field?.name)
+      console.log('rawField', filterQuery.rawField)
+      console.log('validField: ', filterQuery.validField())
+      console.log('comparator: ', filterQuery.comparator?.name)
+      console.log('rawComparator', filterQuery.rawComparator)
+      console.log('validComparator: ', filterQuery.validComparator())
+      console.log('value: ', filterQuery.value)
+      console.log('rawValue: ', filterQuery.rawValue)
+      console.log('validValue: ', filterQuery.validValue())
+      console.log('filter: ', typeof filterQuery.filter)
+      console.log('valid?: ', filterQuery.valid())
+      console.log('\n')
+    })
     console.log('\n')
 
-    if (filterQuery.valid()) {
-      const newData = filterQuery.execute(this.state.allCards);
+    if (filterQuerySet.valid()) {
+      const newData = filterQuerySet.execute(this.state.allCards);
 
       this.setState({
         data: newData,
@@ -129,10 +136,10 @@ class SearchableCardList extends Component {
       });
     }
 
-    return filterQuery.valid();
+    return filterQuerySet.valid();
   }
 
-  searchFilterFunction = text => {
+  searchFilterFunction = (text: string) => {
     const newData = this.state.allCards.filter(card => {
       const textData = text;
       const itemData = `${card.sortTitle} ${card.abbr || ' '}`
@@ -155,7 +162,7 @@ class SearchableCardList extends Component {
   renderHeader = () => {
     return (
       <View style={{
-        height: 100,
+        height: this.state.filterQuerySet.viewHeight(),
         borderBottomColor: this.state.query === null || this.state.query == '' ? 'transparent' : blackColor,
         borderBottomWidth: 2,
       }}>
@@ -179,55 +186,67 @@ class SearchableCardList extends Component {
             />
           }
         />
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center',
-        }}>
-          {this.state.searchModeIndex == 1 && this.state.query &&
-            <Chip
-              title={this.state.filterQuery.displayFieldName()}
-              key={'field'}
-              type='outline'
-              buttonStyle={this.state.filterQuery.validField() ? styles.chipButtonWithMatch : styles.chipButton}
-              titleStyle={this.state.filterQuery.validField() ? styles.chipTitleWithMatch : styles.chipTitle}
-              containerStyle={styles.chipContainer}>
-            </Chip>}
 
-          {this.state.searchModeIndex == 1 && (this.state.filterQuery.comparator || this.state.filterQuery.partiallyValidComparator()) && !(this.state.filterQuery.usingDefaultComparator() && this.state.filterQuery.comparator.name == 'includes') &&
-            <Chip
-              title={this.state.filterQuery.displayComparatorName()}
-              key={'comparator'}
-              type='outline'
-              buttonStyle={this.state.filterQuery.validComparator() ? styles.chipButtonWithMatch : styles.chipButton}
-              titleStyle={this.state.filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
-              containerStyle={styles.chipContainer}>
-            </Chip>}
+        {this.state.filterQuerySet.filterQueries.map((filterQuery: FilterQuery) =>
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'left',
+          }}>
+            {this.state.searchModeIndex == 1 && filterQuery.query &&
+              <Chip
+                title={filterQuery.displayFieldName()}
+                key={'field'}
+                type='outline'
+                buttonStyle={filterQuery.validField() ? styles.chipButtonWithMatch : styles.chipButton}
+                titleStyle={filterQuery.validField() ? styles.chipTitleWithMatch : styles.chipTitle}
+                containerStyle={styles.chipContainer}>
+              </Chip>
+            }
 
-          {this.state.searchModeIndex == 1 && this.state.filterQuery.value &&
-            <Chip
-              title={this.state.filterQuery.rawValue}
-              key={'value'}
-              type='outline'
-              buttonStyle={this.state.filterQuery.validValue() && this.state.data.length > 0 ? styles.chipButtonWithMatch : styles.chipButton}
-              titleStyle={this.state.filterQuery.validValue() && this.state.data.length > 0 ? styles.chipTitleWithMatch : styles.chipTitle}
-              containerStyle={styles.chipContainer}>
-            </Chip>}
+            {this.state.searchModeIndex == 1 && (filterQuery.comparator || filterQuery.partiallyValidComparator()) && !(filterQuery.usingDefaultComparator() && filterQuery.comparator.name == 'includes') &&
+              <Chip
+                title={filterQuery.displayComparatorName()}
+                key={'comparator'}
+                type='outline'
+                buttonStyle={filterQuery.validComparator() ? styles.chipButtonWithMatch : styles.chipButton}
+                titleStyle={filterQuery.validComparator() ? styles.chipTitleWithMatch : styles.chipTitle}
+                containerStyle={styles.chipContainer}>
+              </Chip>
+            }
 
-          {this.state.query != '' && this.state.searchModeIndex == 0 &&
-            <Chip
-              title={this.state.query}
-              key={'value'}
-              type='outline'
-              buttonStyle={styles.chipButtonWithMatch}
-              titleStyle={styles.chipTitleWithMatch}
-              containerStyle={styles.chipContainer}>
-            </Chip>}
+            {this.state.searchModeIndex == 1 && filterQuery.value &&
+              <Chip
+                title={filterQuery.rawValue}
+                key={'value'}
+                type='outline'
+                buttonStyle={filterQuery.validValue() && filterQuery.length(this.state.allCards) > 0 ? styles.chipButtonWithMatch : styles.chipButton}
+                titleStyle={filterQuery.validValue() && filterQuery.length(this.state.allCards) > 0 ? styles.chipTitleWithMatch : styles.chipTitle}
+                containerStyle={styles.chipContainer}>
+              </Chip>
+            }
 
-          <Text style={{ fontSize: 14, color: whiteColor, alignSelf: 'center', marginLeft: 5 }}>
-            {this.state.query ? `(${this.state.data.length} results)` : ''}
+            {this.state.query != '' && this.state.searchModeIndex == 0 &&
+              <Chip
+                title={this.state.query}
+                key={'value'}
+                type='outline'
+                buttonStyle={styles.chipButtonWithMatch}
+                titleStyle={styles.chipTitleWithMatch}
+                containerStyle={styles.chipContainer}>
+              </Chip>
+            }
+
+            <Text style={{ fontSize: 14, color: this.state.filterQuerySet.length() > 1 ? grayColor : whiteColor, alignSelf: 'center', marginLeft: 'auto' }}>
+              {this.state.query ? `(${filterQuery.execute(this.state.allCards).length} results)` : ''}
+            </Text>
+          </View>
+        )}
+        {this.state.query && this.state.filterQuerySet.length() > 1 &&
+          <Text style={{ fontSize: 14, color: whiteColor, alignSelf: 'center', margin: 5 }}>
+            {`(combined ${this.state.data.length} results)`}
           </Text>
-        </View>
+        }
       </View>
     );
   };
