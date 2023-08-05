@@ -49,7 +49,7 @@ class SearchableCardList extends Component {
     1: {
       label: 'natural language query',
       icon: 'color-filter-outline',
-      description: `Search all cards with natural language. e.g.: \n\n\n gametext contains bad feeling (gt c bfhi) \n\n lore matches isb (l m isb) \n\n power = 9 (p 9) \n\n pulls falcon \n\n pulled by sos \n\n is a leader \n\n subtype contains starting \n\n icons includes pilot \n\n\n Also try shortcuts e.g. \n\n gt c ychf`,
+      description: `Search all cards with natural language: \n\n\n gametext contains bad feeling \n\n lore matches isb \n\n power = 9 \n\n pulls falcon \n\n pulled by sos \n\n is a leader \n\n subtype contains starting \n\n icons includes pilot \n\n\n\n Also try combining queries with AND: \n\n\n lore c isb and side=dark and type=character`,
     },
   };
 
