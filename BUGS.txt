@@ -8,3 +8,4 @@ title matchesd & => blanks and shows all instead of combo cards
 oo-ta => nothing (in text and NL?), remove the -. Maybe actually search with and without the special chars?
 cancels blaster pro => says NOT includes blaster pro
 is clone / is a clone => is includes lone
+type = character => type matches character BUT type eq character => type = character
