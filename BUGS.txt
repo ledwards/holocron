@@ -1,0 +1,10 @@
+KNOWN BUGS: (great place to keep these, I know)
+===========
+pwr3 (default comparator doesn't trigger)
+todo: Look at matching/matching weapon
+title = search destroy => uses match instead of =
+title matches search and destroy => triggers AND...
+title matchesd & => blanks and shows all instead of combo cards
+oo-ta => nothing (in text and NL?), remove the -. Maybe actually search with and without the special chars?
+cancels blaster pro => says NOT includes blaster pro
+is clone / is a clone => is includes lone
