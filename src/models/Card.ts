@@ -106,7 +106,7 @@ class Card {
     this.identities = [object.front.characteristics, object.front.type, object.front.subType, object.front.icons].flat();
     this.cancels = object.cancels;
     this.canceledby = object.canceledBy;
-    this.matching = object.matching;
+    this.matching = object.matching; // TODO: rename to matchingstarship?
     this.matchingweapon = object.matchingWeapon;
     this.pulledby = object.pulledBy;
     this.pulls = object.pulls;
@@ -114,7 +114,7 @@ class Card {
     this.counterpart = object.counterpart;
 
     this.sortTitle = this.title
-      .replaceAll(/[^a-zA-Z0-9 -]/g, '')
+      .replaceAll(/[^a-zA-Z0-9 ]/g, '')
       .toLowerCase();
 
     this.displayTitle = this.title

@@ -6,12 +6,6 @@ import FIELDS from '../constants/fields';
 import { ALL_COMPARATORS } from '../constants/comparators';
 import alias from '../constants/aliases';
 
-// KNOWN BUGS: (great place to keep these, I know)
-// pwr3 (default comparator doesn't trigger)
-// todo: Look at matching/matching weapon
-// title = search destroy => uses match instead of =
-// title matches search and destroy => triggers AND...
-
 class FilterQuery {
   query: string;
   field?: Field;
