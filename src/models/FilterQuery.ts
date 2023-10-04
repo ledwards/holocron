@@ -35,6 +35,24 @@ class FilterQuery {
     }
   }
 
+  // parse() {
+  // idea:
+  // get the field
+  // get the comparator
+  // if there is no comparator, get the default comparator
+  // get the value
+  // execute the filter
+  //
+  // let params = {
+  // field: null,
+  // comparator: null,
+  // value: null,
+  // rawField: null,
+  // rawComparator: null,
+  // rawValue: null,
+  // }
+  // }
+
   parseQuery() {
     let params = {
       field: null,
@@ -48,12 +66,12 @@ class FilterQuery {
     params = this.parseThreePartQuery() || params;
     console.log('<three-part query>: ', params)
 
-    if (!params.field) {
+    if (!params.field && params.comparator) {
       params = this.parseValidComparatorInvalidField() || params;
       console.log('<valid comparator, invalid field>: ', params)
     }
 
-    if (params.field && !params.comparator && !this.partiallyValidComparator()) {
+    if (!params.field && !params.comparator && !params.value && !this.partiallyValidComparator()) {
       params = this.parseDefaultComparator() || params;
       console.log('<default comparator>: ', params)
     }
@@ -72,9 +90,11 @@ class FilterQuery {
 
   parseThreePartQuery() {
     let allMatches = [];
+    // should this include =, <, >, <=, >=, etc.?
     const validSeparators = ['\\s+', '$'].concat(ALL_COMPARATORS.map(c => c.nameAndAliases()).flat());
 
     // ordinary three-part query, e.g. power > 6, matches includes red 5, lore matches isb
+    // this won't match at all if the comparator is missing (e.g. invalid or default)
     const matches = FIELDS.map(f => {
       const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s*(${validSeparators.join('|')})(.*)`);
       const fMatches = this.query.match(fieldRe);
@@ -158,7 +178,7 @@ class FilterQuery {
 
     // default comparator check, e.g. power 6, matches red 5, pulls Yoda
     allMatches = FIELDS.map(f => {
-      const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s+(.+)`);
+      const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s*(.+)`);
       const fMatches = this.query.match(fieldRe);
 
       if (fMatches && fMatches.length > 0) {

@@ -103,7 +103,13 @@ class Card {
     this.subtype = object.front.subType;
     this.uniqueness = object.front.uniqueness || 'none';
     this.abbr = object.abbr;
-    this.identities = [object.front.characteristics, object.front.type, object.front.subType, object.front.icons].flat();
+    this.identities = [
+      object.front.characteristics,
+      object.front.type,
+      object.front.subType,
+      object.front.icons,
+      object.front.extraText
+    ].flat();
     this.cancels = object.cancels;
     this.canceledby = object.canceledBy;
     this.matching = object.matching; // TODO: rename to matchingstarship?

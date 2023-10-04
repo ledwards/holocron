@@ -41,7 +41,7 @@ const FIELDS = [
   new Field('matchingweapon', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['matching weapon', 'matchingweapon', 'is matching weapon for', 'matching weapon for', 'mw', 'mwf']),
   new Field('pulledby', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['pulled by', 'pulledby', 'is pulled by']),
   new Field('pulls', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['pull', 'pulls', 'is puller for', 'ispullerfor']),
-  new Field('underlyingcardfor', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['is underlying card for', 'underlying card for', 'underlyingcardfor', 'underlying card', 'underlyingcard', 'underlying', 'undercard', 'uc']),
+  new Field('underlyingcardfor', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['is underlying card for', 'underlying card for', 'underlyingcardfor', 'underlying card', 'underlyingcard', 'underlying', 'undercard', 'uc', 'ucf']),
 
   // TODO: counterpart
 ];
