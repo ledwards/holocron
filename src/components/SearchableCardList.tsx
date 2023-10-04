@@ -60,6 +60,7 @@ class SearchableCardList extends Component {
   loadAllCards = () => {
     this.setState({ loading: true });
 
+    // TODO: Move this to Card.ts so it can be used/reused in tests, for example
     const allCards = [...darkCards.cards, ...lightCards.cards]
       .map(c => new Card(c))
       .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
