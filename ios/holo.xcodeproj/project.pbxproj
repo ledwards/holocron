@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-holo-holoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-holo-holoTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9B2A0C2C2AFB76890029C741 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 9B2A0C2B2AFB76890029C741 /* main.jsbundle */; };
 		9B93A1FA2A43ED8F00250EEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B93A1F92A43ED8F00250EEF /* Assets.xcassets */; };
 		9B93A1FB2A43ED8F00250EEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B93A1F92A43ED8F00250EEF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -45,6 +46,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-holo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-holo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = holo/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-holo-holoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-holo-holoTests.release.xcconfig"; path = "Target Support Files/Pods-holo-holoTests/Pods-holo-holoTests.release.xcconfig"; sourceTree = "<group>"; };
+		9B2A0C2B2AFB76890029C741 /* main.jsbundle */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = main.jsbundle; sourceTree = "<group>"; };
 		9B5E16942A442B0E00E79ABF /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
 		9B5E16952A442B0E00E79ABF /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
 		9B5E16962A442B0E00E79ABF /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Feather.ttf; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 		13B07FAE1A68108700A75B9A /* holo */ = {
 			isa = PBXGroup;
 			children = (
+				9B2A0C2B2AFB76890029C741 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				9B93A1F92A43ED8F00250EEF /* Assets.xcassets */,
@@ -292,6 +295,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				9B93A1FA2A43ED8F00250EEF /* Assets.xcassets in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				9B2A0C2C2AFB76890029C741 /* main.jsbundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -547,7 +551,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4.5;
+				MARKETING_VERSION = 0.4.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

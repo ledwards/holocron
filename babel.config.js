@@ -1,12 +1,12 @@
 module.exports = {
-  presets: [
-    '@babel/preset-env',
-    '@babel/preset-react',
-    '@babel/preset-typescript',
-  ],
+  presets: ['module:metro-react-native-babel-preset'],
+
   env: {
     test: {
-      plugins: ['@babel/plugin-transform-modules-commonjs'],
+      plugins: [
+        '@babel/plugin-transform-modules-commonjs',
+        '@babel/plugin-transform-flow-strip-types',
+      ],
     },
   },
 };
