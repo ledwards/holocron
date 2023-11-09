@@ -1,4 +1,4 @@
-import ExpansionSets from '../../data/ExpansionSets.json'
+import ExpansionSets from '../../data/ExpansionSets.json';
 
 class Card {
   id: string;
@@ -89,7 +89,9 @@ class Card {
     this.politics = object.front.politics;
     this.power = object.front.power;
 
-    this.extratext = `${object.front.extraText?.join(' ')}${object?.back?.extratext ? ' / ' + object.back.extraText.join(' ') : ''}`;
+    this.extratext = `${object.front.extraText?.join(' ')}${
+      object?.back?.extratext ? ' / ' + object.back.extraText.join(' ') : ''
+    }`;
     this.gametext = [object.front.gametext, object.back?.gametext].join(' / ');
     this.lore = object.front.lore;
     this.title = object.front.title;
@@ -108,7 +110,7 @@ class Card {
       object.front.type,
       object.front.subType,
       object.front.icons,
-      object.front.extraText
+      object.front.extraText,
     ].flat();
     this.cancels = object.cancels;
     this.canceledby = object.canceledBy;
@@ -119,9 +121,7 @@ class Card {
     this.underlyingcardfor = object.underlyingCardFor;
     this.counterpart = object.counterpart;
 
-    this.sortTitle = this.title
-      .replaceAll(/[^a-zA-Z0-9 ]/g, '')
-      .toLowerCase();
+    this.sortTitle = this.title.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase();
 
     this.displayTitle = this.title
       .replaceAll('<>', '◇')
@@ -131,24 +131,39 @@ class Card {
       .replace('(Tatooine)', '')
       .replace('(Coruscant)', '');
 
-    if (this.displayTitle.split(' / ')[0] == this.displayTitle.split(' / ')[1]) {
+    if (
+      this.displayTitle.split(' / ')[0] == this.displayTitle.split(' / ')[1]
+    ) {
       this.displayTitle = this.displayTitle.split(' / ')[0];
     }
 
     if (this.type == 'Objective' || this.displayTitle.length > 39) {
       this.displayTitle = this.displayTitle
-        .split(' / ').join(' /\n')
-        .split(' & ').join(' &\n');
+        .split(' / ')
+        .join(' /\n')
+        .split(' & ')
+        .join(' &\n');
     }
 
     this.displayType = this.type.split(' #')[0];
     this.displaySubtype = this.subtype ? this.subtype.split(': ')[0] : '';
-    this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.backImageUrl : this.imageUrl;
-    this.displayBackImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id) ? this.imageUrl : this.backImageUrl;
+    this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id)
+      ? this.backImageUrl
+      : this.imageUrl;
+    this.displayBackImageUrl = ['5621', '5959', '6435', '6501'].includes(
+      this.id,
+    )
+      ? this.imageUrl
+      : this.backImageUrl;
     this.displaySet = ExpansionSets[object.set];
 
-    this.sideways = this.subtype == 'Site' || ['906', '953', '1656', '5106'].includes(this.id);
-    this.combo = this.title.includes(' & ') && (this.type == 'Interrupt' || this.type == 'Effect') && this.id != '2280';
+    this.sideways =
+      this.subtype == 'Site' ||
+      ['906', '953', '1656', '5106'].includes(this.id);
+    this.combo =
+      this.title.includes(' & ') &&
+      (this.type == 'Interrupt' || this.type == 'Effect') &&
+      this.id != '2280';
     this.twoSided = this.backImageUrl != null;
     this.height = this.sideways ? 339 : 475;
     this.width = this.sideways ? 475 : 339;
@@ -163,7 +178,10 @@ class Card {
     } else if (this.subtype == 'Site') {
       this.offsetY = -30;
       this.offsetHeight = 30;
-    } else if (this.sideways && (this.type == 'Starship' || this.type == 'Weapon')) {
+    } else if (
+      this.sideways &&
+      (this.type == 'Starship' || this.type == 'Weapon')
+    ) {
       this.offsetY = -74;
       this.offsetHeight = 90;
     } else if (this.combo) {
@@ -184,7 +202,12 @@ class Card {
     // make a functions dir for this and aliases
     // use this every place i do the dumb regex
     const val = this.get(attributeName);
-    return (typeof val == 'string' ? val.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim() : val);
+    return typeof val == 'string'
+      ? val
+          .replaceAll(/[^a-zA-Z0-9 -]/g, '')
+          .toLowerCase()
+          .trim()
+      : val;
   }
 }
 
