@@ -7,3 +7,7 @@ title = search destroy => uses match instead of =
 cancels blaster pro => says NOT includes blaster pro
 is clone / is a clone => is includes lone
 type = character => type matches character BUT type eq character => type = character
+
+Maul's Double Bladed Lightsaber displays wrong in the card list
+Search results always displays (0 results) even when there are results
+Search: Ap'lek returns nothing, but Aplek returns Ap'lek
