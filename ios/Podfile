@@ -32,6 +32,7 @@ target 'holo' do
   flags = get_default_flags()
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'react-native-blob-util', :path => '../node_modules/react-native-blob-util'
 
   use_react_native!(
     :path => config[:reactNativePath],
