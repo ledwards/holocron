@@ -30,7 +30,6 @@ class SearchableCardList extends Component {
     this.state = {
       loading: false,
       error: null,
-      propCards: this.props.cards,
       allCards: [],
       data: [],
       searchModeIndex: 0,
@@ -40,8 +39,13 @@ class SearchableCardList extends Component {
     };
   }
 
+  // TODO: can this just go in init?
   componentDidMount() {
-    this.loadAllCards();
+    this.setState({
+      data: this.props.cards,
+      allCards: this.props.cards,
+      error: null,
+    });
   }
 
   readonly searchModes = {
@@ -61,27 +65,6 @@ class SearchableCardList extends Component {
   currentSearchMode() {
     return this.searchModes[this.state.searchModeIndex] || 0;
   }
-
-  loadAllCards = () => {
-    this.setState({loading: true});
-
-    // TODO: Move this to Card.ts so it can be used/reused in tests, for example
-    const allCards = this.state.propCards
-      .map(c => new Card(c))
-      .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
-      .filter(c => c.type != 'Game Aid')
-      .sort((a, b) =>
-        a.sortTitle > b.sortTitle ? 1 : b.sortTitle > a.sortTitle ? -1 : 0,
-      );
-
-    this.setState({
-      data: allCards,
-      error: null,
-      loading: false,
-    });
-
-    this.state.allCards = allCards;
-  };
 
   renderSeparator = () => {
     return <View style={{height: 2, backgroundColor: blackColor}} />;
