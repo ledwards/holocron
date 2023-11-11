@@ -14,7 +14,9 @@ class Filter {
   }
 
   execute(cards: Card[]) {
-    return cards.filter(c => this.comparator.execute(c, this.field, this.value));
+    return cards.filter(c =>
+      this.comparator.execute(c, this.field, this.value),
+    );
   }
 }
 

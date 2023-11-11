@@ -9,11 +9,9 @@ import {
 import {SearchBar, Icon, Chip} from 'react-native-elements';
 import CardListItem from './CardListItem';
 
-import Card from '../models/Card';
+import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 import FilterQuery from '../models/FilterQuery';
-
-import alias from '../constants/aliases';
 
 const lightColor = 'rgba(219, 227, 232, 1.0)';
 const darkColor = 'rgba(43, 47, 51, 1.0)';
@@ -95,6 +93,7 @@ class SearchableCardList extends Component {
       filterQuerySet: filterQuerySet,
     });
 
+    console.log('====');
     console.log('text entry: ', text);
     console.log('====');
     filterQuerySet.filterQueries.forEach(filterQuery => {
@@ -188,6 +187,7 @@ class SearchableCardList extends Component {
         {this.state.filterQuerySet.filterQueries.map(
           (filterQuery: FilterQuery) => (
             <View
+              key={`${filterQuery.id}_filterQuery`}
               style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -196,7 +196,7 @@ class SearchableCardList extends Component {
               {this.state.searchModeIndex == 1 && filterQuery.query && (
                 <Chip
                   title={filterQuery.displayFieldName()}
-                  key={'field'}
+                  key={`${filterQuery.id}_field`}
                   type="outline"
                   buttonStyle={
                     filterQuery.validField()
@@ -220,7 +220,7 @@ class SearchableCardList extends Component {
                 ) && (
                   <Chip
                     title={filterQuery.displayComparatorName()}
-                    key={'comparator'}
+                    key={`${filterQuery.id}_comparator`}
                     type="outline"
                     buttonStyle={
                       filterQuery.validComparator()
@@ -277,7 +277,8 @@ class SearchableCardList extends Component {
                 }}>
                 {this.state.query
                   ? `(${
-                      filterQuery.execute(this.state.allCards).length
+                      // filterQuery.execute(this.state.allCards).length
+                      this.state.data.length
                     } results)`
                   : ''}
               </Text>
@@ -319,7 +320,7 @@ class SearchableCardList extends Component {
             data={this.state.data}
             renderItem={({item, index}) => (
               <CardListItem
-                item={item}
+                item={new CardPresenter(item)}
                 index={index}
                 flatListRef={this.state.flatListRef}
                 scrollToIndex={(i: number) =>
@@ -330,7 +331,7 @@ class SearchableCardList extends Component {
                 }
               />
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => `${index}_${item.id}`}
             ItemSeparatorComponent={this.renderSeparator}
             keyboardShouldPersistTaps="never"
             // Performance settings
