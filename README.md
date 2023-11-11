@@ -5,9 +5,10 @@ React Native iOS app for Star Wars CCG card browsing
 `npx npm run test`
 
 # Development
-`npx react-native run-ios --mode Release` # only mode that works
+`npx react-native start --reset-cache`
 
 # Release
+* (Optional) try release build with: `npx react-native run-ios --mode Release`
 * manually change version number every place it appears
 * `open ios/holo.xcodeworkspace`
 * `Product -> Archive`

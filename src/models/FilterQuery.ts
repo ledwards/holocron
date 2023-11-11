@@ -3,8 +3,9 @@ import Field from './Field';
 import Filter from './Filter';
 import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
-import { ALL_COMPARATORS } from '../constants/comparators';
-import alias from '../constants/aliases';
+import {ALL_COMPARATORS} from '../constants/comparators';
+import AliasMap from './AliasMap';
+// import alias from '../constants/aliases';
 
 class FilterQuery {
   query: string;
@@ -24,10 +25,11 @@ class FilterQuery {
 
       this.field = obj?.field;
       this.comparator = obj?.comparator;
-      this.value = obj?.value;
+      this.value = obj?.value; // do we put alias here? It wasn't before
       this.rawValue = obj?.rawValue;
       this.rawField = obj?.rawField;
       this.rawComparator = obj?.rawComparator;
+      this.aliasMap = null; // can only be set on execute (because that's where cards, sets are)
 
       if (this.value) {
         this.filter = new Filter(this.field, this.comparator, this.value);
@@ -61,24 +63,30 @@ class FilterQuery {
       rawField: null,
       rawComparator: null,
       rawValue: null,
-    }
+    };
 
     params = this.parseThreePartQuery() || params;
-    console.log('<three-part query>: ', params)
+    console.log('<three-part query>: ', params);
 
     if (!params.field && params.comparator) {
       params = this.parseValidComparatorInvalidField() || params;
-      console.log('<valid comparator, invalid field>: ', params)
+      console.log('<valid comparator, invalid field>: ', params);
     }
 
-    if (!params.field && !params.comparator && !params.value && !this.partiallyValidComparator()) {
+    if (
+      !params.field &&
+      !params.comparator &&
+      !params.value &&
+      !this.partiallyValidComparator()
+    ) {
       params = this.parseDefaultComparator() || params;
-      console.log('<default comparator>: ', params)
+      console.log('<default comparator>: ', params);
     }
 
-    if (!params.field && !params.comparator) { // no field or comparator matches
+    if (!params.field && !params.comparator) {
+      // no field or comparator matches
       params.rawField = params.query;
-      console.log('<whole query>: ', params)
+      console.log('<whole query>: ', params);
     }
 
     if (params.value) {
@@ -91,43 +99,61 @@ class FilterQuery {
   parseThreePartQuery() {
     let allMatches = [];
     // should this include =, <, >, <=, >=, etc.?
-    const validSeparators = ['\\s+', '$'].concat(ALL_COMPARATORS.map(c => c.nameAndAliases()).flat());
+    const validSeparators = ['\\s+', '$'].concat(
+      ALL_COMPARATORS.map(c => c.nameAndAliases()).flat(),
+    );
 
     // ordinary three-part query, e.g. power > 6, matches includes red 5, lore matches isb
     // this won't match at all if the comparator is missing (e.g. invalid or default)
     const matches = FIELDS.map(f => {
-      const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s*(${validSeparators.join('|')})(.*)`);
+      const fieldRe = new RegExp(
+        `^(${f.nameAndAliases().join('|')})\\s*(${validSeparators.join(
+          '|',
+        )})(.*)`,
+      );
       const fMatches = this.query.match(fieldRe);
-      let params = {}
+      let params = {};
 
-      if (fMatches && fMatches.length > 0) { // field found
+      if (fMatches && fMatches.length > 0) {
+        // field found
         params = {
           field: f,
           rawField: fMatches[1],
-          rawComparator: fMatches[2]?.trim() != '' ? fMatches[2]?.trim() : fMatches[3]?.trim(),
+          rawComparator:
+            fMatches[2]?.trim() != ''
+              ? fMatches[2]?.trim()
+              : fMatches[3]?.trim(),
         };
 
-        allMatches = f.comparators.map(c => {
-          const compRe = new RegExp(`^.+?\\s*(${c.nameAndAliases().join('|')})(.*)`);
-          const cMatches = this.query.match(compRe);
+        allMatches = f.comparators
+          .map(c => {
+            const compRe = new RegExp(
+              `^.+?\\s*(${c.nameAndAliases().join('|')})(.*)`,
+            );
+            const cMatches = this.query.match(compRe);
 
-          if (cMatches && cMatches.length > 1) { // comparator for the given field found
-            return {
-              field: f,
-              comparator: c,
-              value: alias(fMatches[3]?.trim()),
-              rawValue: fMatches[3]?.trim(),
-              rawField: fMatches[1],
-              rawComparator: cMatches[1],
-            };
-          }
-        }).filter(el => el)
+            if (cMatches && cMatches.length > 1) {
+              // comparator for the given field found
+              return {
+                field: f,
+                comparator: c,
+                value: fMatches[3]?.trim(), // TODO alias: goes here
+                rawValue: fMatches[3]?.trim(),
+                rawField: fMatches[1],
+                rawComparator: cMatches[1],
+              };
+            }
+          })
+          .filter(el => el)
           .sort((a, b) => b.rawComparator.length - a.rawComparator.length);
       }
 
       if (allMatches.length > 0) {
         if (allMatches.length > 1) {
-          console.log('Found multiple matches! Using the first of ', allMatches.map(m => [m.field.name, m.comparator.name]))
+          console.log(
+            'Found multiple matches! Using the first of ',
+            allMatches.map(m => [m.field.name, m.comparator.name]),
+          );
         }
         return allMatches[0];
       } else {
@@ -135,7 +161,7 @@ class FilterQuery {
       }
     }).filter(el => el.field);
 
-    const bestMatch = matches.find(m => m.field && m.comparator) || matches[0];  // sketchy! What's the actual best way to know?
+    const bestMatch = matches.find(m => m.field && m.comparator) || matches[0]; // sketchy! What's the actual best way to know?
 
     return bestMatch;
   }
@@ -145,14 +171,16 @@ class FilterQuery {
 
     // invalid field, valid comparator
     allMatches = ALL_COMPARATORS.map(c => {
-      const compRe = new RegExp(`^(.+?)\\s*(${c.nameAndAliases().join('|')})\\s*(.+)`);
+      const compRe = new RegExp(
+        `^(.+?)\\s*(${c.nameAndAliases().join('|')})\\s*(.+)`,
+      );
       const cMatches = this.query.match(compRe);
 
       if (cMatches && cMatches.length > 1) {
         const rawField = cMatches[1];
         const rawComparator = cMatches[2];
         const rawValue = cMatches[3];
-        const value = alias(cMatches[3]);
+        const value = cMatches[3]; // TODO alias: goes here
 
         return {
           field: null,
@@ -163,11 +191,15 @@ class FilterQuery {
           rawComparator: rawComparator,
         };
       }
-    }).filter(el => el)
+    })
+      .filter(el => el)
       .sort((a, b) => b.rawComparator.length - a.rawComparator.length);
 
     if (allMatches.length > 1) {
-      console.log('Found multiple matches! Using the first of ', allMatches.map(m => m.comparator.name))
+      console.log(
+        'Found multiple matches! Using the first of ',
+        allMatches.map(m => m.comparator.name),
+      );
     }
 
     return allMatches[0]; // sketchy! What's the actual best way to know?
@@ -178,18 +210,18 @@ class FilterQuery {
 
     // default comparator check, e.g. power 6, matches red 5, pulls Yoda
     allMatches = FIELDS.map(f => {
-      const fieldRe = new RegExp(`^(${(f.nameAndAliases().join('|'))})\\s*(.+)`);
+      const fieldRe = new RegExp(`^(${f.nameAndAliases().join('|')})\\s*(.+)`);
       const fMatches = this.query.match(fieldRe);
 
       if (fMatches && fMatches.length > 0) {
         return {
           field: f,
           comparator: f.defaultComparator,
-          value: alias(fMatches[2]?.trim()),
+          value: fMatches[2]?.trim(),
           rawValue: fMatches[2]?.trim(),
           rawField: fMatches[1],
           rawComparator: '',
-        }
+        };
       }
     }).filter(el => el);
 
@@ -197,10 +229,12 @@ class FilterQuery {
   }
 
   valid() {
-    return this.validField() &&
+    return (
+      this.validField() &&
       this.validComparator() &&
       this.validValue() &&
-      this.validFilter();
+      this.validFilter()
+    );
   }
 
   validField() {
@@ -214,9 +248,12 @@ class FilterQuery {
   partiallyValidComparator() {
     // true when a comparator is partially typed out
     if (!this.rawComparator) {
-      return false
+      return false;
     } else {
-      return ALL_COMPARATORS.map(c => c.name.indexOf(this.rawComparator) == 0).length > 0;
+      return (
+        ALL_COMPARATORS.map(c => c.name.indexOf(this.rawComparator) == 0)
+          .length > 0
+      );
     }
   }
 
@@ -245,6 +282,13 @@ class FilterQuery {
   }
 
   execute(cards: Card[]) {
+    const alias = new AliasMap(cards, []);
+    const value = alias.resolve(this.value);
+    if (value) {
+      this.value = value;
+      this.filter.value = value;
+    }
+
     if (!this.valid()) {
       return [];
     }

@@ -1,4 +1,4 @@
-import ExpansionSets from '../../data/ExpansionSets.json';
+import ExpansionSet from './ExpansionSet';
 
 class Card {
   id: string;
@@ -7,6 +7,7 @@ class Card {
   subtype: string;
   side: string;
   setNumber: string;
+  expansionSet: ExpansionSet;
   imageUrl: string;
   backImageUrl: string;
 
@@ -32,7 +33,7 @@ class Card {
   characteristics: string[];
   icons: string[];
   rarity: string;
-  set: string;
+  // set: string; // TODO sets: come back!
   uniqueness: string;
 
   identities: string[];
@@ -44,28 +45,14 @@ class Card {
   pulls: string[];
   underlyingcardfor: string[];
   counterpart: string;
-  abbr: string;
+  // abbr: string;
+  abbr: string[];
 
   sortTitle: string;
-
-  displayTitle: string;
-  displayType: string;
-  displaySubtype: string;
-  displayImageUrl: string;
-  displayBackImageUrl: string;
-  displaySet: string;
-
-  offsetY: number;
-  offsetHeight: number;
-  aspectRatio: number;
-  height: number;
-  width: number;
-  sideways: boolean;
-  combo: boolean;
-  twoSided: boolean;
+  sortAbbr: string[];
 
   constructor(object) {
-    this.id = object.id.toString();
+    this.id = object.gempId;
     this.title = object.front.title;
     this.type = object.front.type;
     this.subtype = object.front.subType;
@@ -94,16 +81,14 @@ class Card {
     }`;
     this.gametext = [object.front.gametext, object.back?.gametext].join(' / ');
     this.lore = object.front.lore;
-    this.title = object.front.title;
-    this.type = object.front.type;
 
     this.characteristics = object.front.characteristics;
     this.icons = object.front.icons;
-    this.rarity = object.rarity;
-    this.set = (ExpansionSets as any)[object.set];
+    this.rarity = parseInt(object.setNumber) < 200 ? object.rarity : 'V'; // use "V" as the rarity for all virtual cards
+    // this.set = (ExpansionSets as any)[object.set]; // TODO sets: populate this somehow
     this.side = object.side;
     this.subtype = object.front.subType;
-    this.uniqueness = object.front.uniqueness || 'none';
+    this.uniqueness = object.front.uniqueness || 'none'; // TODO: This should be some kind of enum?
     this.abbr = object.abbr;
     this.identities = [
       object.front.characteristics,
@@ -122,75 +107,13 @@ class Card {
     this.counterpart = object.counterpart;
 
     this.sortTitle = this.title.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase();
+    this.sortAbbr = (this.abbr || []).map(a =>
+      a.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase(),
+    );
+  }
 
-    this.displayTitle = this.title
-      .replaceAll('<>', '◇')
-      .replace('(Premiere)', '')
-      .replace('(Death Star II)', '')
-      .replace("(Jabba's Palace Sealed Deck)", '')
-      .replace('(Tatooine)', '')
-      .replace('(Coruscant)', '');
-
-    if (
-      this.displayTitle.split(' / ')[0] == this.displayTitle.split(' / ')[1]
-    ) {
-      this.displayTitle = this.displayTitle.split(' / ')[0];
-    }
-
-    if (this.type == 'Objective' || this.displayTitle.length > 39) {
-      this.displayTitle = this.displayTitle
-        .split(' / ')
-        .join(' /\n')
-        .split(' & ')
-        .join(' &\n');
-    }
-
-    this.displayType = this.type.split(' #')[0];
-    this.displaySubtype = this.subtype ? this.subtype.split(': ')[0] : '';
-    this.displayImageUrl = ['5621', '5959', '6435', '6501'].includes(this.id)
-      ? this.backImageUrl
-      : this.imageUrl;
-    this.displayBackImageUrl = ['5621', '5959', '6435', '6501'].includes(
-      this.id,
-    )
-      ? this.imageUrl
-      : this.backImageUrl;
-    this.displaySet = ExpansionSets[object.set];
-
-    this.sideways =
-      this.subtype == 'Site' ||
-      ['906', '953', '1656', '5106'].includes(this.id);
-    this.combo =
-      this.title.includes(' & ') &&
-      (this.type == 'Interrupt' || this.type == 'Effect') &&
-      this.id != '2280';
-    this.twoSided = this.backImageUrl != null;
-    this.height = this.sideways ? 339 : 475;
-    this.width = this.sideways ? 475 : 339;
-    this.aspectRatio = this.sideways ? 339 / 475 : 475 / 339;
-
-    if (this.displayType == 'Jedi Test') {
-      this.offsetY = 0;
-      this.offsetHeight = 60;
-    } else if (this.type == 'Objective') {
-      this.offsetY = -10;
-      this.offsetHeight = 60;
-    } else if (this.subtype == 'Site') {
-      this.offsetY = -30;
-      this.offsetHeight = 30;
-    } else if (
-      this.sideways &&
-      (this.type == 'Starship' || this.type == 'Weapon')
-    ) {
-      this.offsetY = -74;
-      this.offsetHeight = 90;
-    } else if (this.combo) {
-      this.offsetY = -5;
-      this.offsetHeight = 80;
-    } else {
-      this.offsetY = 0;
-      this.offsetHeight = 0;
-    }
+  nameAndAliases() {
+    return [this.sortTitle, ...this.sortAbbr];
   }
 
   get(attributeName: string) {
