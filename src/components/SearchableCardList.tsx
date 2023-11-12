@@ -93,6 +93,24 @@ class SearchableCardList extends Component {
       filterQuerySet: filterQuerySet,
     });
 
+    // this.debugger(filterQuerySet); // Uncomment to help debug insane queries
+
+    if (filterQuerySet.valid()) {
+      const newData = filterQuerySet.execute(this.state.allCards);
+
+      this.setState({
+        data: newData,
+      });
+    } else {
+      this.setState({
+        data: [],
+      });
+    }
+
+    return filterQuerySet.valid();
+  };
+
+  debugger = filterQuerySet => {
     console.log('====');
     console.log('text entry: ', text);
     console.log('====');
@@ -111,20 +129,6 @@ class SearchableCardList extends Component {
       console.log('\n');
     });
     console.log('\n');
-
-    if (filterQuerySet.valid()) {
-      const newData = filterQuerySet.execute(this.state.allCards);
-
-      this.setState({
-        data: newData,
-      });
-    } else {
-      this.setState({
-        data: [],
-      });
-    }
-
-    return filterQuerySet.valid();
   };
 
   searchFilterFunction = (text: string) => {

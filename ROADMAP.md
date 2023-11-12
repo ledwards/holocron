@@ -33,8 +33,10 @@ these are specific bugs that should be solved by writing a simple failing test c
 * Search: commas are broken
 
 
-IMPROVEMENTS
-============
+FUNCTIONALITY IMPROVEMENTS
+==========================
+* test coverage
+
 * matching and matchingweapon don't really work
 
 * matching/matchingweapon should be disambiguated (matchingstarship, matchingpilot, matchingweapon, matchingcharacterforweapon, matching (all of the above))
@@ -46,6 +48,11 @@ IMPROVEMENTS
 * Field might want a true name vs display name that shows in the chip, e.g. "underlyingcardfor" vs "undercard for"
 
 * Sideways starships and weapons show a bit of the green or blue chrome in the list view
+
+
+UX IMPROVEMENTS
+===============
+* tapping anywhere on screen should hide keyboard
 
 
 REFACTORS
