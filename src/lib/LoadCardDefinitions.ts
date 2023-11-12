@@ -13,7 +13,7 @@ const readCardFilePromise = side => {
     });
 };
 
-const loadCardDefinitions = () => {
+const loadCardDefinitions = expansionSets => {
   return Promise.allSettled([
     readCardFilePromise('Dark'),
     readCardFilePromise('Light'),
@@ -21,7 +21,11 @@ const loadCardDefinitions = () => {
     return results
       .map(r => {
         return r.value
-          .map(c => new Card(c))
+          .map(c => {
+            const expansionSet = expansionSets.find(s => s.id === c.set);
+            const card = new Card(c, expansionSet);
+            return card;
+          })
           .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
           .filter(c => c.type != 'Game Aid')
           .sort((a, b) =>

@@ -1,11 +1,22 @@
 import FilterQuery from '../FilterQuery';
-
 import Card from '../Card';
+import ExpansionSet from '../ExpansionSet';
 
+// TODO: change fixtures to use fake cards
+
+// import fixtures
 import darkCards from '../../data/__fixtures__/Dark.json';
 import lightCards from '../../data/__fixtures__/Light.json';
+import expansionSets from '../../data/__fixtures__/sets.json';
+
 const allCards = [...darkCards.cards, ...lightCards.cards]
-  .map(c => new Card(c))
+  .map(
+    c =>
+      new Card(
+        c,
+        expansionSets.find(s => s.id === c.set),
+      ),
+  )
   .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
   .filter(c => c.type != 'Game Aid')
   .sort((a, b) =>
@@ -16,77 +27,77 @@ describe('FilterQuery: basic (three part) queries', () => {
   it('matches query: title = Darth Vader', () => {
     const query = 'title = Darth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('does not match card that is not there: title = Pikachu', () => {
     const query = 'title = Pikachu';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual([]);
   });
 
   it('matches query (alias comparator): title == Darth Vader', () => {
     const query = 'title == Darth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (alias comparator): title eq Darth Vader', () => {
     const query = 'title eq Darth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (no spaces): title=Darth Vader', () => {
     const query = 'title=Darth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (alias, no spaces): titleeqDarth Vader', () => {
     const query = 'titleeqDarth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (alias field): t=Darth Vader', () => {
     const query = 't=Darth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (alias field, alias comparator): t eq Darth Vader', () => {
     const query = 'teqDarth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (alias field, alias comparator, alias value): t eq Math Vader', () => {
     const query = 'teqDarth Vader';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query: power = 6', () => {
     const query = 'power = 6';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query: ability > 4', () => {
     const query = 'ability > 4';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -94,14 +105,14 @@ describe('FilterQuery: basic (three part) queries', () => {
   // it('matches query: ability <= 6', () => {
   // const query = 'ability <= 6'
   // const filterQuery = new FilterQuery(query);
-  // const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  // const cards = filterQuery.execute(allCards).map(h => h.title);
   // expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   // });
 
   it('matches query: pwr=6', () => {
     const query = 'pwr=6';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -109,7 +120,7 @@ describe('FilterQuery: basic (three part) queries', () => {
   // it('matches query: pwr!=6', () => {
   // const query = 'pwr!=6'
   // const filterQuery = new FilterQuery(query);
-  // const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  // const cards = filterQuery.execute(allCards).map(h => h.title);
   // expect(cards).toEqual(['•Luke Skywalker']);
   // });
 });
@@ -118,7 +129,7 @@ describe('FilterQuery: default comparator queries', () => {
   it('matches query (implicit comparator, no space, alias field): pwr6', () => {
     const query = 'pwr6';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 });
@@ -127,50 +138,57 @@ describe('FilterQuery: string comparator queries', () => {
   it('matches query (lore contains): best starpilot', () => {
     const query = 'lore contains best starpilot';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (lore includes): best starpilot', () => {
     const query = 'lore includes best starpilot';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (lore contains, aliases): best starpilot', () => {
     const query = 'lcbest starpilot';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (lore equals): not the whole lore', () => {
     const query = 'l eq starpilot';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual([]);
   });
 
   it('matches query (extratext includes, alias): dark jedi', () => {
     const query = 'extratext c dark jedi';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
   it('matches query (type equals): character', () => {
     const query = 'type equals character';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   });
 
-  it('matches query (set equals): premier', () => {
+  it('matches query (set equals): premiere', () => {
     const query = 'set eq premiere';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
-    expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
+    expect(cards).toEqual(['•Darth Vader']);
+  });
+
+  it('matches query with value alias (set equals): P', () => {
+    const query = 'set eq p';
+    const filterQuery = new FilterQuery(query);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
+    expect(cards).toEqual(['•Darth Vader']);
   });
 });
 
@@ -178,7 +196,7 @@ describe('FilterQuery: list comparator queries', () => {
   it('matches query (icons contains): pilot', () => {
     const query = 'icons contains pilot';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   });
 
@@ -186,7 +204,7 @@ describe('FilterQuery: list comparator queries', () => {
   // it('matches query (icons includes): pilot', () => {
   //   const query = 'icons includes pilot'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   // });
 
@@ -194,7 +212,7 @@ describe('FilterQuery: list comparator queries', () => {
   // it('matches query (characteristics c): leader', () => {
   //   const query = 'characteristics c leader'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Darth Vader']);
   // });
 });
@@ -205,14 +223,14 @@ describe('FilterQuery: two-part queries', () => {
   // it('matches query (cancels blaster): blaster pro', () => {
   //   const query = 'cancels blaster pro'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Blaster Proficiency']);
   // });
 
   it('matches query (pulledby c): Blizzard 4', () => {
     const query = 'pulledby c Blizzard 4';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -220,21 +238,21 @@ describe('FilterQuery: two-part queries', () => {
   // it('matches query (pulledby): Blizzard 4', () => {
   // const query = 'pulledby Blizzard 4'
   // const filterQuery = new FilterQuery(query);
-  // const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  // const cards = filterQuery.execute(allCards).map(h => h.title);
   // expect(cards).toEqual(['•Darth Vader']);
   // });
 
   it('matches query (matching): Red 5', () => {
     const query = 'matching Red 5';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Luke Skywalker']);
   });
 
   it('matches query (matchingweapon): lightsaber', () => {
     const query = 'matchingweapon lightsaber';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   });
 
@@ -242,7 +260,7 @@ describe('FilterQuery: two-part queries', () => {
   it("matches query (matchingweapon): vader's lightsaber", () => {
     const query = "matchingweapon vader's lightsaber";
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -250,14 +268,14 @@ describe('FilterQuery: two-part queries', () => {
   // it('matches query (matchingweapon): vaders lightsaber', () => {
   //   const query = 'matchingweapon vaders lightsaber'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Darth Vader']);
   // });
 
   it('matches query (underlyingcard for, alias): darth vader (v)', () => {
     const query = 'ucf darth vader (v)';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -269,7 +287,7 @@ describe('FilterQuery: identity aka "is"', () => {
   it('matches query (is c): imperial', () => {
     const query = 'is c imperial';
     const filterQuery = new FilterQuery(query);
-    const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+    const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual(['•Darth Vader']);
   });
 
@@ -277,7 +295,7 @@ describe('FilterQuery: identity aka "is"', () => {
   // it('matches query (is): imperial', () => {
   // const query = 'is imperial'
   // const filterQuery = new FilterQuery(query);
-  // const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  // const cards = filterQuery.execute(allCards).map(h => h.title);
   // expect(cards).toEqual(['•Darth Vader']);
   // });
 
@@ -285,7 +303,7 @@ describe('FilterQuery: identity aka "is"', () => {
   // it('matches query (is an): imperial - ignores an', () => {
   // const query = 'is an imperial'
   // const filterQuery = new FilterQuery(query);
-  // const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  // const cards = filterQuery.execute(allCards).map(h => h.title);
   // expect(cards).toEqual(['•Darth Vader']);
   // });
 
@@ -294,14 +312,14 @@ describe('FilterQuery: identity aka "is"', () => {
   // it('matches query (is): pilot', () => {
   //   const query = 'is pilot'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   // });
 
   // it('matches query (is): character', () => {
   //   const query = 'is character'
   //   const filterQuery = new FilterQuery(query);
-  //   const cards = filterQuery.execute(allCards).map(h => h.displayTitle);
+  //   const cards = filterQuery.execute(allCards).map(h => h.title);
   //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
   // });
 });

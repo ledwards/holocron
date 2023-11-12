@@ -4,8 +4,7 @@ import Filter from './Filter';
 import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 import {ALL_COMPARATORS} from '../constants/comparators';
-import AliasMap from './AliasMap';
-// import alias from '../constants/aliases';
+import AliasResolver from './AliasResolver';
 
 class FilterQuery {
   query: string;
@@ -25,35 +24,16 @@ class FilterQuery {
 
       this.field = obj?.field;
       this.comparator = obj?.comparator;
-      this.value = obj?.value; // do we put alias here? It wasn't before
+      this.value = obj?.value;
       this.rawValue = obj?.rawValue;
       this.rawField = obj?.rawField;
       this.rawComparator = obj?.rawComparator;
-      this.aliasMap = null; // can only be set on execute (because that's where cards, sets are)
 
       if (this.value) {
         this.filter = new Filter(this.field, this.comparator, this.value);
       }
     }
   }
-
-  // parse() {
-  // idea:
-  // get the field
-  // get the comparator
-  // if there is no comparator, get the default comparator
-  // get the value
-  // execute the filter
-  //
-  // let params = {
-  // field: null,
-  // comparator: null,
-  // value: null,
-  // rawField: null,
-  // rawComparator: null,
-  // rawValue: null,
-  // }
-  // }
 
   parseQuery() {
     let params = {
@@ -137,7 +117,7 @@ class FilterQuery {
               return {
                 field: f,
                 comparator: c,
-                value: fMatches[3]?.trim(), // TODO alias: goes here
+                value: fMatches[3]?.trim(),
                 rawValue: fMatches[3]?.trim(),
                 rawField: fMatches[1],
                 rawComparator: cMatches[1],
@@ -180,7 +160,7 @@ class FilterQuery {
         const rawField = cMatches[1];
         const rawComparator = cMatches[2];
         const rawValue = cMatches[3];
-        const value = cMatches[3]; // TODO alias: goes here
+        const value = cMatches[3];
 
         return {
           field: null,
@@ -208,7 +188,7 @@ class FilterQuery {
   parseDefaultComparator() {
     let allMatches = [];
 
-    // default comparator check, e.g. power 6, matches red 5, pulls Yoda
+    // default comparator check, e.g. power 6, matches luke, pulls cantina
     allMatches = FIELDS.map(f => {
       const fieldRe = new RegExp(`^(${f.nameAndAliases().join('|')})\\s*(.+)`);
       const fMatches = this.query.match(fieldRe);
@@ -282,11 +262,12 @@ class FilterQuery {
   }
 
   execute(cards: Card[]) {
-    const alias = new AliasMap(cards, []);
-    const value = alias.resolve(this.value);
-    if (value) {
-      this.value = value;
-      this.filter.value = value;
+    const aliasResolver = new AliasResolver(cards);
+    const aliasResolvedValue = aliasResolver.resolve(this.value);
+
+    if (aliasResolvedValue) {
+      this.value = aliasResolvedValue;
+      this.filter.value = aliasResolvedValue;
     }
 
     if (!this.valid()) {

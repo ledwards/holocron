@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import {PureComponent} from 'react';
 import {Animated, Easing, Dimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -42,9 +42,6 @@ class CardListItem extends PureComponent {
         this.state.expanded &&
         this.state.showingBack) ||
       (!this.props.item.twoSided && this.state.expanded);
-
-    // TODO: native driver:
-    // https://stackoverflow.com/questions/63976219/style-property-width-is-not-supported-by-native-animated-module-need-advice-f
 
     this.props.scrollToIndex(this.props.index);
 
@@ -195,7 +192,7 @@ class CardListItem extends PureComponent {
                     ? 8
                     : 12,
                 }}>
-                {`${this.props.item.displaySet} • ${this.props.item.type} • ${this.props.item.rarity}`}
+                {`${this.props.item.displayExpansionSet} • ${this.props.item.type} • ${this.props.item.rarity}`}
               </ListItem.Subtitle>
             </ListItem.Content>
           </Animated.View>
