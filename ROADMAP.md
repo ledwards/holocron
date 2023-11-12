@@ -7,6 +7,19 @@ FEATURES
 * use OpenAI to ingest rules PDF and card data to create a TD chatbot or natural language chat query interface
 
 
+BUGS
+====
+* app sometimes stuck on first load? Log below:
+```LOG  Running "holo" with {"rootTag":1,"initialProps":{}}
+LOG  [SyntaxError: JSON Parse error: Unexpected end of input]
+WARN  Possible Unhandled Promise Rejection (id: 0):
+TypeError: Cannot read property 'map' of undefined
+TypeError: Cannot read property 'map' of undefined```
+
+* what happens when wifi down and app needs tries to download data?
+ - perhaps chekc if internet down, and then say it needs connection
+
+
 SPECIFIC BUGS
 =============
 these are specific bugs that should be solved by writing a simple failing test case
@@ -16,8 +29,7 @@ these are specific bugs that should be solved by writing a simple failing test c
 * cancels blaster pro => says NOT includes blaster pro
 * is clone / is a clone => is includes lone
 * type = character => type matches character BUT type eq character => type = character
-* Maul's Double Bladed Lightsaber displays wrong in the card list, ditto Executor, Finalizer, Flagship Executor
-* Search: Ap'lek returns nothing, but Aplek returns Ap'lek
+* Search: Luke's returns nothing, but Lukes does
 * Search: commas are broken
 
 
@@ -32,6 +44,9 @@ IMPROVEMENTS
 * in FilterQuery there is "sketchy" logic (search for that comment.) There should be real logic for this.
 
 * Field might want a true name vs display name that shows in the chip, e.g. "underlyingcardfor" vs "undercard for"
+
+* Sideways starships and weapons show a bit of the green or blue chrome in the list view
+
 
 REFACTORS
 =========
@@ -54,6 +69,7 @@ REFACTORS
  - would encapsulate the logic for loading the data from the json files
 
 * Rename FilterQuerySet to FilterQueryGroup
+
 
 ONE DAY
 =======
