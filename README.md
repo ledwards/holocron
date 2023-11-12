@@ -8,8 +8,11 @@ React Native iOS app for Star Wars CCG card browsing
 `npx react-native start --reset-cache`
 
 # Release
+* TODO: Try automating with https://stackoverflow.com/questions/2664885/xcode-build-and-archive-from-command-line
 * (Optional) try release build with: `npx react-native run-ios --mode Release`
-* manually change version number every place it appears
+* run `npm version patch|minor|major`
+* (may not be necessary, but if needed): `npx react-native-version --never-amend`
+* manually change the marketing version in `holo.xcproj` if desired
 * `open ios/holo.xcodeworkspace`
 * `Product -> Archive`
 * Select `Distribute App` and then `TestFlight Internal Only`
