@@ -28,8 +28,8 @@ class SearchableCardList extends Component {
     this.state = {
       loading: false,
       error: null,
-      allCards: [],
-      data: [],
+      allCards: [], // all cards, doesn't change
+      data: [], // currently filtered cards
       searchModeIndex: 0,
       query: '',
       filterQuerySet: new FilterQuerySet(''),
@@ -101,7 +101,7 @@ class SearchableCardList extends Component {
       console.log('rawField', filterQuery.rawField);
       console.log('validField: ', filterQuery.validField());
       console.log('comparator: ', filterQuery.comparator?.name);
-      console.log('rawComparator', filterQuery.rawComparator);
+      console.log('rawComparator: ', filterQuery.rawComparator);
       console.log('validComparator: ', filterQuery.validComparator());
       console.log('value: ', filterQuery.value);
       console.log('rawValue: ', filterQuery.rawValue);

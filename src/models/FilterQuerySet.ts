@@ -1,7 +1,6 @@
 import Card from './Card';
 import FilterQuery from './FilterQuery';
 
-// TODO: Rename to FilterQueryGroup
 class FilterQuerySet {
   query: string;
   filterQueries: FilterQuery[];
@@ -13,7 +12,9 @@ class FilterQuerySet {
 
   parseQuery() {
     const subQueries = this.query.toLowerCase().split('and');
-    return (subQueries.length < 1 && subQueries[0] === '') ? [new FilterQuery('')] : subQueries.map(sq => new FilterQuery(sq));
+    return subQueries.length < 1 && subQueries[0] === ''
+      ? [new FilterQuery('')]
+      : subQueries.map(sq => new FilterQuery(sq));
   }
 
   valid() {
@@ -35,7 +36,9 @@ class FilterQuerySet {
 
     const results = this.filterQueries.map(fq => fq.execute(cards));
 
-    return results.reduce((result, currentArray) => result.filter(obj => currentArray.some(item => item.id === obj.id)));
+    return results.reduce((result, currentArray) =>
+      result.filter(obj => currentArray.some(item => item.id === obj.id)),
+    );
   }
 }
 

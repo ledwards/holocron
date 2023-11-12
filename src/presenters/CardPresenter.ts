@@ -1,5 +1,4 @@
 import Card from '../models/Card';
-import ExpansionSet from '../models/ExpansionSet';
 
 class CardPresenter {
   id: string;
@@ -10,18 +9,15 @@ class CardPresenter {
   imageUrl: string;
   backImageUrl: string;
   rarity: string;
-  // set: string; // TODO sets: come back!
   uniqueness: string;
   sortTitle: string;
-
-  expansionSet: ExpansionSet;
 
   displayTitle: string;
   displayType: string;
   displaySubtype: string;
   displayImageUrl: string;
   displayBackImageUrl: string;
-  displaySet: string;
+  displayExpansionSet: string;
 
   offsetY: number;
   offsetHeight: number;
@@ -36,15 +32,21 @@ class CardPresenter {
     this.id = card.id;
     this.title = card.title;
     this.type = card.type;
-    this.subtype = card.subType;
+    this.subtype = card.subtype;
     this.side = card.side;
     this.imageUrl = card.imageUrl;
     this.backImageUrl = card.backImageUrl;
     this.rarity = card.rarity;
-    // this.expansionSet = (ExpansionSets as any)[object.set]; // TODO sets: populate this somehow
     this.side = card.side;
-    this.subtype = card.subType;
     this.uniqueness = card.uniqueness;
+
+    this.displayExpansionSet = card.expansionSet.name
+      .replace('Reflections 2', 'Reflections II')
+      .replace('Reflections 3', 'Reflections III')
+      .replace('Two Player', '2-Player')
+      .replace('mpire ', '') // lol
+      .replace('rikes ', '')
+      .replace('ack ', '');
 
     this.sortTitle = this.title.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase();
 
@@ -80,12 +82,11 @@ class CardPresenter {
     )
       ? this.imageUrl
       : this.backImageUrl;
-    // this.displaySet = ExpansionSets[object.set];
-    this.displaySet = 'Need to make this load from sets.json somehow';
 
     this.sideways =
       this.subtype == 'Site' ||
       ['906', '953', '1656', '5106'].includes(this.id);
+
     this.combo =
       this.title.includes(' & ') &&
       (this.type == 'Interrupt' || this.type == 'Effect') &&
@@ -118,23 +119,6 @@ class CardPresenter {
       this.offsetHeight = 0;
     }
   }
-
-  // get(attributeName: string) {
-  //   return (this as any)[attributeName];
-  // }
-
-  // getSanitized(attributeName: string) {
-  //   // TODO: make sanitize fn
-  //   // make a functions dir for this and aliases
-  //   // use this every place i do the dumb regex
-  //   const val = this.get(attributeName);
-  //   return typeof val == 'string'
-  //     ? val
-  //         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
-  //         .toLowerCase()
-  //         .trim()
-  //     : val;
-  // }
 }
 
 export default CardPresenter;

@@ -1,0 +1,90 @@
+[
+  {
+    "id": "1",
+    "name": "Premiere",
+    "gempName": "Premiere",
+    "abbr": "P",
+    "legacy": false,
+    "cycle_code": "full",
+    "date_release": "1995-12-01",
+    "position": 1,
+    "size": 324
+  },
+  {
+    "id": "105",
+    "name": "First Anthology",
+    "gempName": "1st Anthology",
+    "abbr": "1A",
+    "legacy": false,
+    "cycle_code": "full",
+    "date_release": "1997-05-01",
+    "position": 105,
+    "size": -99
+  },
+  {
+    "id": "7",
+    "name": "Special Edition",
+    "gempName": "Special Edition",
+    "abbr": "SE",
+    "legacy": false,
+    "cycle_code": "full",
+    "date_release": "1998-11-01",
+    "position": 7,
+    "size": 324
+  },
+  {
+    "id": "108",
+    "name": "Enhanced Premiere",
+    "gempName": "Enhanced Premiere Pack",
+    "abbr": "EPP",
+    "legacy": false,
+    "cycle_code": "premium",
+    "date_release": "1998-11-01",
+    "position": 108,
+    "size": 6
+  },
+  {
+    "id": "201",
+    "name": "Virtual Set 1",
+    "gempName": "Set 1",
+    "abbr": "V1",
+    "legacy": false,
+    "cycle_code": "full",
+    "date_release": "2015-03-27",
+    "position": 201,
+    "size": 47
+  },
+  {
+    "id": "501",
+    "name": "Playtesting",
+    "gempName": "Playtesting",
+    "abbr": "PT",
+    "legacy": false,
+    "cycle_code": "full",
+    "date_release": "0000-00-00",
+    "position": 501,
+    "size": -99
+  },
+  {
+    "id": "200d",
+    "name": "Virtual Defensive Shields",
+    "gempName": "Set D",
+    "abbr": "VDS",
+    "legacy": false,
+    "cycle_code": "shields",
+    "date_release": "2014-09-24",
+    "position": 200,
+    "size": 17
+  },
+  {
+    "id": "1001",
+    "name": "Virtual Block 1",
+    "gempName": "Block 1",
+    "abbr": "VB1",
+    "legacy": true,
+    "cycle_code": "full",
+    "date_release": "0000-00-00",
+    "position": 1001,
+    "size": -99
+  }
+]

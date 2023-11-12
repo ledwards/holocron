@@ -1,26 +1,17 @@
 {
   "cards": [
     {
-      "abbr": [
-        "Farmboy Luke"
-      ],
+      "abbr": ["Farmboy Luke"],
       "front": {
         "ability": "4",
-        "characteristics": [
-          "Rebel"
-        ],
+        "characteristics": ["Rebel"],
         "deploy": "3",
         "destiny": "1",
         "errataSymbol": "E1",
-        "extraText": [
-          "Force-Sensitive"
-        ],
+        "extraText": ["Force-Sensitive"],
         "forfeit": "7",
         "gametext": "While Luke is not on Tatooine your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Red 5, also adds 2 to maneuver. Immune to attrition < 3.",
-        "icons": [
-          "Pilot",
-          "Warrior"
-        ],
+        "icons": ["Pilot", "Warrior"],
         "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/lukeskywalker.gif",
         "lore": "Son of Anakin Skywalker. Student of Obi-Wan Kenobi. Honed piloting skills while bullseyeing womp rats in Beggar's Canyon aboard T-16 skyhopper.",
         "power": "3",
@@ -48,19 +39,14 @@
       ],
       "printings": [
         {
-          "set": "1"
+          "set": "7"
         }
       ],
-      "pulledBy": [
-        "Camie",
-        "Luke's Back"
-      ],
+      "pulledBy": ["Camie", "Luke's Back"],
       "rarity": "R1",
-      "set": "1",
+      "set": "7",
       "side": "Light",
-      "underlyingCardFor": [
-        "Luke Skywalker (V)"
-      ]
+      "underlyingCardFor": ["Luke Skywalker (V)"]
     }
   ]
 }

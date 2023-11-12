@@ -1,12 +1,6 @@
 import Card from '../models/Card';
 import Comparator from '../models/Comparator';
 
-// TODO: type checking
-// TODO: enums?
-// TODO: contains any of (eg multiple words in a lore/gametext)
-// TODO: remove commas
-// TODO: the replaceAlls should refactor into a function
-
 const EQ_COMPARATOR = new Comparator(
   '=',
   (card: Card, attribute: string, value: string) =>

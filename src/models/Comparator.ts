@@ -1,6 +1,5 @@
 import Card from './Card';
 import Field from './Field';
-// import alias from '../constants/aliases'; // value aliases, e.g. SOS
 
 class Comparator {
   name: string;
@@ -21,7 +20,7 @@ class Comparator {
     let val = false;
 
     try {
-      val = this.fn(card, field?.name, value); // TODO alias: add alias back in later
+      val = this.fn(card, field?.name, value);
     } catch (e) {
       console.log(e);
       // This can happen with a type mismatch... ugly way to fix it I guess
