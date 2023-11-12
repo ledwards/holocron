@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!my-library-dir)/'",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
-    "postinstall": "npm run bundle:ios"
+    "postinstall": "npm run bundle:ios",
+    "postversion": "react-native-version --never-amend"
   },
   "dependencies": {
     "react": "18.2.0",
