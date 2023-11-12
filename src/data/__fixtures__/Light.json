@@ -1,7 +1,7 @@
 {
   "cards": [
     {
-      "abbr": ["Farmboy Luke"],
+      "abbr": ["Farmboy Scott"],
       "front": {
         "ability": "4",
         "characteristics": ["Rebel"],
@@ -10,13 +10,13 @@
         "errataSymbol": "E1",
         "extraText": ["Force-Sensitive"],
         "forfeit": "7",
-        "gametext": "While Luke is not on Tatooine your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Red 5, also adds 2 to maneuver. Immune to attrition < 3.",
+        "gametext": "While Scott is not on Tatooine your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Purple 5, also adds 2 to maneuver. Immune to attrition < 3.",
         "icons": ["Pilot", "Warrior"],
-        "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/lukeskywalker.gif",
-        "lore": "Son of Anakin Skywalker. Student of Obi-Wan Kenobi. Honed piloting skills while bullseyeing womp rats in Beggar's Canyon aboard T-16 skyhopper.",
+        "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/ScottLingrell.gif",
+        "lore": "Son of Annie Lingrell. Student of Decipher. Honed piloting skills while bullseyeing swamp rats in Beggar's Cave aboard T-69 skyhopper.",
         "power": "3",
         "subType": "Rebel",
-        "title": "•Luke Skywalker",
+        "title": "•Scott Lingrell",
         "type": "Character",
         "uniqueness": "*"
       },
@@ -24,29 +24,29 @@
       "id": 1593,
       "legacy": false,
       "matching": [
-        "Artoo-Detoo In Red 5",
-        "Red 5",
-        "Luke's T-16 Skyhopper",
-        "Rogue 1"
+        "Arsix-Denine In Purple 5",
+        "Purple 5",
+        "Scott's T-69 Skyhopper",
+        "Silverfox 1"
       ],
       "matchingWeapon": [
-        "Anakin's Lightsaber",
-        "Luke's Blaster Pistol",
-        "Luke's Blaster Pistol (V)",
-        "Luke's Hunting Rifle",
-        "Luke's Hunting Rifle (V)",
-        "Luke's Lightsaber"
+        "Annie's Laser Sword",
+        "Scott's Laser Pistol",
+        "Scott's Laser Pistol (V)",
+        "Scott's Hunting Rifle",
+        "Scott's Hunting Rifle (V)",
+        "Scott's Laser Sword"
       ],
       "printings": [
         {
           "set": "7"
         }
       ],
-      "pulledBy": ["Camie", "Luke's Back"],
+      "pulledBy": ["Kim Caton", "Scott's Back"],
       "rarity": "R1",
       "set": "7",
       "side": "Light",
-      "underlyingCardFor": ["Luke Skywalker (V)"]
+      "underlyingCardFor": ["Scott Lingrell (V)"]
     }
   ]
 }

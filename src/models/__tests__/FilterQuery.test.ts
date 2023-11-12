@@ -2,13 +2,10 @@ import FilterQuery from '../FilterQuery';
 import Card from '../Card';
 import ExpansionSet from '../ExpansionSet';
 
-// TODO: change fixtures to use fake cards
-
 // import fixtures
 import darkCards from '../../data/__fixtures__/Dark.json';
 import lightCards from '../../data/__fixtures__/Light.json';
 import expansionSets from '../../data/__fixtures__/sets.json';
-
 const allCards = [...darkCards.cards, ...lightCards.cards]
   .map(
     c =>
@@ -24,81 +21,81 @@ const allCards = [...darkCards.cards, ...lightCards.cards]
   );
 
 describe('FilterQuery: basic (three part) queries', () => {
-  it('matches query: title = Darth Vader', () => {
-    const query = 'title = Darth Vader';
+  it('matches query: title = Hayes Hunter', () => {
+    const query = 'title = Hayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('does not match card that is not there: title = Pikachu', () => {
-    const query = 'title = Pikachu';
+  it('does not match card that is not there: title = Black Lotus', () => {
+    const query = 'title = Black Lotus';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
     expect(cards).toEqual([]);
   });
 
-  it('matches query (alias comparator): title == Darth Vader', () => {
-    const query = 'title == Darth Vader';
+  it('matches query (alias comparator): title == Hayes Hunter', () => {
+    const query = 'title == Hayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (alias comparator): title eq Darth Vader', () => {
-    const query = 'title eq Darth Vader';
+  it('matches query (alias comparator): title eq Hayes Hunter', () => {
+    const query = 'title eq Hayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (no spaces): title=Darth Vader', () => {
-    const query = 'title=Darth Vader';
+  it('matches query (no spaces): title=Hayes Hunter', () => {
+    const query = 'title=Hayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (alias, no spaces): titleeqDarth Vader', () => {
-    const query = 'titleeqDarth Vader';
+  it('matches query (alias, no spaces): titleeqHayes Hunter', () => {
+    const query = 'titleeqHayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (alias field): t=Darth Vader', () => {
-    const query = 't=Darth Vader';
+  it('matches query (alias field): t=Hayes Hunter', () => {
+    const query = 't=Hayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (alias field, alias comparator): t eq Darth Vader', () => {
-    const query = 'teqDarth Vader';
+  it('matches query (alias field, alias comparator): t eq Hayes Hunter', () => {
+    const query = 'teqHayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
-  it('matches query (alias field, alias comparator, alias value): t eq Math Vader', () => {
-    const query = 'teqDarth Vader';
+  it('matches query (alias field, alias comparator, alias value): t eq Math Hunter', () => {
+    const query = 'teqHayes Hunter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query: power = 6', () => {
     const query = 'power = 6';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query: ability > 4', () => {
     const query = 'ability > 4';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // BUG: MATCHES < and not <=
@@ -106,14 +103,14 @@ describe('FilterQuery: basic (three part) queries', () => {
   // const query = 'ability <= 6'
   // const filterQuery = new FilterQuery(query);
   // const cards = filterQuery.execute(allCards).map(h => h.title);
-  // expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+  // expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   // });
 
   it('matches query: pwr=6', () => {
     const query = 'pwr=6';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // BUG: It returns all cards?
@@ -121,7 +118,7 @@ describe('FilterQuery: basic (three part) queries', () => {
   // const query = 'pwr!=6'
   // const filterQuery = new FilterQuery(query);
   // const cards = filterQuery.execute(allCards).map(h => h.title);
-  // expect(cards).toEqual(['•Luke Skywalker']);
+  // expect(cards).toEqual(['•Scott Lingrell']);
   // });
 });
 
@@ -130,7 +127,7 @@ describe('FilterQuery: default comparator queries', () => {
     const query = 'pwr6';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 });
 
@@ -139,21 +136,21 @@ describe('FilterQuery: string comparator queries', () => {
     const query = 'lore contains best starpilot';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query (lore includes): best starpilot', () => {
     const query = 'lore includes best starpilot';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query (lore contains, aliases): best starpilot', () => {
     const query = 'lcbest starpilot';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query (lore equals): not the whole lore', () => {
@@ -163,32 +160,32 @@ describe('FilterQuery: string comparator queries', () => {
     expect(cards).toEqual([]);
   });
 
-  it('matches query (extratext includes, alias): dark jedi', () => {
-    const query = 'extratext c dark jedi';
+  it('matches query (extratext includes, alias): derek jeter', () => {
+    const query = 'extratext c derek jeter';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query (type equals): character', () => {
     const query = 'type equals character';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+    expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   });
 
   it('matches query (set equals): premiere', () => {
     const query = 'set eq premiere';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   it('matches query with value alias (set equals): P', () => {
     const query = 'set eq p';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 });
 
@@ -197,7 +194,7 @@ describe('FilterQuery: list comparator queries', () => {
     const query = 'icons contains pilot';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+    expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   });
 
   // BUG: This converts to NOT INCLUDES instead of INLCUDES and fails
@@ -205,7 +202,7 @@ describe('FilterQuery: list comparator queries', () => {
   //   const query = 'icons includes pilot'
   //   const filterQuery = new FilterQuery(query);
   //   const cards = filterQuery.execute(allCards).map(h => h.title);
-  //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+  //   expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   // });
 
   // TODO: Need a character that is a leader or has a characteristic
@@ -213,7 +210,7 @@ describe('FilterQuery: list comparator queries', () => {
   //   const query = 'characteristics c leader'
   //   const filterQuery = new FilterQuery(query);
   //   const cards = filterQuery.execute(allCards).map(h => h.title);
-  //   expect(cards).toEqual(['•Darth Vader']);
+  //   expect(cards).toEqual(['•Hayes Hunter']);
   // });
 });
 
@@ -227,68 +224,68 @@ describe('FilterQuery: two-part queries', () => {
   //   expect(cards).toEqual(['•Blaster Proficiency']);
   // });
 
-  it('matches query (pulledby c): Blizzard 4', () => {
-    const query = 'pulledby c Blizzard 4';
+  it('matches query (pulledby c): Frozen 4', () => {
+    const query = 'pulledby c Frozen 4';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // BUG: this was probably broken by me fixing pwr3
-  // it('matches query (pulledby): Blizzard 4', () => {
-  // const query = 'pulledby Blizzard 4'
+  // it('matches query (pulledby): Frozen 4', () => {
+  // const query = 'pulledby Frozen 4'
   // const filterQuery = new FilterQuery(query);
   // const cards = filterQuery.execute(allCards).map(h => h.title);
-  // expect(cards).toEqual(['•Darth Vader']);
+  // expect(cards).toEqual(['•Hayes Hunter']);
   // });
 
-  it('matches query (matching): Red 5', () => {
-    const query = 'matching Red 5';
+  it('matches query (matching): Purple 5', () => {
+    const query = 'matching Purple 5';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Luke Skywalker']);
+    expect(cards).toEqual(['•Scott Lingrell']);
   });
 
-  it('matches query (matchingweapon): lightsaber', () => {
-    const query = 'matchingweapon lightsaber';
+  it('matches query (matchingweapon): laser sword', () => {
+    const query = 'matchingweapon laser sword';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+    expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   });
 
   // BUG: This fails in the UI for some reason
-  it("matches query (matchingweapon): vader's lightsaber", () => {
-    const query = "matchingweapon vader's lightsaber";
+  it("matches query (matchingweapon): Hunter's laser sword", () => {
+    const query = "matchingweapon Hunter's laser sword";
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // BUG: This should match anyway but doesn't
-  // it('matches query (matchingweapon): vaders lightsaber', () => {
-  //   const query = 'matchingweapon vaders lightsaber'
+  // it('matches query (matchingweapon): Hunters laser sword', () => {
+  //   const query = 'matchingweapon Hunters laser sword'
   //   const filterQuery = new FilterQuery(query);
   //   const cards = filterQuery.execute(allCards).map(h => h.title);
-  //   expect(cards).toEqual(['•Darth Vader']);
+  //   expect(cards).toEqual(['•Hayes Hunter']);
   // });
 
-  it('matches query (underlyingcard for, alias): darth vader (v)', () => {
-    const query = 'ucf darth vader (v)';
+  it('matches query (underlyingcard for, alias): Hayes Hunter (v)', () => {
+    const query = 'ucf Hayes Hunter (v)';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // TODO: pulls, cancels, canceledby
 });
 
 describe('FilterQuery: identity aka "is"', () => {
-  // DATA BUG: Darth Vader should be an Imperial! Corrected in my fixture only
+  // DATA BUG: Hayes Hunter should be an Imperial! Corrected in my fixture only
   it('matches query (is c): imperial', () => {
     const query = 'is c imperial';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Darth Vader']);
+    expect(cards).toEqual(['•Hayes Hunter']);
   });
 
   // BUG: this was probably broken by me fixing pwr3
@@ -296,7 +293,7 @@ describe('FilterQuery: identity aka "is"', () => {
   // const query = 'is imperial'
   // const filterQuery = new FilterQuery(query);
   // const cards = filterQuery.execute(allCards).map(h => h.title);
-  // expect(cards).toEqual(['•Darth Vader']);
+  // expect(cards).toEqual(['•Hayes Hunter']);
   // });
 
   // BUG: this was probably broken by me fixing pwr3
@@ -304,7 +301,7 @@ describe('FilterQuery: identity aka "is"', () => {
   // const query = 'is an imperial'
   // const filterQuery = new FilterQuery(query);
   // const cards = filterQuery.execute(allCards).map(h => h.title);
-  // expect(cards).toEqual(['•Darth Vader']);
+  // expect(cards).toEqual(['•Hayes Hunter']);
   // });
 
   // BUG: this was probably broken by me fixing pwr3
@@ -313,14 +310,14 @@ describe('FilterQuery: identity aka "is"', () => {
   //   const query = 'is pilot'
   //   const filterQuery = new FilterQuery(query);
   //   const cards = filterQuery.execute(allCards).map(h => h.title);
-  //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+  //   expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   // });
 
   // it('matches query (is): character', () => {
   //   const query = 'is character'
   //   const filterQuery = new FilterQuery(query);
   //   const cards = filterQuery.execute(allCards).map(h => h.title);
-  //   expect(cards).toEqual(['•Darth Vader', '•Luke Skywalker']);
+  //   expect(cards).toEqual(['•Hayes Hunter', '•Scott Lingrell']);
   // });
 });
 
