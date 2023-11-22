@@ -1,6 +1,6 @@
 FEATURES
 ========
-* Put entire up under tab bar menu
+* Put entire app under tab bar menu
 * Scrape public decklists
 * Add login screen for gemp
 * Browse your own decks
@@ -53,6 +53,8 @@ FUNCTIONALITY IMPROVEMENTS
 UX IMPROVEMENTS
 ===============
 * tapping anywhere on screen should hide keyboard
+* tap a site rotates it 180 degrees
+* tab bar should be dark mode with light icons
 
 
 REFACTORS
@@ -76,6 +78,14 @@ REFACTORS
  - would encapsulate the logic for loading the data from the json files
 
 * Rename FilterQuerySet to FilterQueryGroup
+
+
+OTHER TABS
+==========
+* Decklists
+* Forums
+* Slack/Discord?
+* Change About to "Settings"
 
 
 ONE DAY
