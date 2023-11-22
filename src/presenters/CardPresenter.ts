@@ -57,10 +57,10 @@ class CardPresenter {
     this.displayTitle = this.title
       .replaceAll('<>', '◇')
       .replace('(Premiere)', '')
-      .replace(/(Death .* II)/, '')
-      .replace(/(J.* Palace Sealed Deck)/, '')
-      .replace(/(T.*ine)/, '')
-      .replace(/(Cor.*t)/, '');
+      .replace(/\(Death .* II\)/, '')
+      .replace(/\(J.* Palace Sealed Deck\)/, '')
+      .replace(/\(T.*ine\)/, '')
+      .replace(/\(Cor.*t\)/, '');
 
     if (
       this.displayTitle.split(' / ')[0] == this.displayTitle.split(' / ')[1]
