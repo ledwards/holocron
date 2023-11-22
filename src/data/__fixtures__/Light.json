@@ -10,7 +10,7 @@
         "errataSymbol": "E1",
         "extraText": ["Force-Sensitive"],
         "forfeit": "7",
-        "gametext": "While Scott is not on Tatooine your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Purple 5, also adds 2 to maneuver. Immune to attrition < 3.",
+        "gametext": "While Scott is not on Mars your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Purple 5, also adds 2 to maneuver. Immune to attrition < 3.",
         "icons": ["Pilot", "Warrior"],
         "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/ScottLingrell.gif",
         "lore": "Son of Annie Lingrell. Student of Decipher. Honed piloting skills while bullseyeing swamp rats in Beggar's Cave aboard T-69 skyhopper.",
