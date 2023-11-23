@@ -7,10 +7,12 @@ APP STUFF
 FEATURES
 ========
 * Put entire app under tab bar menu
-* Scrape public decklists
+* Decklists
 * Add login screen for gemp
 * Browse your own decks
 * use OpenAI to ingest rules PDF and card data to create a TD chatbot or natural language chat query interface
+* Links to Forums, Slack, Discord?
+* Change About to "Settings"
 
 
 GENERAL BUGS
@@ -52,9 +54,7 @@ UX IMPROVEMENTS
 REFACTORS
 =========
 * Use Typescript properly in every file...
-* colors constants file - almost every view has this
 * stylesheets - conditional logic with styles should use classes and a stylesheet
-
 * Value class
  - should contain alias resolver logic
  - values can actually be a set of values, e.g. `gt c numbers` is actually gametext contains either of the two "numbers" cards
@@ -62,21 +62,11 @@ REFACTORS
  - this could also allow for "or" logic e.g. `gt c cantina or night club`
  - enums?
  - type checking of sorts? (value is invalid if it doesn't work as a type, like power = bob)
-
 * Repo classes
  - for Card and maybe ExpansionSet
  - would encapsulate search logic, for various search kinds like case insensitive, etc.
  - would encapsulate the logic for loading the data from the json files
-
 * Rename FilterQuerySet to FilterQueryGroup
-
-
-OTHER TABS
-==========
-* Decklists
-* Forums
-* Slack/Discord?
-* Change About to "Settings"
 
 
 ONE DAY
