@@ -5,6 +5,8 @@
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView, Text} from 'react-native';
 import SearchableCardList from './src/components/SearchableCardList';
+import NetInfo from '@react-native-community/netinfo';
+
 import downloadCardDefinitions from './src/lib/DownloadCardDefinitions';
 import downloadExpansionSets from './src/lib/DownloadExpansionSets';
 import loadCardDefinitions from './src/lib/LoadCardDefinitions';
@@ -15,15 +17,31 @@ const App = () => {
   const [isSetsDownloadReady, setIsSetsDownloadReady] = useState(false);
   const [allCards, setAllCards] = useState([]);
   const [expansionSets, setExpansionSets] = useState([]);
+  const [internetConnection, setInternetConnection] = useState(false);
 
   useEffect(() => {
-    downloadCardDefinitions().then(() => {
-      setIsCardDownloadReady(true);
+    NetInfo.fetch().then(state => {
+      setInternetConnection(state.isConnected);
     });
-    downloadExpansionSets().then(() => {
-      setIsSetsDownloadReady(true);
+
+    NetInfo.addEventListener(state => {
+      setInternetConnection(state.isConnected);
     });
   }, []);
+
+  useEffect(() => {
+    if (!isCardDownloadReady && internetConnection) {
+      downloadCardDefinitions().then(() => {
+        setIsCardDownloadReady(true);
+      });
+    }
+
+    if (!isSetsDownloadReady && internetConnection) {
+      downloadExpansionSets().then(() => {
+        setIsSetsDownloadReady(true);
+      });
+    }
+  }, [internetConnection]);
 
   useEffect(() => {
     if (isCardDownloadReady && isSetsDownloadReady) {
@@ -48,7 +66,11 @@ const App = () => {
       {allCards && allCards.length > 0 ? (
         <SearchableCardList cards={allCards} />
       ) : (
-        <Text style={{textAlign: 'center'}}>Loading...</Text>
+        <Text style={{textAlign: 'center'}}>
+          {internetConnection
+            ? 'Loading...'
+            : 'Waiting for Internet connection...'}
+        </Text>
       )}
     </SafeAreaView>
   );
