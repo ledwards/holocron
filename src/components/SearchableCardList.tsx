@@ -13,13 +13,7 @@ import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 import FilterQuery from '../models/FilterQuery';
 
-const lightColor = 'rgba(219, 227, 232, 1.0)';
-const darkColor = 'rgba(43, 47, 51, 1.0)';
-const grayColor = 'rgba(58, 62, 66, 1.0)';
-const blackColor = 'rgba(0, 0, 0, 1.0)';
-const translucentBlackColor = 'rgba(0, 0, 0, 0.1)';
-const whiteColor = 'rgba(255, 255, 255, 1.0)';
-const terminalGreen = 'rgba(74, 246, 38, 1.0)';
+import colors from '../constants/colors';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -65,7 +59,7 @@ class SearchableCardList extends Component {
   }
 
   renderSeparator = () => {
-    return <View style={{height: 2, backgroundColor: blackColor}} />;
+    return <View style={{height: 2, backgroundColor: colors.black}} />;
   };
 
   searchRouter = (text: string) => {
@@ -162,7 +156,7 @@ class SearchableCardList extends Component {
           borderBottomColor:
             this.state.query === null || this.state.query == ''
               ? 'transparent'
-              : blackColor,
+              : colors.black,
           borderBottomWidth: 2,
         }}>
         <SearchBar
@@ -176,7 +170,7 @@ class SearchableCardList extends Component {
             <Icon
               name={this.currentSearchMode().icon}
               type="ionicon"
-              color={lightColor}
+              color={colors.light}
               onPress={() => {
                 this.setState({query: null});
                 this.searchRouter('');
@@ -274,8 +268,8 @@ class SearchableCardList extends Component {
                   fontSize: 14,
                   color:
                     this.state.filterQuerySet.length() > 1
-                      ? grayColor
-                      : whiteColor,
+                      ? colors.gray
+                      : colors.white,
                   alignSelf: 'center',
                   marginLeft: 'auto',
                 }}>
@@ -293,7 +287,7 @@ class SearchableCardList extends Component {
           <Text
             style={{
               fontSize: 14,
-              color: whiteColor,
+              color: colors.white,
               alignSelf: 'center',
               margin: 5,
             }}>
@@ -314,7 +308,8 @@ class SearchableCardList extends Component {
     }
 
     return (
-      <View style={{flex: 1, overflow: 'hidden', backgroundColor: blackColor}}>
+      <View
+        style={{flex: 1, overflow: 'hidden', backgroundColor: colors.black}}>
         {this.renderHeader()}
         {(this.state.query && (
           <Animated.FlatList
@@ -355,21 +350,21 @@ class SearchableCardList extends Component {
                 width: '100%',
                 marginTop: 0,
               }}>
-              <Text style={{color: 'white'}}>Tap the</Text>
+              <Text style={{color: colors.white}}>Tap the</Text>
               <Icon
                 name={this.currentSearchMode().icon}
                 type="ionicon"
-                color="white"
+                color={colors.white}
                 size={16}
                 style={{marginLeft: 5, marginRight: 5}}
               />
-              <Text style={{color: 'white'}}>
+              <Text style={{color: colors.white}}>
                 icon to switch between search modes. {'\n\n\n'}
               </Text>
             </View>
             <Text
               style={{
-                color: 'white',
+                color: colors.white,
                 padding: 18,
                 textAlign: 'center',
                 marginBottom: 40,
@@ -385,7 +380,7 @@ class SearchableCardList extends Component {
 
 const styles = StyleSheet.create({
   chipButton: {
-    borderColor: 'red',
+    borderColor: colors.red,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 4,
@@ -394,7 +389,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   chipButtonWithMatch: {
-    borderColor: terminalGreen,
+    borderColor: colors.terminalGreen,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 4,
@@ -406,11 +401,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   chipTitle: {
-    color: 'red',
+    color: colors.red,
     fontSize: 14,
   },
   chipTitleWithMatch: {
-    color: terminalGreen,
+    color: colors.terminalGreen,
     fontSize: 14,
   },
 });
