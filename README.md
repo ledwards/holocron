@@ -8,11 +8,19 @@ React Native iOS app for Star Wars CCG card browsing
 `npx react-native start --reset-cache`
 
 # Release
-* TODO: Try automating with https://stackoverflow.com/questions/2664885/xcode-build-and-archive-from-command-line
+* `npm i && cd ios && pod install && cd ..`
 * (Optional) try release build with: `npx react-native run-ios --mode Release`
 * run `npm version patch|minor|major`
-* (may not be necessary, but if needed): `npx react-native-version --never-amend`
-* manually change the marketing version in `holo.xcproj` if desired
+* (Optional): `npx react-native-version --never-amend`
+* (Optional) manually change the marketing version in `ios/holo.xcodeproj`
+
+## (Option 1) CLI
+* `xcodebuild clean -workspace ios/holo.xcworkspace -scheme holo`
+* `xcodebuild archive -workspace ios/holo.xcworkspace -scheme holo -archivePath ios/build/holo.xcarchive`
+* `xcodebuild -exportArchive -archivePath ios/build/holo.xcarchive -exportPath ios/build/ipa -exportOptionsPlist exportOptions.plist`
+* `xcrun altool --upload-app -f ios/build/holo.ipa/holo.ipa -u <APPLE_USERNAME> -p <APPLE_ONE_TIME_PASSWORD> --type ios`
+
+## (Option 2) UI
 * `open ios/holo.xcodeworkspace`
 * `Product -> Archive`
 * Select `Distribute App` and then `TestFlight Internal Only`
