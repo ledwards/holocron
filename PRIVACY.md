@@ -6,6 +6,9 @@ This Privacy Policy describes Our policies and procedures on the collection, use
 
 We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the [Privacy Policy Generator](https://www.termsfeed.com/privacy-policy-generator/).
 
+[Read live version of this document](https://www.termsfeed.com/live/b3d05936-1443-4098-b897-f0b4af6099c8)
+
+
 ## Interpretation and Definitions
 
 ### Interpretation
@@ -201,5 +204,3 @@ If you have any questions about this Privacy Policy, You can contact us:
 
 
 - By email: lee@ledwards.com
-
-[https://www.termsfeed.com/live/b3d05936-1443-4098-b897-f0b4af6099c8](Live Document)
