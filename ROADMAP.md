@@ -1,3 +1,9 @@
+APP STUFF
+=======
+* Rename project/app
+* New icon?
+
+
 FEATURES
 ========
 * Put entire app under tab bar menu
@@ -10,6 +16,7 @@ FEATURES
 GENERAL BUGS
 ====
 *
+
 
 SEARCH BUGS
 =============
