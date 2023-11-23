@@ -7,20 +7,20 @@ FEATURES
 * use OpenAI to ingest rules PDF and card data to create a TD chatbot or natural language chat query interface
 
 
-BUGS
+GENERAL BUGS
 ====
-* app sometimes stuck on first load? Log below:
+* app sometimes stuck on first load, likely does something before files downloaded. Log below:
 ```LOG  Running "holo" with {"rootTag":1,"initialProps":{}}
 LOG  [SyntaxError: JSON Parse error: Unexpected end of input]
 WARN  Possible Unhandled Promise Rejection (id: 0):
 TypeError: Cannot read property 'map' of undefined
 TypeError: Cannot read property 'map' of undefined```
 
-* what happens when wifi down and app needs tries to download data?
- - perhaps chekc if internet down, and then say it needs connection
+what happens when wifi down and app needs tries to download data?
+ - perhaps check if internet down, and then say it needs connection
 
 
-SPECIFIC BUGS
+SEARCH BUGS
 =============
 these are specific bugs that should be solved by writing a simple failing test case
 * title = search destroy => uses match instead of =
