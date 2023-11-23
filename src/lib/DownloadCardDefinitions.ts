@@ -4,14 +4,19 @@ const remoteCardFilePath =
 const localCardFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
 const downloadCardFiles = () => {
-  const promises = ['Dark', 'Light'].map(side => {
-    ReactNativeBlobUtil.config({
+  const promises = ['Dark', 'Light'].map(async side => {
+    await ReactNativeBlobUtil.config({
       fileCache: true,
       path: `${localCardFilePath}/${side}.json`,
-    }).fetch('GET', `${remoteCardFilePath}/${side}.json`, {});
+    })
+      .fetch('GET', `${remoteCardFilePath}/${side}.json`, {})
+      .catch(err => {
+        console.log(err);
+        return new Promise((resolve, reject) => reject(err));
+      });
   });
 
-  return Promise.all(promises);
+  return Promise.allSettled(promises);
 };
 
 export default downloadCardFiles;

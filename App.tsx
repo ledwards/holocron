@@ -5,12 +5,10 @@
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView, Text} from 'react-native';
 import SearchableCardList from './src/components/SearchableCardList';
-// TODO: Test what happens when downloading files but offline
 import downloadCardDefinitions from './src/lib/DownloadCardDefinitions';
 import downloadExpansionSets from './src/lib/DownloadExpansionSets';
 import loadCardDefinitions from './src/lib/LoadCardDefinitions';
 import loadExpansionSets from './src/lib/LoadExpansionSets';
-import ExpansionSet from './src/models/ExpansionSet';
 
 const App = () => {
   const [isCardDownloadReady, setIsCardDownloadReady] = useState(false);
@@ -38,6 +36,9 @@ const App = () => {
           loadCardDefinitions(expansionSets).then(cards => {
             setAllCards(cards);
           });
+        })
+        .catch(error => {
+          console.log(error);
         });
     }
   }, [isCardDownloadReady, isSetsDownloadReady]);
@@ -47,7 +48,7 @@ const App = () => {
       {allCards && allCards.length > 0 ? (
         <SearchableCardList cards={allCards} />
       ) : (
-        <Text>Loading...</Text>
+        <Text style={{textAlign: 'center'}}>Loading...</Text>
       )}
     </SafeAreaView>
   );
