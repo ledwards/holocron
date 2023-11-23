@@ -7,7 +7,12 @@ const downloadExpansionSets = () => {
   const promise = ReactNativeBlobUtil.config({
     fileCache: true,
     path: `${localExpansionSetsFilePath}/sets.json`,
-  }).fetch('GET', `${remoteExpansionSetsFilePath}/sets.json`, {});
+  })
+    .fetch('GET', `${remoteExpansionSetsFilePath}/sets.json`, {})
+    .catch(err => {
+      console.log(err);
+      return new Promise((resolve, reject) => reject(err));
+    });
 
   return promise;
 };

@@ -9,7 +9,7 @@ const loadExpansionSets = () => {
       return JSON.parse(data);
     })
     .then(results => {
-      return results
+      return (results || [])
         .filter(s => !s.legacy) // exclude legacy sets
         .map(s => new ExpansionSet(s));
     })
