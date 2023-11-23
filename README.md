@@ -18,7 +18,8 @@ React Native iOS app for Star Wars CCG card browsing
 * `xcodebuild clean -workspace ios/holo.xcworkspace -scheme holo`
 * `xcodebuild archive -workspace ios/holo.xcworkspace -scheme holo -archivePath ios/build/holo.xcarchive`
 * `xcodebuild -exportArchive -archivePath ios/build/holo.xcarchive -exportPath ios/build/ipa -exportOptionsPlist exportOptions.plist`
-* `xcrun altool --upload-app -f ios/build/holo.ipa/holo.ipa -u <APPLE_USERNAME> -p <APPLE_ONE_TIME_PASSWORD> --type ios`
+* (Optional) `source .env`
+* `xcrun altool --upload-app -f ios/build/ipa/holo.ipa -u $APP_SPECIFIC_USERNAME -p $APP_SPECIFIC_PASSWORD --type ios`
 
 ## (Option 2) UI
 * `open ios/holo.xcodeworkspace`
