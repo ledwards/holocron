@@ -1,8 +1,9 @@
 import {PureComponent} from 'react';
 import {Animated, Easing, Dimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
-
 import {ListItem} from 'react-native-elements';
+
+import styles from '../styles/CardListItemStyles';
 
 class CardListItem extends PureComponent {
   constructor(props) {
@@ -94,12 +95,6 @@ class CardListItem extends PureComponent {
   };
 
   render() {
-    const lightColor = 'rgba(219, 227, 232, 1.0)';
-    const darkColor = `rgba(43, 47, 51, 1.0)`;
-    const alpha = '0.3';
-    const lightAlphaColor = lightColor.replace('1.0', alpha);
-    const darkAlphaColor = darkColor.replace('1.0', alpha);
-
     return (
       <Animated.View
         style={{
@@ -111,86 +106,61 @@ class CardListItem extends PureComponent {
           button
           onPress={this.toggleExpanded}
           containerStyle={{
-            backgroundColor:
-              this.props.item.side == 'Dark' ? darkColor : lightColor,
-            overflow: 'hidden',
-            height: '100%',
+            ...styles.cardListItemContainer,
+            ...(this.props.item.side == 'Dark'
+              ? styles.cardListItemContainerDarkSide
+              : styles.cardListItemContainerLightSide),
           }}>
           <Animated.View
-            style={
-              !this.state.expanded
+            style={{
+              ...styles.cardListItem,
+              height: this.state.heightAnim,
+              width: this.state.widthAnim,
+              ...(!this.state.expanded
                 ? {
-                    backgroundColor: 'black',
-                    position: 'absolute',
+                    ...styles.cardListItemExpanded,
                     top: 0 + this.props.item.offsetY,
-                    right: -60,
-                    width: this.state.widthAnim,
-                    height: this.state.heightAnim,
-                    overflow: 'hidden',
                   }
-                : {
-                    backgroundColor: 'black',
-                    position: 'absolute',
-                    right: 0,
-                    height: this.state.heightAnim,
-                    width: this.state.widthAnim,
-                  }
-            }>
+                : styles.cardListItemCollapsed),
+            }}>
             <FastImage
               source={{
                 uri: this.state.showingBack
                   ? this.props.item.displayBackImageUrl
                   : this.props.item.displayImageUrl,
               }}
-              resizeMode={FastImage.resizeMode.cover}
-              style={
-                !this.state.expanded
-                  ? {
-                      position: 'relative',
-                      left: -30,
-                      top: 0,
-                      borderRadius: 14,
-                      height: '100%',
-                    }
-                  : {
-                      borderRadius: 14,
-                      height: '100%',
-                      left: 0,
-                    }
-              }
+              alpha={FastImage.resizeMode.cover}
+              style={{
+                ...styles.cardListItemImage,
+                ...(!this.state.expanded
+                  ? styles.cardListItemImageExpanded
+                  : styles.cardListItemCollapsed),
+              }}
             />
           </Animated.View>
           <Animated.View
             style={{
               opacity: this.state.labelOpacityAnim,
             }}>
-            <ListItem.Content style={{}}>
+            <ListItem.Content>
               <ListItem.Title
                 style={{
-                  backgroundColor:
-                    this.props.item.side == 'Light'
-                      ? lightAlphaColor
-                      : darkAlphaColor,
-                  color:
-                    this.props.item.side == 'Light' ? darkColor : lightColor,
-                  fontWeight: 'bold',
-                  fontSize: this.props.item.displayTitle.includes('\n')
-                    ? 10
-                    : 16,
+                  ...styles.cardListItemTitle,
+                  ...(this.props.item.displayTitle.includes('\n')
+                    ? styles.cardListItemTitleLong
+                    : styles.cardListItemTitleShort),
+                  ...(this.props.item.side == 'Light'
+                    ? styles.cardListItemTitleLight
+                    : styles.cardListItemTitleDark),
                 }}>
                 {`${this.props.item.displayTitle}`}
               </ListItem.Title>
               <ListItem.Subtitle
                 style={{
-                  backgroundColor:
-                    this.props.item.side == 'Light'
-                      ? lightAlphaColor
-                      : darkAlphaColor,
-                  color:
-                    this.props.item.side == 'Light' ? darkColor : lightColor,
-                  fontSize: this.props.item.displayTitle.includes('\n')
-                    ? 8
-                    : 12,
+                  ...styles.cardListItemSubtitle,
+                  ...(this.props.item.side == 'Light'
+                    ? styles.cardListItemSubtitleLight
+                    : styles.cardListItemSubtitleDark),
                 }}>
                 {`${this.props.item.displayExpansionSet} • ${this.props.item.type} • ${this.props.item.rarity}`}
               </ListItem.Subtitle>

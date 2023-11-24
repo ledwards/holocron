@@ -22,7 +22,7 @@ DerivedData
 *.xcuserstate
 ios/.xcode.env.local
 ExportOptions.plist
-holo.ipa
+ExportOptions.plist*
 
 # Android/IntelliJ
 #
