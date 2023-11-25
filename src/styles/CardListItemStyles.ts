@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   cardListItemSubtitle: {
-    fontWeight: 'bold',
     fontSize: 12,
   },
   cardListItemSubtitleLight: {

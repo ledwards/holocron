@@ -67,6 +67,7 @@ REFACTORS
 =========
 * Use Typescript properly in every file...
 * chip code has a LOT of duplication (copy/paste)
+* SearchableCardList should have many sub-components
 * `Value` class
  - should contain alias resolver logic
  - values can actually be a set of values, e.g. `gt c numbers` is actually gametext contains either of the two "numbers" cards
