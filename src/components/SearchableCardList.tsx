@@ -15,10 +15,7 @@ import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 import FilterQuery from '../models/FilterQuery';
 
-import colors from '../styles/colors';
 import styles from '../styles/SearchableCardListStyles';
-import themeDark from '../styles/themeDark';
-import themeLight from '../styles/themeLight';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -33,25 +30,25 @@ class SearchableCardList extends Component {
       query: '',
       filterQuerySet: new FilterQuerySet(''),
       flatListRef: null,
-      theme: this.props.theme === 'light' ? themeLight : themeDark,
+      theme: this.props.theme,
     };
   }
 
-  // TODO: can this just go in init?
   componentDidMount() {
     this.setState({
       data: this.props.cards,
       allCards: this.props.cards,
+      theme: this.props.theme,
       error: null,
     });
   }
 
-  componentDidUpdate() {
-    Appearance.addChangeListener(theme => {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.theme.name != this.props.theme.name) {
       this.setState({
-        theme: theme.colorScheme === 'light' ? themeLight : themeDark,
+        theme: this.props.theme,
       });
-    });
+    }
   }
 
   readonly searchModes = {
@@ -174,10 +171,6 @@ class SearchableCardList extends Component {
       <View
         style={{
           height: this.state.filterQuerySet.viewHeight(),
-          ...styles.header,
-          ...(this.state.query === null || this.state.query == ''
-            ? styles.headerWithEmptyQuery
-            : styles.headerWithQuery),
         }}>
         <SearchBar
           placeholder={`Search by ${this.currentSearchMode().label}`}
@@ -185,16 +178,12 @@ class SearchableCardList extends Component {
           onChangeText={text => this.searchRouter(text)}
           autoCorrect={false}
           value={this.state.query}
-          inputStyle={{
-            ...styles.searchBarInput,
-          }}
           containerStyle={{
             ...styles.searchBarContainer,
             backgroundColor: this.state.theme.secondaryBackgroundColor,
           }}
           inputContainerStyle={{
             backgroundColor: this.state.theme.backgroundColor,
-            ...styles.searchBarInputContainer,
           }}
           searchIcon={
             <Icon
@@ -220,7 +209,6 @@ class SearchableCardList extends Component {
                 backgroundColor: this.state.query
                   ? this.state.theme.secondaryBackgroundColor
                   : this.state.theme.backgroundColor,
-                borderColor: this.state.theme.backgroundColor,
                 ...styles.filterQueryContainer,
               }}>
               {this.state.searchModeIndex == 1 && filterQuery.query && (
@@ -326,9 +314,6 @@ class SearchableCardList extends Component {
                 style={{
                   color: this.state.theme.foregroundColor,
                   ...styles.resultsCount,
-                  ...(this.state.filterQuerySet.length() > 1
-                    ? styles.resultsCountWithNoMatch
-                    : styles.resultsCountWithMatch),
                 }}>
                 {this.state.query
                   ? `(${
@@ -379,6 +364,7 @@ class SearchableCardList extends Component {
             data={this.state.data}
             renderItem={({item, index}) => (
               <CardListItem
+                theme={this.state.theme}
                 item={new CardPresenter(item)}
                 index={index}
                 flatListRef={this.state.flatListRef}

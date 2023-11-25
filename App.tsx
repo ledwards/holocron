@@ -21,12 +21,12 @@ import downloadExpansionSets from './src/lib/DownloadExpansionSets';
 import loadCardDefinitions from './src/lib/LoadCardDefinitions';
 import loadExpansionSets from './src/lib/LoadExpansionSets';
 
-import colors from './src/styles/colors';
 import themeDark from './src/styles/themeDark';
 import themeLight from './src/styles/themeLight';
 
 const statusBarHeight = () =>
   Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+
 const headerHeight = () => {
   if (Platform.OS === 'android') {
     return 0;
@@ -46,7 +46,7 @@ const App = () => {
   const [expansionSets, setExpansionSets] = useState([]);
   const [internetConnection, setInternetConnection] = useState(false);
   const [theme, setTheme] = useState(
-    initialTheme?.colorScheme === 'light' ? themeLight : themeDark,
+    initialTheme.colorScheme === 'light' ? themeLight : themeDark,
   );
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const App = () => {
           flex: 1,
         }}>
         {allCards && allCards.length > 0 ? (
-          <SearchableCardList cards={allCards} theme={theme.name} />
+          <SearchableCardList cards={allCards} theme={theme} />
         ) : (
           <Text style={{textAlign: 'center'}}>
             {internetConnection
