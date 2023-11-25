@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark,
   },
   cardListItemContainerLightSide: {
-    backgroundColor: colors.light,
+    backgroundColor: colors.white,
   },
   cardListItem: {
     backgroundColor: colors.black,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardListItemTitleLight: {
-    backgroundColor: colors.alphaLight,
+    backgroundColor: colors.alphaWhite,
     color: colors.dark,
   },
   cardListItemTitleDark: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardListItemSubtitleLight: {
-    backgroundColor: colors.alphaLight,
+    backgroundColor: colors.alphaWhite,
     color: colors.dark,
   },
   cardListItemSubtitleDark: {

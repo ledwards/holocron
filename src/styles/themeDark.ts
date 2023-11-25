@@ -16,6 +16,8 @@ const themeDark = {
   yesColor: colors.terminalGreen,
   noColor: colors.red,
 
+  dividerColor: colors.black,
+
   statusBarStyle: 'light-content',
 };
 

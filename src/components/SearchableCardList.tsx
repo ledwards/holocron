@@ -76,7 +76,7 @@ class SearchableCardList extends Component {
     return (
       <View
         style={{
-          backgroundColor: this.state.theme.backgroundColor,
+          backgroundColor: this.state.theme.dividerColor,
           ...styles.separator,
         }}
       />
@@ -357,8 +357,10 @@ class SearchableCardList extends Component {
     return (
       <View
         style={{
-          ...styles.scrollableCardlistContainer,
-          backgroundColor: this.state.theme.backgroundColor,
+          ...styles.scrollableCardListContainer,
+          backgroundColor: this.state.query
+            ? this.state.theme.secondaryBackgroundColor
+            : this.state.theme.backgroundColor,
         }}>
         {this.renderHeader()}
         {(this.state.query && (
@@ -380,6 +382,11 @@ class SearchableCardList extends Component {
                 }
               />
             )}
+            ListFooterComponent={() => <></>}
+            ListFooterComponentStyle={{
+              backgroundColor: this.state.theme.secondaryBackgroundColor,
+              height: 30,
+            }}
             keyExtractor={(item, index) => `${index}_${item.id}`}
             ItemSeparatorComponent={this.renderSeparator}
             keyboardShouldPersistTaps="never"
@@ -420,6 +427,16 @@ class SearchableCardList extends Component {
               }}>
               {this.currentSearchMode().description}
             </Text>
+            {/* <Image
+              // source={require(`../../shared/images/holocron-${this.state.theme.name}-${this.state.searchModeIndex}.png`)}
+              source={require(`../../shared/images/holocron-light-0-transparent.png`)}
+              style={{
+                resizeMode: 'contain',
+                width: '90%',
+                alignSelf: 'center',
+                flex: 1,
+                marginBottom: -250,
+              }}></Image> */}
           </>
         )}
       </View>
