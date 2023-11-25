@@ -229,16 +229,18 @@ class SearchableCardList extends Component {
                   key={`$filter_query_{i}_field`}
                   type="outline"
                   buttonStyle={{
-                    backgroundColor: this.state.theme.backgroundColor,
+                    backgroundColor: filterQuery.validField()
+                      ? this.state.theme.chipYesBackgroundColor
+                      : this.state.theme.chipNoBackgroundColor,
                     borderColor: filterQuery.validField()
-                      ? this.state.theme.yesColor
-                      : this.state.theme.noColor,
+                      ? this.state.theme.chipYesBorderColor
+                      : this.state.theme.chipNoBorderColor,
                     ...styles.chipButton,
                   }}
                   titleStyle={{
                     color: filterQuery.validField()
-                      ? this.state.theme.yesColor
-                      : this.state.theme.noColor,
+                      ? this.state.theme.chipYesTextColor
+                      : this.state.theme.chipNoTextColor,
                     ...styles.chipTitle,
                   }}
                   containerStyle={styles.chipContainer}></Chip>
@@ -256,16 +258,18 @@ class SearchableCardList extends Component {
                     key={`filter_query_${i}_comparator`}
                     type="outline"
                     buttonStyle={{
-                      backgroundColor: this.state.theme.backgroundColor,
+                      backgroundColor: filterQuery.validComparator()
+                        ? this.state.theme.chipYesBackgroundColor
+                        : this.state.theme.chipNoBackgroundColor,
                       borderColor: filterQuery.validComparator()
-                        ? this.state.theme.yesColor
-                        : this.state.theme.noColor,
+                        ? this.state.theme.chipYesBorderColor
+                        : this.state.theme.chipNoBorderColor,
                       ...styles.chipButton,
                     }}
                     titleStyle={{
                       color: filterQuery.validComparator()
-                        ? this.state.theme.yesColor
-                        : this.state.theme.noColor,
+                        ? this.state.theme.chipYesTextColor
+                        : this.state.theme.chipNoTextColor,
                       ...styles.chipTitle,
                     }}
                     containerStyle={styles.chipContainer}></Chip>
@@ -277,20 +281,24 @@ class SearchableCardList extends Component {
                   key={'value'}
                   type="outline"
                   buttonStyle={{
-                    backgroundColor: this.state.theme.backgroundColor,
+                    backgroundColor:
+                      filterQuery.validValue() &&
+                      filterQuery.length(this.state.allCards) > 0
+                        ? this.state.theme.chipYesBackgroundColor
+                        : this.state.theme.chipNoBackgroundColor,
                     borderColor:
                       filterQuery.validValue() &&
                       filterQuery.length(this.state.allCards) > 0
-                        ? this.state.theme.yesColor
-                        : this.state.theme.noColor,
+                        ? this.state.theme.chipYesBorderColor
+                        : this.state.theme.chipNoBorderColor,
                     ...styles.chipButton,
                   }}
                   titleStyle={{
                     color:
                       filterQuery.validValue() &&
                       filterQuery.length(this.state.allCards) > 0
-                        ? this.state.theme.yesColor
-                        : this.state.theme.noColor,
+                        ? this.state.theme.chipYesTextColor
+                        : this.state.theme.chipNoTextColor,
                     ...styles.chipTitle,
                   }}
                   containerStyle={styles.chipContainer}></Chip>
@@ -302,12 +310,12 @@ class SearchableCardList extends Component {
                   key={'value'}
                   type="outline"
                   buttonStyle={{
-                    backgroundColor: this.state.theme.backgroundColor,
-                    borderColor: this.state.theme.yesColor,
+                    backgroundColor: this.state.theme.chipYesBackgroundColor,
+                    borderColor: this.state.theme.chipYesBorderColor,
                     ...styles.chipButton,
                   }}
                   titleStyle={{
-                    color: this.state.theme.yesColor,
+                    color: this.state.theme.chipYesTextColor,
                     ...styles.chipTitle,
                   }}
                   containerStyle={styles.chipContainer}
