@@ -1,5 +1,13 @@
 import {Component} from 'react';
-import {View, ActivityIndicator, Text, Animated} from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  Text,
+  Image,
+  ImageBackground,
+  Animated,
+  Appearance,
+} from 'react-native';
 import {SearchBar, Icon, Chip} from 'react-native-elements';
 import CardListItem from './CardListItem';
 
@@ -9,6 +17,8 @@ import FilterQuery from '../models/FilterQuery';
 
 import colors from '../styles/colors';
 import styles from '../styles/SearchableCardListStyles';
+import themeDark from '../styles/themeDark';
+import themeLight from '../styles/themeLight';
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -23,6 +33,7 @@ class SearchableCardList extends Component {
       query: '',
       filterQuerySet: new FilterQuerySet(''),
       flatListRef: null,
+      theme: this.props.theme === 'light' ? themeLight : themeDark,
     };
   }
 
@@ -32,6 +43,14 @@ class SearchableCardList extends Component {
       data: this.props.cards,
       allCards: this.props.cards,
       error: null,
+    });
+  }
+
+  componentDidUpdate() {
+    Appearance.addChangeListener(theme => {
+      this.setState({
+        theme: theme.colorScheme === 'light' ? themeLight : themeDark,
+      });
     });
   }
 
@@ -54,7 +73,14 @@ class SearchableCardList extends Component {
   }
 
   renderSeparator = () => {
-    return <View style={{height: 2, backgroundColor: colors.black}} />;
+    return (
+      <View
+        style={{
+          backgroundColor: this.state.theme.backgroundColor,
+          ...styles.separator,
+        }}
+      />
+    );
   };
 
   searchRouter = (text: string) => {
@@ -159,12 +185,22 @@ class SearchableCardList extends Component {
           onChangeText={text => this.searchRouter(text)}
           autoCorrect={false}
           value={this.state.query}
-          style={styles.searchBar}
+          inputStyle={{
+            ...styles.searchBarInput,
+          }}
+          containerStyle={{
+            ...styles.searchBarContainer,
+            backgroundColor: this.state.theme.secondaryBackgroundColor,
+          }}
+          inputContainerStyle={{
+            backgroundColor: this.state.theme.backgroundColor,
+            ...styles.searchBarInputContainer,
+          }}
           searchIcon={
             <Icon
               name={this.currentSearchMode().icon}
               type="ionicon"
-              color={colors.light}
+              color={this.state.theme.iconColor}
               onPress={() => {
                 this.setState({query: null});
                 this.searchRouter('');
@@ -178,22 +214,33 @@ class SearchableCardList extends Component {
 
         {this.state.filterQuerySet.filterQueries.map(
           (filterQuery: FilterQuery, i: number) => (
-            <View key={`filterQuery_${i}`} style={styles.filterQueryContainer}>
+            <View
+              key={`filterQuery_${i}`}
+              style={{
+                backgroundColor: this.state.query
+                  ? this.state.theme.secondaryBackgroundColor
+                  : this.state.theme.backgroundColor,
+                borderColor: this.state.theme.backgroundColor,
+                ...styles.filterQueryContainer,
+              }}>
               {this.state.searchModeIndex == 1 && filterQuery.query && (
                 <Chip
                   title={filterQuery.displayFieldName()}
                   key={`$filter_query_{i}_field`}
                   type="outline"
-                  buttonStyle={
-                    filterQuery.validField()
-                      ? styles.chipButtonWithMatch
-                      : styles.chipButton
-                  }
-                  titleStyle={
-                    filterQuery.validField()
-                      ? styles.chipTitleWithMatch
-                      : styles.chipTitle
-                  }
+                  buttonStyle={{
+                    backgroundColor: this.state.theme.backgroundColor,
+                    borderColor: filterQuery.validField()
+                      ? this.state.theme.yesColor
+                      : this.state.theme.noColor,
+                    ...styles.chipButton,
+                  }}
+                  titleStyle={{
+                    color: filterQuery.validField()
+                      ? this.state.theme.yesColor
+                      : this.state.theme.noColor,
+                    ...styles.chipTitle,
+                  }}
                   containerStyle={styles.chipContainer}></Chip>
               )}
 
@@ -208,16 +255,19 @@ class SearchableCardList extends Component {
                     title={filterQuery.displayComparatorName()}
                     key={`filter_query_${i}_comparator`}
                     type="outline"
-                    buttonStyle={
-                      filterQuery.validComparator()
-                        ? styles.chipButtonWithMatch
-                        : styles.chipButton
-                    }
-                    titleStyle={
-                      filterQuery.validComparator()
-                        ? styles.chipTitleWithMatch
-                        : styles.chipTitle
-                    }
+                    buttonStyle={{
+                      backgroundColor: this.state.theme.backgroundColor,
+                      borderColor: filterQuery.validComparator()
+                        ? this.state.theme.yesColor
+                        : this.state.theme.noColor,
+                      ...styles.chipButton,
+                    }}
+                    titleStyle={{
+                      color: filterQuery.validComparator()
+                        ? this.state.theme.yesColor
+                        : this.state.theme.noColor,
+                      ...styles.chipTitle,
+                    }}
                     containerStyle={styles.chipContainer}></Chip>
                 )}
 
@@ -226,18 +276,23 @@ class SearchableCardList extends Component {
                   title={filterQuery.rawValue}
                   key={'value'}
                   type="outline"
-                  buttonStyle={
-                    filterQuery.validValue() &&
-                    filterQuery.length(this.state.allCards) > 0
-                      ? styles.chipButtonWithMatch
-                      : styles.chipButton
-                  }
-                  titleStyle={
-                    filterQuery.validValue() &&
-                    filterQuery.length(this.state.allCards) > 0
-                      ? styles.chipTitleWithMatch
-                      : styles.chipTitle
-                  }
+                  buttonStyle={{
+                    backgroundColor: this.state.theme.backgroundColor,
+                    borderColor:
+                      filterQuery.validValue() &&
+                      filterQuery.length(this.state.allCards) > 0
+                        ? this.state.theme.yesColor
+                        : this.state.theme.noColor,
+                    ...styles.chipButton,
+                  }}
+                  titleStyle={{
+                    color:
+                      filterQuery.validValue() &&
+                      filterQuery.length(this.state.allCards) > 0
+                        ? this.state.theme.yesColor
+                        : this.state.theme.noColor,
+                    ...styles.chipTitle,
+                  }}
                   containerStyle={styles.chipContainer}></Chip>
               )}
 
@@ -246,13 +301,22 @@ class SearchableCardList extends Component {
                   title={this.state.query}
                   key={'value'}
                   type="outline"
-                  buttonStyle={styles.chipButtonWithMatch}
-                  titleStyle={styles.chipTitleWithMatch}
-                  containerStyle={styles.chipContainer}></Chip>
+                  buttonStyle={{
+                    backgroundColor: this.state.theme.backgroundColor,
+                    borderColor: this.state.theme.yesColor,
+                    ...styles.chipButton,
+                  }}
+                  titleStyle={{
+                    color: this.state.theme.yesColor,
+                    ...styles.chipTitle,
+                  }}
+                  containerStyle={styles.chipContainer}
+                />
               )}
 
               <Text
                 style={{
+                  color: this.state.theme.foregroundColor,
                   ...styles.resultsCount,
                   ...(this.state.filterQuerySet.length() > 1
                     ? styles.resultsCountWithNoMatch
@@ -269,7 +333,11 @@ class SearchableCardList extends Component {
           ),
         )}
         {this.state.query && this.state.filterQuerySet.length() > 1 && (
-          <Text style={styles.combinedResultsCount}>
+          <Text
+            style={{
+              color: this.state.theme.foregroundColor,
+              ...styles.combinedResultsCount,
+            }}>
             {`(combined ${this.state.data.length} results)`}
           </Text>
         )}
@@ -287,7 +355,11 @@ class SearchableCardList extends Component {
     }
 
     return (
-      <View style={styles.scrollableCardlistContainer}>
+      <View
+        style={{
+          ...styles.scrollableCardlistContainer,
+          backgroundColor: this.state.theme.backgroundColor,
+        }}>
         {this.renderHeader()}
         {(this.state.query && (
           <Animated.FlatList
@@ -321,19 +393,31 @@ class SearchableCardList extends Component {
         )) || (
           <>
             <View style={styles.defaultTextContainer}>
-              <Text style={styles.defaultText}>Tap the</Text>
+              <Text
+                style={{
+                  color: this.state.theme.foregroundColor,
+                }}>
+                Tap the
+              </Text>
               <Icon
                 name={this.currentSearchMode().icon}
                 type="ionicon"
-                color={colors.white}
+                color={this.state.theme.foregroundColor}
                 size={16}
                 style={styles.defaultTextIcon}
               />
-              <Text style={styles.defaultText}>
+              <Text
+                style={{
+                  color: this.state.theme.foregroundColor,
+                }}>
                 icon to switch between search modes. {'\n\n\n'}
               </Text>
             </View>
-            <Text style={styles.defaultTextDescription}>
+            <Text
+              style={{
+                color: this.state.theme.foregroundColor,
+                ...styles.defaultTextDescription,
+              }}>
               {this.currentSearchMode().description}
             </Text>
           </>

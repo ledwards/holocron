@@ -85,7 +85,7 @@ class Card {
 
     this.characteristics = cardJSON.front.characteristics;
     this.icons = cardJSON.front.icons;
-    this.rarity = parseInt(cardJSON.setNumber) < 200 ? cardJSON.rarity : 'V'; // use "V" as the rarity for all virtual cards
+    this.rarity = parseInt(cardJSON.set) < 200 ? cardJSON.rarity : 'V'; // use "V" as the rarity for all virtual cards
     this.side = cardJSON.side;
     this.subtype = cardJSON.front.subType;
     this.uniqueness = cardJSON.front.uniqueness || 'none'; // TODO: This should be some kind of enum?
