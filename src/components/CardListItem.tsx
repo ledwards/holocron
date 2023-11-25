@@ -29,7 +29,22 @@ class CardListItem extends PureComponent {
       minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth,
       posY: 0,
+      theme: this.props.theme,
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      theme: this.props.theme,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.theme.name != this.props.theme.name) {
+      this.setState({
+        theme: this.props.theme,
+      });
+    }
   }
 
   toggleExpanded = () => {
@@ -110,6 +125,8 @@ class CardListItem extends PureComponent {
             ...(this.props.item.side == 'Dark'
               ? styles.cardListItemContainerDarkSide
               : styles.cardListItemContainerLightSide),
+            borderTopWidth: this.props.index == 0 ? 2 : 0,
+            borderColor: this.state.theme.separatorColor,
           }}>
           <Animated.View
             style={{
