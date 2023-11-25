@@ -2,25 +2,38 @@ import {StyleSheet} from 'react-native';
 import colors from './colors';
 
 const styles = StyleSheet.create({
+  separator: {
+    height: 2,
+  },
   header: {
-    borderBottomWidth: 2,
+    // borderBottomWidth: 0,
   },
   headerWithEmptyQuery: {
-    borderBottomColor: colors.black,
+    // borderBottomWidth: 0,
   },
   headerWithQuery: {
-    borderBottomColor: colors.transparent,
+    borderBottomWidth: 0,
   },
-  searchBar: {
-    fontSize: 16,
+  searchBarInput: {},
+  searchBarInputContainer: {
+    // backgroundColor: colors.black,
+  },
+  searchBarContainer: {
+    borderTopWidth: 0, //works
+    borderBottomWidth: 0, //works
+    // backgroundColor: colors.dark,
   },
   filterQueryContainer: {
+    // backgroundColor: colors.dark,
+    borderBottomWidth: 2,
+    paddingLeft: 2,
+    paddingRight: 2,
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'left',
   },
   chipButton: {
-    borderColor: colors.red,
+    // backgroundColor: colors.black,
+    // borderColor: colors.red,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 4,
@@ -28,40 +41,41 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginHorizontal: 2,
   },
-  chipButtonWithMatch: {
-    borderColor: colors.terminalGreen,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 0,
-    marginTop: 6,
-    marginHorizontal: 2,
-  },
+  // chipButtonWithMatch: {
+  // backgroundColor: colors.black,
+  // borderColor: colors.terminalGreen,
+  // borderWidth: 1,
+  // borderRadius: 10,
+  // paddingHorizontal: 4,
+  // paddingVertical: 0,
+  // marginTop: 6,
+  // marginHorizontal: 2,
+  // },
   chipContainer: {
     marginHorizontal: 0,
   },
   chipTitle: {
-    color: colors.red,
+    // color: colors.red,
     fontSize: 14,
   },
-  chipTitleWithMatch: {
-    color: colors.terminalGreen,
-    fontSize: 14,
-  },
+  // chipTitleWithMatch: {
+  // color: colors.terminalGreen,
+  // fontSize: 14,
+  // },
   resultsCount: {
     fontSize: 14,
     alignSelf: 'center',
     marginLeft: 'auto',
   },
   resultsCountWithMatch: {
-    color: colors.white,
+    // color: colors.white,
   },
   resultsCountWithNoMatch: {
-    color: colors.gray,
+    // color: colors.gray,
   },
   combinedResultsCount: {
+    // color: colors.white,
     fontSize: 14,
-    color: colors.white,
     alignSelf: 'center',
     margin: 5,
   },
@@ -72,8 +86,8 @@ const styles = StyleSheet.create({
   },
   scrollableCardListContainer: {
     flex: 1,
+    height: '100%',
     overflow: 'hidden',
-    backgroundColor: colors.black,
   },
   defaultTextContainer: {
     alignSelf: 'flex-start',
@@ -83,14 +97,14 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   defaultText: {
-    color: colors.white,
+    // flex: 1,
+    // marginTop: 50,
   },
   defaultTextIcon: {
     marginLeft: 5,
     marginRight: 5,
   },
   defaultTextDescription: {
-    color: colors.white,
     padding: 18,
     textAlign: 'center',
     marginBottom: 40,

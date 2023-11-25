@@ -16,8 +16,13 @@ FEATURES
 
 
 GENERAL BUGS
-====
+============
 *
+
+
+DATA-RELATED BUGS
+=================
+* Emperor's Prize / Emperor's Prize weird to be display titled like that
 
 
 SEARCH BUGS
@@ -31,6 +36,8 @@ these are specific bugs that should be solved by writing a simple failing test c
 * type = character => type matches character BUT type eq character => type = character
 * Search: Luke's returns nothing, but Lukes does
 * Search: commas are broken
+* "gtc va" returns nothing
+* "a3 and side = light and foob = bazzzz" shows 0 results for every step instead of just the last one
 
 
 FUNCTIONALITY IMPROVEMENTS
@@ -48,14 +55,19 @@ UX IMPROVEMENTS
 ===============
 * tapping anywhere on screen should hide keyboard
 * tap a site rotates it 180 degrees
-* dark/light mode support
+
+
+DESIGN IDEAS
+============
+* top part could be translucent, with scroll list going behind it (like iMessage)
+* default screen has logo on it?
 
 
 REFACTORS
 =========
 * Use Typescript properly in every file...
-* stylesheets - conditional logic with styles should use classes and a stylesheet
-* Value class
+* chip code has a LOT of duplication (copy/paste)
+* `Value` class
  - should contain alias resolver logic
  - values can actually be a set of values, e.g. `gt c numbers` is actually gametext contains either of the two "numbers" cards
  - allow for `lore c foo bar baz` to work with all 3 words
@@ -63,10 +75,12 @@ REFACTORS
  - enums?
  - type checking of sorts? (value is invalid if it doesn't work as a type, like power = bob)
 * Repo classes
- - for Card and maybe ExpansionSet
+ - for `Card` and maybe `ExpansionSet`
  - would encapsulate search logic, for various search kinds like case insensitive, etc.
  - would encapsulate the logic for loading the data from the json files
-* Rename FilterQuerySet to FilterQueryGroup
+* Rename `FilterQuerySet` to `FilterQueryGroup`
+* `FilterQuery` maybe needs a Presenter that can wrap display logic
+* Rename `card` to `cardPresenter` when its a presenter that's being used to clear up confusion
 
 
 ONE DAY
