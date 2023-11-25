@@ -351,9 +351,10 @@ class SearchableCardList extends Component {
       <View
         style={{
           ...styles.scrollableCardListContainer,
-          backgroundColor: this.state.query
-            ? this.state.theme.secondaryBackgroundColor
-            : this.state.theme.backgroundColor,
+          backgroundColor:
+            this.state.query && this.state.data.length > 0
+              ? this.state.theme.secondaryBackgroundColor
+              : this.state.theme.backgroundColor,
         }}>
         {this.renderHeader()}
         {(this.state.query && (
@@ -379,7 +380,7 @@ class SearchableCardList extends Component {
             ListFooterComponent={() => <></>}
             ListFooterComponentStyle={{
               backgroundColor: this.state.theme.secondaryBackgroundColor,
-              height: 30,
+              height: this.state.query && this.state.data.length > 0 ? 30 : 0,
             }}
             keyExtractor={(item, index) => `${index}_${item.id}`}
             ItemSeparatorComponent={this.renderSeparator}
