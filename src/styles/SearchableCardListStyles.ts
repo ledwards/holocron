@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0, // must specify individually for some reason
   },
   filterQueryContainer: {
-    paddingLeft: 2,
-    paddingRight: 2,
+    paddingLeft: 7,
+    paddingRight: 7,
     flex: 1,
     flexDirection: 'row',
   },
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   chipContainer: {
-    marginHorizontal: 5,
+    marginHorizontal: 0,
   },
   chipTitle: {
     fontSize: 14,
