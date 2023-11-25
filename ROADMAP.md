@@ -60,7 +60,7 @@ UX IMPROVEMENTS
 DESIGN IDEAS
 ============
 * top part could be translucent, with scroll list going behind it (like iMessage)
-* default screen has logo on it?
+* empty list state has holocron art - maybe dependent on light vs. dark mode
 
 
 REFACTORS

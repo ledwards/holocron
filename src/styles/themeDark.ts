@@ -13,10 +13,14 @@ const themeDark = {
   secondaryBackgroundColor: secondaryBackgroundColor,
   disabledColor: colors.gray,
   iconColor: foregroundColor,
-  yesColor: colors.terminalGreen,
-  noColor: colors.red,
 
   dividerColor: colors.black,
+  chipYesTextColor: colors.terminalGreen,
+  chipNoTextColor: colors.red,
+  chipYesBorderColor: colors.darkGreen,
+  chipNoBorderColor: colors.darkRed,
+  chipYesBackgroundColor: backgroundColor,
+  chipNoBackgroundColor: backgroundColor,
 
   statusBarStyle: 'light-content',
 };

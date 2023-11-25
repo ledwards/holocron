@@ -12,6 +12,7 @@ export default {
   terminalGreen: 'rgba(74, 246, 38, 1.0)',
   darkGreen: 'rgba(34, 209, 34, 1.0)',
   red: 'rgba(255, 0, 0, 1.0)',
+  darkRed: 'rgba(209, 34, 34, 1.0)',
   translucentBlack: 'rgba(0, 0, 0, 0.1)',
   // TODO: name colors like "background" and "text" and allow them to depend on Dark/Light mode
 };
