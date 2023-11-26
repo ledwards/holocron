@@ -14,6 +14,7 @@ const themeLight = {
   disabledColor: colors.gray,
   iconColor: foregroundColor,
 
+  translucentBackgroundColor: colors.alphaWhite,
   dividerColor: colors.light,
   chipYesTextColor: backgroundColor,
   chipNoTextColor: backgroundColor,

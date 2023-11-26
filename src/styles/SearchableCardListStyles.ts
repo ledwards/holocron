@@ -8,6 +8,13 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     borderTopWidth: 0, // must specify individually for some reason
     borderBottomWidth: 0, // must specify individually for some reason
+    backgroundColor: 'transparent',
+    width: '100%',
+    position: 'absolute',
+  },
+  filterQuerySetContainer: {
+    position: 'absolute',
+    width: '100%',
   },
   filterQueryContainer: {
     paddingLeft: 7,
@@ -45,8 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollableCardListContainer: {
-    flex: 1,
-    height: '100%',
     overflow: 'hidden',
   },
   defaultTextContainer: {
@@ -64,6 +69,19 @@ const styles = StyleSheet.create({
     padding: 18,
     textAlign: 'center',
     marginBottom: 40,
+    fontSize: 16,
+  },
+  defaultTextTitle: {
+    marginTop: 40,
+    padding: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  headerContainer: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
   },
 });
 

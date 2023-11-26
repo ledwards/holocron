@@ -38,6 +38,7 @@ these are specific bugs that should be solved by writing a simple failing test c
 * Search: commas are broken
 * "gtc va" returns nothing
 * "a3 and side = light and foob = bazzzz" shows 0 results for every step instead of just the last one
+* "pulled by sos" doesn't work, "pulled by c sos" does
 
 
 FUNCTIONALITY IMPROVEMENTS
@@ -59,7 +60,7 @@ UX IMPROVEMENTS
 
 DESIGN IDEAS
 ============
-* top part could be translucent, with scroll list going behind it (like iMessage)
+* add glassmorphism to the header/footer https://github.com/Kureev/react-native-blur#usage
 * empty list state has holocron art - maybe dependent on light vs. dark mode
 
 

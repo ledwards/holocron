@@ -125,8 +125,6 @@ class CardListItem extends PureComponent {
             ...(this.props.item.side == 'Dark'
               ? styles.cardListItemContainerDarkSide
               : styles.cardListItemContainerLightSide),
-            borderTopWidth: this.props.index == 0 ? 2 : 0,
-            borderColor: this.state.theme.separatorColor,
           }}>
           <Animated.View
             style={{
