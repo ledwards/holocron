@@ -1,8 +1,7 @@
 APP STUFF
-=======
-* Rename project/app
-* New icon?
-
+=========
+* better screenshots and App Store description
+* rename repo
 
 FEATURES
 ========
@@ -25,8 +24,8 @@ DATA-RELATED BUGS
 * Emperor's Prize / Emperor's Prize weird to be display titled like that
 
 
-SEARCH BUGS
-=============
+ADVANCED SEARCH BUGS
+====================
 these are specific bugs that should be solved by writing a simple failing test case
 * title = search destroy => uses match instead of =
 * title matches search and destroy => triggers AND...
