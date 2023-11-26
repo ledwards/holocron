@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-    marginTop: 0,
+    marginTop: 7,
   },
   defaultTextIcon: {
     marginLeft: 5,
