@@ -7,13 +7,15 @@ const secondaryBackgroundColor = colors.dark;
 
 const themeDark = {
   name: 'dark',
-  foregroundColor: foregroundColor,
-  backgroundColor: backgroundColor,
-  secondaryForegroundColor: secondaryForegroundColor,
-  secondaryBackgroundColor: secondaryBackgroundColor,
+  foregroundColor,
+  backgroundColor,
+  secondaryForegroundColor,
+  secondaryBackgroundColor,
   disabledColor: colors.gray,
   iconColor: foregroundColor,
 
+  translucentBackgroundColor: colors.alphaBlack,
+  // translucentBackgroundColor: 'transparent',
   dividerColor: colors.black,
   chipYesTextColor: colors.terminalGreen,
   chipNoTextColor: colors.red,

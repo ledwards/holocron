@@ -1,7 +1,3 @@
-/**
- * @format
- */
-
 import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
@@ -34,6 +30,17 @@ const headerHeight = () => {
     return 44;
   } else {
     return 0;
+  }
+};
+
+const nativeHeaderHeight = () => statusBarHeight() + headerHeight();
+const nativeFooterHeight = () => {
+  if (Platform.OS === 'android') {
+    return 0;
+  } else if (DeviceInfo.hasNotch()) {
+    return 44;
+  } else {
+    return 30;
   }
 };
 
@@ -102,30 +109,30 @@ const App = () => {
       style={{
         flex: 1,
       }}>
-      <View
-        style={{
-          backgroundColor: theme.secondaryBackgroundColor,
-          height: statusBarHeight(),
-        }}>
-        <StatusBar
-          translucent
-          color={theme.secondaryForegroundColor}
-          backgroundColor={theme.secondaryBackgroundColor}
-          barStyle={theme.statusBarStyle}
-        />
-      </View>
-      <View
-        style={{
-          backgroundColor: theme.secondaryBackgroundColor,
-          height: headerHeight(),
-        }}
-      />
+      <StatusBar barStyle={theme.statusBarStyle} />
       <View
         style={{
           flex: 1,
+          backgroundColor: theme.backgroundColor,
         }}>
         {allCards && allCards.length > 0 ? (
-          <SearchableCardList cards={allCards} theme={theme} />
+          <>
+            <SearchableCardList
+              cards={allCards}
+              theme={theme}
+              nativeHeaderHeight={nativeHeaderHeight()}
+              nativeFooterHeight={nativeFooterHeight()}
+            />
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                width: '100%',
+                height: nativeHeaderHeight(),
+                backgroundColor: theme.translucentBackgroundColor,
+              }}
+            />
+          </>
         ) : (
           <Text style={{textAlign: 'center'}}>
             {internetConnection
