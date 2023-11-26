@@ -9,15 +9,16 @@ import {
   Appearance,
 } from 'react-native';
 import {SearchBar, Icon, Chip} from 'react-native-elements';
-import CardListItem from './CardListItem';
+import {BlurView} from '@react-native-community/blur';
 
+import CardListItem from './CardListItem';
 import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 import FilterQuery from '../models/FilterQuery';
 
 import styles from '../styles/SearchableCardListStyles';
 
-const searchBarHeight = 30; // not used to set height, used for other calculations
+const searchBarHeight = 28; // not used to set height, used for other calculations
 
 class SearchableCardList extends Component {
   constructor(props) {
@@ -172,6 +173,7 @@ class SearchableCardList extends Component {
     });
   };
 
+  // note: this header is badly named, as it appears on the bottom of the screen...
   renderHeader = () => {
     return (
       <View
@@ -184,6 +186,19 @@ class SearchableCardList extends Component {
             this.state.nativeFooterHeight -
             searchBarHeight,
         }}>
+        <BlurView
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            height: this.state.filterQuerySet.viewHeight() + 20, // magic number
+          }}
+          blurType={this.state.theme.name}
+          blurAmount={10}
+          reducedTransparencyFallbackColor={
+            this.state.theme.translucentBackgroundColor
+          }
+        />
         <View style={styles.filterQuerySetContainer}>
           {!this.state.query && (
             <View style={styles.defaultTextContainer}>
@@ -341,6 +356,7 @@ class SearchableCardList extends Component {
             </Text>
           )}
         </View>
+
         <SearchBar
           placeholder={`Search by ${this.currentSearchMode().label}`}
           round
@@ -384,7 +400,6 @@ class SearchableCardList extends Component {
         </Text>
         <Text
           style={{
-            // marginTop: 'auto',
             color: this.state.theme.foregroundColor,
             ...styles.defaultTextDescription,
           }}>

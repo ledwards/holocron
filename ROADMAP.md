@@ -56,6 +56,7 @@ UX IMPROVEMENTS
 ===============
 * tapping anywhere on screen should hide keyboard
 * tap a site rotates it 180 degrees
+* acronyms resolve to their expanded selves in the green filter query area (even for basic search)
 
 
 DESIGN IDEAS

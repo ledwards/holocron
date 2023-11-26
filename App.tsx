@@ -8,9 +8,11 @@ import {
   Platform,
   Appearance,
 } from 'react-native';
-import SearchableCardList from './src/components/SearchableCardList';
+import {BlurView} from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
 import DeviceInfo from 'react-native-device-info';
+
+import SearchableCardList from './src/components/SearchableCardList';
 
 import downloadCardDefinitions from './src/lib/DownloadCardDefinitions';
 import downloadExpansionSets from './src/lib/DownloadExpansionSets';
@@ -123,14 +125,18 @@ const App = () => {
               nativeHeaderHeight={nativeHeaderHeight()}
               nativeFooterHeight={nativeFooterHeight()}
             />
-            <View
+            <BlurView
               style={{
                 position: 'absolute',
                 top: 0,
                 width: '100%',
                 height: nativeHeaderHeight(),
-                backgroundColor: theme.translucentBackgroundColor,
               }}
+              blurType={theme.name}
+              blurAmount={10}
+              reducedTransparencyFallbackColor={
+                theme.translucentBackgroundColor
+              }
             />
           </>
         ) : (

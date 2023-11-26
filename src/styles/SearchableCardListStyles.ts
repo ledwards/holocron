@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   combinedResultsCount: {
     fontSize: 14,
     alignSelf: 'center',
-    margin: 5,
+    marginTop: 10,
   },
   loading: {
     flex: 1,
