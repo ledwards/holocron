@@ -388,7 +388,7 @@ class SearchableCardList extends Component {
           )}
           ListEmptyComponent={() =>
             this.state.query ? (
-              <View style={styles.defaultTextContainer}>
+              <View style={styles.listEmptyContainer}>
                 <Text
                   style={{
                     color: this.state.theme.foregroundColor,
