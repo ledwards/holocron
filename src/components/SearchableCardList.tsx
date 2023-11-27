@@ -10,11 +10,9 @@ import {SearchBar, Icon, Chip} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 
 import CardListItem from './CardListItem';
-import SearchBarChip from './SearchBarChip';
-
+import QueryStatusBar from './QueryStatusBar';
 import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
-import FilterQuery from '../models/FilterQuery';
 
 import styles from '../styles/SearchableCardListStyles';
 const searchBarHeight = 28; // not used to set height, used for other calculations
@@ -38,6 +36,22 @@ class SearchableCardList extends Component {
     };
   }
 
+  readonly searchModes = {
+    0: {
+      label: 'title',
+      icon: 'search-outline',
+      title: 'Search cards by title',
+      description:
+        'quick draw \n\n farm \n\n chimaera \n\n destroyer \n\n dvdlots \n\n hdadtj',
+    },
+    1: {
+      label: 'natural language query',
+      icon: 'color-filter-outline',
+      title: 'Search cards with natural language (BETA) ',
+      description: `gametext contains bad feeling \n\n gt c bad feeling \n\n lore matches isb \n\n lore m isb \n\n power = 9 \n\n pulls falcon \n\n subtype contains starting \n\n icons c pilot \n\n lore c isb and side=dark and type=character`,
+    },
+  };
+
   componentDidMount() {
     this.setState({
       data: this.props.cards,
@@ -55,35 +69,29 @@ class SearchableCardList extends Component {
     }
   }
 
-  readonly searchModes = {
-    0: {
-      label: 'title',
-      icon: 'search-outline',
-      title: 'Search cards by title',
-      description:
-        'quick draw \n\n farm \n\n chimaera \n\n destroyer \n\n dvdlots \n\n hdadtj',
-    },
-    1: {
-      label: 'natural language query',
-      icon: 'color-filter-outline',
-      title: 'Search cards with natural language (BETA) ',
-      description: `gametext contains bad feeling \n\n gt c bad feeling \n\n lore matches isb \n\n lore m isb \n\n power = 9 \n\n pulls falcon \n\n subtype contains starting \n\n icons c pilot \n\n lore c isb and side=dark and type=character`,
-    },
-  };
-
   currentSearchMode() {
     return this.searchModes[this.state.searchModeIndex] || 0;
   }
 
-  renderSeparator = () => {
-    return (
-      <View
-        style={{
-          backgroundColor: this.state.theme.dividerColor,
-          ...styles.separator,
-        }}
-      />
-    );
+  debugger = filterQuerySet => {
+    console.log('====');
+    console.log('text entry: ', text);
+    console.log('====');
+    filterQuerySet.filterQueries.forEach(filterQuery => {
+      console.log('field: ', filterQuery.field?.name);
+      console.log('rawField', filterQuery.rawField);
+      console.log('validField: ', filterQuery.validField());
+      console.log('comparator: ', filterQuery.comparator?.name);
+      console.log('rawComparator: ', filterQuery.rawComparator);
+      console.log('validComparator: ', filterQuery.validComparator());
+      console.log('value: ', filterQuery.value);
+      console.log('rawValue: ', filterQuery.rawValue);
+      console.log('validValue: ', filterQuery.validValue());
+      console.log('filter: ', typeof filterQuery.filter);
+      console.log('valid?: ', filterQuery.valid());
+      console.log('\n');
+    });
+    console.log('\n');
   };
 
   searchRouter = (text: string) => {
@@ -115,43 +123,15 @@ class SearchableCardList extends Component {
 
     if (filterQuerySet.valid()) {
       const newData = filterQuerySet.execute(this.state.allCards);
-
-      this.setState({
-        data: newData,
-      });
+      this.setState({data: newData});
     } else {
-      this.setState({
-        data: [],
-      });
+      this.setState({data: []});
     }
 
     return filterQuerySet.valid();
   };
 
-  debugger = filterQuerySet => {
-    console.log('====');
-    console.log('text entry: ', text);
-    console.log('====');
-    filterQuerySet.filterQueries.forEach(filterQuery => {
-      console.log('field: ', filterQuery.field?.name);
-      console.log('rawField', filterQuery.rawField);
-      console.log('validField: ', filterQuery.validField());
-      console.log('comparator: ', filterQuery.comparator?.name);
-      console.log('rawComparator: ', filterQuery.rawComparator);
-      console.log('validComparator: ', filterQuery.validComparator());
-      console.log('value: ', filterQuery.value);
-      console.log('rawValue: ', filterQuery.rawValue);
-      console.log('validValue: ', filterQuery.validValue());
-      console.log('filter: ', typeof filterQuery.filter);
-      console.log('valid?: ', filterQuery.valid());
-      console.log('\n');
-    });
-    console.log('\n');
-  };
-
   searchFilterFunction = (text: string) => {
-    // console.log('searching for:', text);
-
     const newData = this.state.allCards.filter(card => {
       const textData = text;
       const itemData = `${card.title} ${card.sortTitle} ${card.abbr || ' '}`
@@ -172,14 +152,13 @@ class SearchableCardList extends Component {
     });
   };
 
-  // note: this header is badly named, as it appears on the bottom of the screen...
-  renderHeader = () => {
+  renderFooter = () => {
     return (
       <KeyboardAvoidingView behavior="position">
         <View
-          // contains entire header: search bar and filter queries
+          // contains entire footer: search bar and filter queries
           style={{
-            ...styles.headerContainer,
+            ...styles.footerContainer,
             backgroundColor: this.state.theme.translucentBackgroundColor,
             height:
               this.state.filterQuerySet.viewHeight() +
@@ -200,105 +179,15 @@ class SearchableCardList extends Component {
             }
           />
           <View style={styles.filterQuerySetContainer}>
-            {!this.state.query && (
-              <View style={styles.defaultTextContainer}>
-                <Text
-                  style={{
-                    color: this.state.theme.foregroundColor,
-                  }}>
-                  Tap the
-                </Text>
-                <Icon
-                  name={this.currentSearchMode().icon}
-                  type="ionicon"
-                  color={this.state.theme.foregroundColor}
-                  size={16}
-                  style={styles.defaultTextIcon}
-                />
-                <Text
-                  style={{
-                    color: this.state.theme.foregroundColor,
-                  }}>
-                  icon to switch between search modes.
-                </Text>
-              </View>
-            )}
-
-            {this.state.filterQuerySet.filterQueries.map(
-              (filterQuery: FilterQuery, i: number) => (
-                <View
-                  key={`filterQuery-${i}`}
-                  style={{
-                    ...styles.filterQueryContainer,
-                  }}>
-                  {this.state.searchModeIndex == 1 && filterQuery.query && (
-                    <SearchBarChip
-                      title={filterQuery.displayFieldName()}
-                      colorConditional={filterQuery.validField()}
-                      theme={this.state.theme}
-                    />
-                  )}
-
-                  {this.state.searchModeIndex == 1 &&
-                    (filterQuery.comparator ||
-                      filterQuery.partiallyValidComparator()) &&
-                    !(
-                      filterQuery.usingDefaultComparator() &&
-                      filterQuery.comparator.name == 'includes'
-                    ) && (
-                      <SearchBarChip
-                        title={filterQuery.displayComparatorName()}
-                        colorConditional={filterQuery.validComparator()}
-                        theme={this.state.theme}
-                      />
-                    )}
-
-                  {this.state.searchModeIndex == 1 && filterQuery.value && (
-                    <SearchBarChip
-                      title={filterQuery.rawValue}
-                      colorConditional={
-                        filterQuery.validValue() &&
-                        filterQuery.length(this.state.allCards) > 0
-                      }
-                      theme={this.state.theme}
-                    />
-                  )}
-
-                  {this.state.query != '' &&
-                    this.state.searchModeIndex == 0 && (
-                      <SearchBarChip
-                        title={this.state.query}
-                        colorConditional={true}
-                        theme={this.state.theme}
-                      />
-                    )}
-
-                  <Text
-                    style={{
-                      color: this.state.theme.foregroundColor,
-                      ...styles.resultsCount,
-                    }}>
-                    {this.state.query
-                      ? `(${
-                          filterQuery.valid()
-                            ? filterQuery.execute(this.state.allCards).length
-                            : this.state.data.length
-                        } results)`
-                      : ''}
-                  </Text>
-                </View>
-              ),
-            )}
-            {this.state.query && this.state.filterQuerySet.length() > 1 && (
-              <Text
-                style={{
-                  color: this.state.theme.foregroundColor,
-                  backgroundColor: 'transparent',
-                  ...styles.combinedResultsCount,
-                }}>
-                {`(combined ${this.state.data.length} results)`}
-              </Text>
-            )}
+            {!this.state.query && this.renderSwitchModeHint()}
+            <QueryStatusBar
+              theme={this.state.theme}
+              query={this.state.query}
+              filterQuerySet={this.state.filterQuerySet}
+              searchMode={this.state.searchModeIndex}
+              allCards={this.state.allCards}
+              data={this.state.data}
+            />
           </View>
 
           <SearchBar
@@ -333,7 +222,7 @@ class SearchableCardList extends Component {
     );
   };
 
-  renderEmptyState = () => {
+  renderEmptyListComponent = () => {
     return (
       <>
         <Text
@@ -351,6 +240,53 @@ class SearchableCardList extends Component {
           {this.currentSearchMode().description}
         </Text>
       </>
+    );
+  };
+
+  renderSwitchModeHint = () => (
+    <View style={styles.defaultTextContainer}>
+      <Text
+        style={{
+          color: this.state.theme.foregroundColor,
+        }}>
+        Tap the
+      </Text>
+      <Icon
+        name={this.currentSearchMode().icon}
+        type="ionicon"
+        color={this.state.theme.foregroundColor}
+        size={16}
+        style={styles.defaultTextIcon}
+      />
+      <Text
+        style={{
+          color: this.state.theme.foregroundColor,
+        }}>
+        icon to switch between search modes.
+      </Text>
+    </View>
+  );
+
+  renderNoResultsListComponent = () => (
+    <View style={styles.listEmptyContainer}>
+      <Text
+        style={{
+          color: this.state.theme.foregroundColor,
+          ...styles.emptyListText,
+        }}>
+        No results found
+      </Text>
+    </View>
+  );
+
+  renderSeparatorComponent = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: this.state.theme.dividerColor,
+          ...styles.separator,
+        }}
+      />
     );
   };
 
@@ -387,19 +323,9 @@ class SearchableCardList extends Component {
             />
           )}
           ListEmptyComponent={() =>
-            this.state.query ? (
-              <View style={styles.listEmptyContainer}>
-                <Text
-                  style={{
-                    color: this.state.theme.foregroundColor,
-                    ...styles.emptyListText,
-                  }}>
-                  No results found
-                </Text>
-              </View>
-            ) : (
-              this.renderEmptyState()
-            )
+            this.state.query
+              ? this.renderNoResultsListComponent()
+              : this.renderEmptyListComponent()
           }
           ListHeaderComponent={() => <></>}
           ListHeaderComponentStyle={{
@@ -428,7 +354,7 @@ class SearchableCardList extends Component {
           updateCellsBatchingPeriod={100} // Increase time between renders
           windowSize={10} // Reduce the window size
         />
-        {this.renderHeader()}
+        {this.renderFooter()}
       </>
     );
   }
