@@ -149,7 +149,7 @@ class SearchableCardList extends Component {
   };
 
   searchFilterFunction = (text: string) => {
-    console.log('searching for:', text);
+    // console.log('searching for:', text);
 
     const newData = this.state.allCards.filter(card => {
       const textData = text;
@@ -338,8 +338,9 @@ class SearchableCardList extends Component {
                     }}>
                     {this.state.query
                       ? `(${
-                          // filterQuery.execute(this.state.allCards).length
-                          this.state.data.length
+                          filterQuery.valid()
+                            ? filterQuery.execute(this.state.allCards).length
+                            : this.state.data.length
                         } results)`
                       : ''}
                   </Text>
