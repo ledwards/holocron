@@ -1,6 +1,5 @@
 APP STUFF
 =========
-* better screenshots and App Store description
 * rename repo
 
 FEATURES
@@ -53,14 +52,12 @@ FUNCTIONALITY IMPROVEMENTS
 
 UX IMPROVEMENTS
 ===============
-* tapping anywhere on screen should hide keyboard
 * tap a site rotates it 180 degrees
 * acronyms resolve to their expanded selves in the green filter query area (even for basic search)
 
 
 DESIGN IDEAS
 ============
-* add glassmorphism to the header/footer https://github.com/Kureev/react-native-blur#usage
 * empty list state has holocron art - maybe dependent on light vs. dark mode
 
 

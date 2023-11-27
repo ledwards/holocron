@@ -1,5 +1,5 @@
 import {PureComponent} from 'react';
-import {Animated, Easing, Dimensions} from 'react-native';
+import {Animated, Easing, Dimensions, Keyboard} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
@@ -48,6 +48,7 @@ class CardListItem extends PureComponent {
   }
 
   toggleExpanded = () => {
+    Keyboard.dismiss();
     const needsToExpand = !this.state.expanded;
     const needsToFlip =
       this.props.item.twoSided &&
