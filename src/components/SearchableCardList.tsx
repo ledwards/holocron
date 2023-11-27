@@ -10,12 +10,13 @@ import {SearchBar, Icon, Chip} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 
 import CardListItem from './CardListItem';
+import SearchBarChip from './SearchBarChip';
+
 import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 import FilterQuery from '../models/FilterQuery';
 
 import styles from '../styles/SearchableCardListStyles';
-
 const searchBarHeight = 28; // not used to set height, used for other calculations
 
 class SearchableCardList extends Component {
@@ -226,31 +227,16 @@ class SearchableCardList extends Component {
             {this.state.filterQuerySet.filterQueries.map(
               (filterQuery: FilterQuery, i: number) => (
                 <View
-                  key={`filterQuery_${i}`}
+                  key={`filterQuery-${i}`}
                   style={{
                     ...styles.filterQueryContainer,
                   }}>
                   {this.state.searchModeIndex == 1 && filterQuery.query && (
-                    <Chip
+                    <SearchBarChip
                       title={filterQuery.displayFieldName()}
-                      key={`$filter_query_{i}_field`}
-                      type="outline"
-                      buttonStyle={{
-                        backgroundColor: filterQuery.validField()
-                          ? this.state.theme.chipYesBackgroundColor
-                          : this.state.theme.chipNoBackgroundColor,
-                        borderColor: filterQuery.validField()
-                          ? this.state.theme.chipYesBorderColor
-                          : this.state.theme.chipNoBorderColor,
-                        ...styles.chipButton,
-                      }}
-                      titleStyle={{
-                        color: filterQuery.validField()
-                          ? this.state.theme.chipYesTextColor
-                          : this.state.theme.chipNoTextColor,
-                        ...styles.chipTitle,
-                      }}
-                      containerStyle={styles.chipContainer}></Chip>
+                      colorConditional={filterQuery.validField()}
+                      theme={this.state.theme}
+                    />
                   )}
 
                   {this.state.searchModeIndex == 1 &&
@@ -260,74 +246,30 @@ class SearchableCardList extends Component {
                       filterQuery.usingDefaultComparator() &&
                       filterQuery.comparator.name == 'includes'
                     ) && (
-                      <Chip
+                      <SearchBarChip
                         title={filterQuery.displayComparatorName()}
-                        key={`filter_query_${i}_comparator`}
-                        type="outline"
-                        buttonStyle={{
-                          backgroundColor: filterQuery.validComparator()
-                            ? this.state.theme.chipYesBackgroundColor
-                            : this.state.theme.chipNoBackgroundColor,
-                          borderColor: filterQuery.validComparator()
-                            ? this.state.theme.chipYesBorderColor
-                            : this.state.theme.chipNoBorderColor,
-                          ...styles.chipButton,
-                        }}
-                        titleStyle={{
-                          color: filterQuery.validComparator()
-                            ? this.state.theme.chipYesTextColor
-                            : this.state.theme.chipNoTextColor,
-                          ...styles.chipTitle,
-                        }}
-                        containerStyle={styles.chipContainer}></Chip>
+                        colorConditional={filterQuery.validComparator()}
+                        theme={this.state.theme}
+                      />
                     )}
 
                   {this.state.searchModeIndex == 1 && filterQuery.value && (
-                    <Chip
+                    <SearchBarChip
                       title={filterQuery.rawValue}
-                      key={'value'}
-                      type="outline"
-                      buttonStyle={{
-                        backgroundColor:
-                          filterQuery.validValue() &&
-                          filterQuery.length(this.state.allCards) > 0
-                            ? this.state.theme.chipYesBackgroundColor
-                            : this.state.theme.chipNoBackgroundColor,
-                        borderColor:
-                          filterQuery.validValue() &&
-                          filterQuery.length(this.state.allCards) > 0
-                            ? this.state.theme.chipYesBorderColor
-                            : this.state.theme.chipNoBorderColor,
-                        ...styles.chipButton,
-                      }}
-                      titleStyle={{
-                        color:
-                          filterQuery.validValue() &&
-                          filterQuery.length(this.state.allCards) > 0
-                            ? this.state.theme.chipYesTextColor
-                            : this.state.theme.chipNoTextColor,
-                        ...styles.chipTitle,
-                      }}
-                      containerStyle={styles.chipContainer}></Chip>
+                      colorConditional={
+                        filterQuery.validValue() &&
+                        filterQuery.length(this.state.allCards) > 0
+                      }
+                      theme={this.state.theme}
+                    />
                   )}
 
                   {this.state.query != '' &&
                     this.state.searchModeIndex == 0 && (
-                      <Chip
+                      <SearchBarChip
                         title={this.state.query}
-                        key={'value'}
-                        type="outline"
-                        buttonStyle={{
-                          backgroundColor:
-                            this.state.theme.chipYesBackgroundColor,
-                          borderColor: this.state.theme.chipYesBorderColor,
-                          ...styles.chipButton,
-                        }}
-                        titleStyle={{
-                          color: this.state.theme.chipYesTextColor,
-                          ...styles.chipTitle,
-                        }}
-                        containerStyle={styles.chipContainer}
+                        colorConditional={true}
+                        theme={this.state.theme}
                       />
                     )}
 
