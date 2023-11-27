@@ -11,6 +11,7 @@ import {BlurView} from '@react-native-community/blur';
 
 import CardListItem from './CardListItem';
 import QueryStatusBar from './QueryStatusBar';
+import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../presenters/CardPresenter';
 import FilterQuerySet from '../models/FilterQuerySet';
 
@@ -38,6 +39,7 @@ class SearchableCardList extends Component {
 
   readonly searchModes = {
     0: {
+      index: 0, // existence of this is proof that this should be a class
       label: 'title',
       icon: 'search-outline',
       title: 'Search cards by title',
@@ -45,6 +47,7 @@ class SearchableCardList extends Component {
         'quick draw \n\n farm \n\n chimaera \n\n destroyer \n\n dvdlots \n\n hdadtj',
     },
     1: {
+      index: 1,
       label: 'natural language query',
       icon: 'color-filter-outline',
       title: 'Search cards with natural language (BETA) ',
@@ -152,79 +155,17 @@ class SearchableCardList extends Component {
     });
   };
 
-  renderFooter = () => {
-    return (
-      <KeyboardAvoidingView behavior="position">
-        <View
-          // contains entire footer: search bar and filter queries
-          style={{
-            ...styles.footerContainer,
-            backgroundColor: this.state.theme.translucentBackgroundColor,
-            height:
-              this.state.filterQuerySet.viewHeight() +
-              this.state.nativeFooterHeight -
-              searchBarHeight,
-          }}>
-          <BlurView
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-              height: this.state.filterQuerySet.viewHeight() + 20, // magic number
-            }}
-            blurType={this.state.theme.name}
-            blurAmount={10}
-            reducedTransparencyFallbackColor={
-              this.state.theme.translucentBackgroundColor
-            }
-          />
-          <View style={styles.filterQuerySetContainer}>
-            {!this.state.query && this.renderSwitchModeHint()}
-            <QueryStatusBar
-              theme={this.state.theme}
-              query={this.state.query}
-              filterQuerySet={this.state.filterQuerySet}
-              searchMode={this.state.searchModeIndex}
-              allCards={this.state.allCards}
-              data={this.state.data}
-            />
-          </View>
-
-          <SearchBar
-            placeholder={`Search by ${this.currentSearchMode().label}`}
-            round
-            onChangeText={text => this.searchRouter(text)}
-            autoCorrect={false}
-            value={this.state.query}
-            containerStyle={{
-              ...styles.searchBarContainer,
-              bottom: this.state.nativeFooterHeight,
-              height: this.state.nativeFooterHeight, // for symmetry
-            }}
-            inputContainerStyle={{
-              backgroundColor: this.state.theme.secondaryBackgroundColor,
-            }}
-            searchIcon={
-              <Icon
-                name={this.currentSearchMode().icon}
-                type="ionicon"
-                color={this.state.theme.iconColor}
-                onPress={() => {
-                  this.setState({query: null});
-                  this.searchRouter('');
-                  this.setState({
-                    searchModeIndex: (this.state.searchModeIndex + 1) % 2,
-                  });
-                }}></Icon>
-            }></SearchBar>
-        </View>
-      </KeyboardAvoidingView>
-    );
+  toggleSearchMode = () => {
+    this.setState({query: null});
+    this.searchRouter('');
+    this.setState({
+      searchModeIndex: (this.state.searchModeIndex + 1) % 2,
+    });
   };
 
   renderEmptyListComponent = () => {
     return (
-      <>
+      <View style={styles.foo}>
         <Text
           style={{
             color: this.state.theme.foregroundColor,
@@ -239,33 +180,9 @@ class SearchableCardList extends Component {
           }}>
           {this.currentSearchMode().description}
         </Text>
-      </>
+      </View>
     );
   };
-
-  renderSwitchModeHint = () => (
-    <View style={styles.defaultTextContainer}>
-      <Text
-        style={{
-          color: this.state.theme.foregroundColor,
-        }}>
-        Tap the
-      </Text>
-      <Icon
-        name={this.currentSearchMode().icon}
-        type="ionicon"
-        color={this.state.theme.foregroundColor}
-        size={16}
-        style={styles.defaultTextIcon}
-      />
-      <Text
-        style={{
-          color: this.state.theme.foregroundColor,
-        }}>
-        icon to switch between search modes.
-      </Text>
-    </View>
-  );
 
   renderNoResultsListComponent = () => (
     <View style={styles.listEmptyContainer}>
@@ -354,7 +271,18 @@ class SearchableCardList extends Component {
           updateCellsBatchingPeriod={100} // Increase time between renders
           windowSize={10} // Reduce the window size
         />
-        {this.renderFooter()}
+        <CardSearchFooter
+          theme={this.state.theme}
+          query={this.state.query}
+          filterQuerySet={this.state.filterQuerySet}
+          nativeFooterHeight={this.state.nativeFooterHeight}
+          searchBarHeight={searchBarHeight}
+          searchMode={this.currentSearchMode()}
+          allCards={this.state.allCards}
+          data={this.state.data}
+          searchCallback={this.searchRouter}
+          toggleSearchMode={this.toggleSearchMode}
+        />
       </>
     );
   }

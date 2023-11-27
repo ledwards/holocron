@@ -11,7 +11,7 @@ type QueryStatusBarProps = {
   theme: any;
   query: string;
   filterQuerySet: FilterQuerySet;
-  searchMode: number; // 0: search, 1: advanced search
+  searchMode: any;
   allCards: Card[];
   data: Card[];
 };
@@ -25,7 +25,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
           style={{
             ...styles.filterQueryContainer,
           }}>
-          {props.searchMode == 1 && filterQuery.query && (
+          {props.searchMode.index == 1 && filterQuery.query && (
             <SearchBarChip
               title={filterQuery.displayFieldName()}
               colorConditional={filterQuery.validField()}
@@ -33,7 +33,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
             />
           )}
 
-          {props.searchMode == 1 &&
+          {props.searchMode.index == 1 &&
             (filterQuery.comparator ||
               filterQuery.partiallyValidComparator()) &&
             !(
@@ -47,7 +47,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
               />
             )}
 
-          {props.searchMode == 1 && filterQuery.value && (
+          {props.searchMode.index == 1 && filterQuery.value && (
             <SearchBarChip
               title={filterQuery.rawValue}
               colorConditional={
@@ -58,7 +58,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
             />
           )}
 
-          {props.query != '' && props.searchMode == 0 && (
+          {props.query != '' && props.searchMode.index == 0 && (
             <SearchBarChip
               title={props.query}
               colorConditional={true}
