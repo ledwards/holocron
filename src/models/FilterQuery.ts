@@ -46,11 +46,11 @@ class FilterQuery {
     };
 
     params = this.parseThreePartQuery() || params;
-    console.log('<three-part query>: ', params);
+    // console.log('<three-part query>: ', params);
 
     if (!params.field && params.comparator) {
       params = this.parseValidComparatorInvalidField() || params;
-      console.log('<valid comparator, invalid field>: ', params);
+      // console.log('<valid comparator, invalid field>: ', params);
     }
 
     if (
@@ -60,13 +60,13 @@ class FilterQuery {
       !this.partiallyValidComparator()
     ) {
       params = this.parseDefaultComparator() || params;
-      console.log('<default comparator>: ', params);
+      // console.log('<default comparator>: ', params);
     }
 
     if (!params.field && !params.comparator) {
       // no field or comparator matches
       params.rawField = params.query;
-      console.log('<whole query>: ', params);
+      // console.log('<whole query>: ', params);
     }
 
     if (params.value) {
@@ -129,12 +129,9 @@ class FilterQuery {
       }
 
       if (allMatches.length > 0) {
-        if (allMatches.length > 1) {
-          console.log(
-            'Found multiple matches! Using the first of ',
-            allMatches.map(m => [m.field.name, m.comparator.name]),
-          );
-        }
+        // if (allMatches.length > 1) {
+        //   console.log('Found multiple matches! Using the first of ', allMatches.map(m => [m.field.name, m.comparator.name]));
+        // }
         return allMatches[0];
       } else {
         return params;
@@ -175,12 +172,9 @@ class FilterQuery {
       .filter(el => el)
       .sort((a, b) => b.rawComparator.length - a.rawComparator.length);
 
-    if (allMatches.length > 1) {
-      console.log(
-        'Found multiple matches! Using the first of ',
-        allMatches.map(m => m.comparator.name),
-      );
-    }
+    // if (allMatches.length > 1) {
+    //   console.log('Found multiple matches! Using the first of ', allMatches.map(m => m.comparator.name));
+    // }
 
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
