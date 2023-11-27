@@ -3,10 +3,8 @@ import {
   View,
   ActivityIndicator,
   Text,
-  Image,
-  ImageBackground,
   Animated,
-  Appearance,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {SearchBar, Icon, Chip} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
@@ -176,106 +174,78 @@ class SearchableCardList extends Component {
   // note: this header is badly named, as it appears on the bottom of the screen...
   renderHeader = () => {
     return (
-      <View
-        // contains entire header: search bar and filter queries
-        style={{
-          ...styles.headerContainer,
-          backgroundColor: this.state.theme.translucentBackgroundColor,
-          height:
-            this.state.filterQuerySet.viewHeight() +
-            this.state.nativeFooterHeight -
-            searchBarHeight,
-        }}>
-        <BlurView
+      <KeyboardAvoidingView behavior="position">
+        <View
+          // contains entire header: search bar and filter queries
           style={{
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
-            height: this.state.filterQuerySet.viewHeight() + 20, // magic number
-          }}
-          blurType={this.state.theme.name}
-          blurAmount={10}
-          reducedTransparencyFallbackColor={
-            this.state.theme.translucentBackgroundColor
-          }
-        />
-        <View style={styles.filterQuerySetContainer}>
-          {!this.state.query && (
-            <View style={styles.defaultTextContainer}>
-              <Text
-                style={{
-                  color: this.state.theme.foregroundColor,
-                }}>
-                Tap the
-              </Text>
-              <Icon
-                name={this.currentSearchMode().icon}
-                type="ionicon"
-                color={this.state.theme.foregroundColor}
-                size={16}
-                style={styles.defaultTextIcon}
-              />
-              <Text
-                style={{
-                  color: this.state.theme.foregroundColor,
-                }}>
-                icon to switch between search modes.
-              </Text>
-            </View>
-          )}
+            ...styles.headerContainer,
+            backgroundColor: this.state.theme.translucentBackgroundColor,
+            height:
+              this.state.filterQuerySet.viewHeight() +
+              this.state.nativeFooterHeight -
+              searchBarHeight,
+          }}>
+          <BlurView
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              height: this.state.filterQuerySet.viewHeight() + 20, // magic number
+            }}
+            blurType={this.state.theme.name}
+            blurAmount={10}
+            reducedTransparencyFallbackColor={
+              this.state.theme.translucentBackgroundColor
+            }
+          />
+          <View style={styles.filterQuerySetContainer}>
+            {!this.state.query && (
+              <View style={styles.defaultTextContainer}>
+                <Text
+                  style={{
+                    color: this.state.theme.foregroundColor,
+                  }}>
+                  Tap the
+                </Text>
+                <Icon
+                  name={this.currentSearchMode().icon}
+                  type="ionicon"
+                  color={this.state.theme.foregroundColor}
+                  size={16}
+                  style={styles.defaultTextIcon}
+                />
+                <Text
+                  style={{
+                    color: this.state.theme.foregroundColor,
+                  }}>
+                  icon to switch between search modes.
+                </Text>
+              </View>
+            )}
 
-          {this.state.filterQuerySet.filterQueries.map(
-            (filterQuery: FilterQuery, i: number) => (
-              <View
-                key={`filterQuery_${i}`}
-                style={{
-                  ...styles.filterQueryContainer,
-                }}>
-                {this.state.searchModeIndex == 1 && filterQuery.query && (
-                  <Chip
-                    title={filterQuery.displayFieldName()}
-                    key={`$filter_query_{i}_field`}
-                    type="outline"
-                    buttonStyle={{
-                      backgroundColor: filterQuery.validField()
-                        ? this.state.theme.chipYesBackgroundColor
-                        : this.state.theme.chipNoBackgroundColor,
-                      borderColor: filterQuery.validField()
-                        ? this.state.theme.chipYesBorderColor
-                        : this.state.theme.chipNoBorderColor,
-                      ...styles.chipButton,
-                    }}
-                    titleStyle={{
-                      color: filterQuery.validField()
-                        ? this.state.theme.chipYesTextColor
-                        : this.state.theme.chipNoTextColor,
-                      ...styles.chipTitle,
-                    }}
-                    containerStyle={styles.chipContainer}></Chip>
-                )}
-
-                {this.state.searchModeIndex == 1 &&
-                  (filterQuery.comparator ||
-                    filterQuery.partiallyValidComparator()) &&
-                  !(
-                    filterQuery.usingDefaultComparator() &&
-                    filterQuery.comparator.name == 'includes'
-                  ) && (
+            {this.state.filterQuerySet.filterQueries.map(
+              (filterQuery: FilterQuery, i: number) => (
+                <View
+                  key={`filterQuery_${i}`}
+                  style={{
+                    ...styles.filterQueryContainer,
+                  }}>
+                  {this.state.searchModeIndex == 1 && filterQuery.query && (
                     <Chip
-                      title={filterQuery.displayComparatorName()}
-                      key={`filter_query_${i}_comparator`}
+                      title={filterQuery.displayFieldName()}
+                      key={`$filter_query_{i}_field`}
                       type="outline"
                       buttonStyle={{
-                        backgroundColor: filterQuery.validComparator()
+                        backgroundColor: filterQuery.validField()
                           ? this.state.theme.chipYesBackgroundColor
                           : this.state.theme.chipNoBackgroundColor,
-                        borderColor: filterQuery.validComparator()
+                        borderColor: filterQuery.validField()
                           ? this.state.theme.chipYesBorderColor
                           : this.state.theme.chipNoBorderColor,
                         ...styles.chipButton,
                       }}
                       titleStyle={{
-                        color: filterQuery.validComparator()
+                        color: filterQuery.validField()
                           ? this.state.theme.chipYesTextColor
                           : this.state.theme.chipNoTextColor,
                         ...styles.chipTitle,
@@ -283,108 +253,140 @@ class SearchableCardList extends Component {
                       containerStyle={styles.chipContainer}></Chip>
                   )}
 
-                {this.state.searchModeIndex == 1 && filterQuery.value && (
-                  <Chip
-                    title={filterQuery.rawValue}
-                    key={'value'}
-                    type="outline"
-                    buttonStyle={{
-                      backgroundColor:
-                        filterQuery.validValue() &&
-                        filterQuery.length(this.state.allCards) > 0
-                          ? this.state.theme.chipYesBackgroundColor
-                          : this.state.theme.chipNoBackgroundColor,
-                      borderColor:
-                        filterQuery.validValue() &&
-                        filterQuery.length(this.state.allCards) > 0
-                          ? this.state.theme.chipYesBorderColor
-                          : this.state.theme.chipNoBorderColor,
-                      ...styles.chipButton,
-                    }}
-                    titleStyle={{
-                      color:
-                        filterQuery.validValue() &&
-                        filterQuery.length(this.state.allCards) > 0
-                          ? this.state.theme.chipYesTextColor
-                          : this.state.theme.chipNoTextColor,
-                      ...styles.chipTitle,
-                    }}
-                    containerStyle={styles.chipContainer}></Chip>
-                )}
+                  {this.state.searchModeIndex == 1 &&
+                    (filterQuery.comparator ||
+                      filterQuery.partiallyValidComparator()) &&
+                    !(
+                      filterQuery.usingDefaultComparator() &&
+                      filterQuery.comparator.name == 'includes'
+                    ) && (
+                      <Chip
+                        title={filterQuery.displayComparatorName()}
+                        key={`filter_query_${i}_comparator`}
+                        type="outline"
+                        buttonStyle={{
+                          backgroundColor: filterQuery.validComparator()
+                            ? this.state.theme.chipYesBackgroundColor
+                            : this.state.theme.chipNoBackgroundColor,
+                          borderColor: filterQuery.validComparator()
+                            ? this.state.theme.chipYesBorderColor
+                            : this.state.theme.chipNoBorderColor,
+                          ...styles.chipButton,
+                        }}
+                        titleStyle={{
+                          color: filterQuery.validComparator()
+                            ? this.state.theme.chipYesTextColor
+                            : this.state.theme.chipNoTextColor,
+                          ...styles.chipTitle,
+                        }}
+                        containerStyle={styles.chipContainer}></Chip>
+                    )}
 
-                {this.state.query != '' && this.state.searchModeIndex == 0 && (
-                  <Chip
-                    title={this.state.query}
-                    key={'value'}
-                    type="outline"
-                    buttonStyle={{
-                      backgroundColor: this.state.theme.chipYesBackgroundColor,
-                      borderColor: this.state.theme.chipYesBorderColor,
-                      ...styles.chipButton,
-                    }}
-                    titleStyle={{
-                      color: this.state.theme.chipYesTextColor,
-                      ...styles.chipTitle,
-                    }}
-                    containerStyle={styles.chipContainer}
-                  />
-                )}
+                  {this.state.searchModeIndex == 1 && filterQuery.value && (
+                    <Chip
+                      title={filterQuery.rawValue}
+                      key={'value'}
+                      type="outline"
+                      buttonStyle={{
+                        backgroundColor:
+                          filterQuery.validValue() &&
+                          filterQuery.length(this.state.allCards) > 0
+                            ? this.state.theme.chipYesBackgroundColor
+                            : this.state.theme.chipNoBackgroundColor,
+                        borderColor:
+                          filterQuery.validValue() &&
+                          filterQuery.length(this.state.allCards) > 0
+                            ? this.state.theme.chipYesBorderColor
+                            : this.state.theme.chipNoBorderColor,
+                        ...styles.chipButton,
+                      }}
+                      titleStyle={{
+                        color:
+                          filterQuery.validValue() &&
+                          filterQuery.length(this.state.allCards) > 0
+                            ? this.state.theme.chipYesTextColor
+                            : this.state.theme.chipNoTextColor,
+                        ...styles.chipTitle,
+                      }}
+                      containerStyle={styles.chipContainer}></Chip>
+                  )}
 
-                <Text
-                  style={{
-                    color: this.state.theme.foregroundColor,
-                    ...styles.resultsCount,
-                  }}>
-                  {this.state.query
-                    ? `(${
-                        // filterQuery.execute(this.state.allCards).length
-                        this.state.data.length
-                      } results)`
-                    : ''}
-                </Text>
-              </View>
-            ),
-          )}
-          {this.state.query && this.state.filterQuerySet.length() > 1 && (
-            <Text
-              style={{
-                color: this.state.theme.foregroundColor,
-                backgroundColor: 'transparent',
-                ...styles.combinedResultsCount,
-              }}>
-              {`(combined ${this.state.data.length} results)`}
-            </Text>
-          )}
+                  {this.state.query != '' &&
+                    this.state.searchModeIndex == 0 && (
+                      <Chip
+                        title={this.state.query}
+                        key={'value'}
+                        type="outline"
+                        buttonStyle={{
+                          backgroundColor:
+                            this.state.theme.chipYesBackgroundColor,
+                          borderColor: this.state.theme.chipYesBorderColor,
+                          ...styles.chipButton,
+                        }}
+                        titleStyle={{
+                          color: this.state.theme.chipYesTextColor,
+                          ...styles.chipTitle,
+                        }}
+                        containerStyle={styles.chipContainer}
+                      />
+                    )}
+
+                  <Text
+                    style={{
+                      color: this.state.theme.foregroundColor,
+                      ...styles.resultsCount,
+                    }}>
+                    {this.state.query
+                      ? `(${
+                          // filterQuery.execute(this.state.allCards).length
+                          this.state.data.length
+                        } results)`
+                      : ''}
+                  </Text>
+                </View>
+              ),
+            )}
+            {this.state.query && this.state.filterQuerySet.length() > 1 && (
+              <Text
+                style={{
+                  color: this.state.theme.foregroundColor,
+                  backgroundColor: 'transparent',
+                  ...styles.combinedResultsCount,
+                }}>
+                {`(combined ${this.state.data.length} results)`}
+              </Text>
+            )}
+          </View>
+
+          <SearchBar
+            placeholder={`Search by ${this.currentSearchMode().label}`}
+            round
+            onChangeText={text => this.searchRouter(text)}
+            autoCorrect={false}
+            value={this.state.query}
+            containerStyle={{
+              ...styles.searchBarContainer,
+              bottom: this.state.nativeFooterHeight,
+              height: this.state.nativeFooterHeight, // for symmetry
+            }}
+            inputContainerStyle={{
+              backgroundColor: this.state.theme.secondaryBackgroundColor,
+            }}
+            searchIcon={
+              <Icon
+                name={this.currentSearchMode().icon}
+                type="ionicon"
+                color={this.state.theme.iconColor}
+                onPress={() => {
+                  this.setState({query: null});
+                  this.searchRouter('');
+                  this.setState({
+                    searchModeIndex: (this.state.searchModeIndex + 1) % 2,
+                  });
+                }}></Icon>
+            }></SearchBar>
         </View>
-
-        <SearchBar
-          placeholder={`Search by ${this.currentSearchMode().label}`}
-          round
-          onChangeText={text => this.searchRouter(text)}
-          autoCorrect={false}
-          value={this.state.query}
-          containerStyle={{
-            ...styles.searchBarContainer,
-            bottom: this.state.nativeFooterHeight,
-            height: this.state.nativeFooterHeight, // for symmetry
-          }}
-          inputContainerStyle={{
-            backgroundColor: this.state.theme.secondaryBackgroundColor,
-          }}
-          searchIcon={
-            <Icon
-              name={this.currentSearchMode().icon}
-              type="ionicon"
-              color={this.state.theme.iconColor}
-              onPress={() => {
-                this.setState({query: null});
-                this.searchRouter('');
-                this.setState({
-                  searchModeIndex: (this.state.searchModeIndex + 1) % 2,
-                });
-              }}></Icon>
-          }></SearchBar>
-      </View>
+      </KeyboardAvoidingView>
     );
   };
 
@@ -475,7 +477,7 @@ class SearchableCardList extends Component {
           }}
           keyExtractor={(item, index) => `${index}_${item.id}`}
           ItemSeparatorComponent={this.renderSeparator}
-          keyboardShouldPersistTaps="never"
+          keyboardShouldPersistTaps="handled"
           // Performance settings
           initialNumToRender={10} // Reduce initial render amount
           removeClippedSubviews={true} // Unmount components when outside of window
