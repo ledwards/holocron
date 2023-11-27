@@ -1,7 +1,6 @@
 # Release Notes
 
 ## 1.0.1
-- Fix bug with counting results of subqueries in advanced search
 
 ## 1.0.0 (current)
 - Initial release
@@ -10,3 +9,4 @@
 - Advanced search (partially functional)
 - Dark/Light mode for iOS
 - Fancy AI-generated app icon
+- Fix bug with counting results of subqueries in advanced search
