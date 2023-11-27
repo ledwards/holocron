@@ -64,6 +64,7 @@ DESIGN IDEAS
 
 REFACTORS
 =========
+* class components are all using a state object instead of useState
 * Use Typescript properly in every file...
 * SearchMode should be a class instead of a couple hashes
 * `Value` class
