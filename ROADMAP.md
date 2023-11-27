@@ -54,6 +54,7 @@ UX IMPROVEMENTS
 ===============
 * tap a site rotates it 180 degrees
 * acronyms resolve to their expanded selves in the green filter query area (even for basic search)
+* Advanced search (for small phones) on press, hide the detailed view of the advanced query and leave just "combined reuslts" showing, on focus on the input field, show again
 
 
 DESIGN IDEAS

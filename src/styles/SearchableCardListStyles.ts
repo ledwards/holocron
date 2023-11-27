@@ -22,20 +22,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  chipButton: {
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 0,
-    marginTop: 6,
-    marginHorizontal: 2,
-  },
-  chipContainer: {
-    marginHorizontal: 0,
-  },
-  chipTitle: {
-    fontSize: 14,
-  },
   resultsCount: {
     fontSize: 14,
     alignSelf: 'center',
