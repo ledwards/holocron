@@ -65,8 +65,7 @@ DESIGN IDEAS
 REFACTORS
 =========
 * Use Typescript properly in every file...
-* chip code has a LOT of duplication (copy/paste)
-* SearchableCardList should have many sub-components
+* SearchMode should be a class instead of a couple hashes
 * `Value` class
  - should contain alias resolver logic
  - values can actually be a set of values, e.g. `gt c numbers` is actually gametext contains either of the two "numbers" cards
@@ -81,6 +80,7 @@ REFACTORS
 * Rename `FilterQuerySet` to `FilterQueryGroup`
 * `FilterQuery` maybe needs a Presenter that can wrap display logic
 * Rename `card` to `cardPresenter` when its a presenter that's being used to clear up confusion
+* figure out the magic numbers in the `SearchableCardList` component
 
 
 ONE DAY
