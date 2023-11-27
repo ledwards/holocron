@@ -128,7 +128,7 @@ const LTE_COMPARATOR = new Comparator(
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
   (card: Card, attribute: string, value: string) =>
-    card.getSanitized(attribute).includes(
+    card.getSanitized(attribute)?.includes(
       value
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
