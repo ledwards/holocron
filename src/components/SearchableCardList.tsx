@@ -163,7 +163,7 @@ class SearchableCardList extends Component {
     });
   };
 
-  renderEmptyListComponent = () => {
+  EmptyListComponent = () => {
     return (
       <View style={styles.foo}>
         <Text
@@ -184,7 +184,7 @@ class SearchableCardList extends Component {
     );
   };
 
-  renderNoResultsListComponent = () => (
+  NoResultsListComponent = () => (
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
@@ -196,7 +196,7 @@ class SearchableCardList extends Component {
     </View>
   );
 
-  renderSeparatorComponent = () => {
+  SeparatorComponent = () => {
     return (
       <View
         style={{
@@ -241,8 +241,8 @@ class SearchableCardList extends Component {
           )}
           ListEmptyComponent={() =>
             this.state.query
-              ? this.renderNoResultsListComponent()
-              : this.renderEmptyListComponent()
+              ? this.NoResultsListComponent()
+              : this.EmptyListComponent()
           }
           ListHeaderComponent={() => <></>}
           ListHeaderComponentStyle={{
@@ -262,7 +262,7 @@ class SearchableCardList extends Component {
             borderColor: this.state.theme.dividerColor,
           }}
           keyExtractor={(item, index) => `${index}_${item.id}`}
-          ItemSeparatorComponent={this.renderSeparator}
+          ItemSeparatorComponent={this.SeparatorComponent}
           keyboardShouldPersistTaps="handled"
           // Performance settings
           initialNumToRender={10} // Reduce initial render amount
