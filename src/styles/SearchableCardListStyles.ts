@@ -47,6 +47,13 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 7,
   },
+  listEmptyContainer: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 20,
+  },
   defaultTextIcon: {
     marginLeft: 5,
     marginRight: 5,
