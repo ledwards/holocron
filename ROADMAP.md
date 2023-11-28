@@ -4,14 +4,14 @@ FEATURES
 ========
 * swipe on any expanded card to show card details broken out as text
 * Put entire app under tab bar menu
-* Decklists
-* PDF Rules
-* Text Rules
+* Tab: Settings (switch Dark/Light/inherit mode)
+* Tab: PDF Rules
+* Tab: Decklists
 * Add login screen for gemp
 * Browse your own decks
-* use OpenAI to ingest rules PDF and card data to create a TD chatbot or natural language chat query interface
-* Links to Forums, Slack, Discord?
-* Settings (switch Dark/Light/inherit mode)
+* Tab: Deckbuilder
+* Tab: use OpenAI to ingest rules PDF and card data to create a TD chatbot or natural language chat query interface
+* Tab: Links to Forums, Slack, Discord?
 
 
 GENERAL BUGS
@@ -48,6 +48,7 @@ FUNCTIONALITY IMPROVEMENTS
 * fuzzy search (https://medium.com/analytics-vidhya/how-to-create-a-fuzzy-search-in-react-js-using-fuse-js-859f80345657)
 * if results include both alias and exact title, list alias last (or sort by score)
 * Field might want a true name vs display name that shows in the chip, e.g. "underlyingcardfor" vs "undercard for"
+* show card details by swiping on a card
 
 
 UX IMPROVEMENTS
@@ -88,8 +89,12 @@ REFACTORS
 
 APP STORE / OPS
 ===============
+* webpage home for app
 
 
 ONE DAY
 =======
 * use native driver for CardListItem component e.g. https://stackoverflow.com/questions/63976219/style-property-width-is-not-supported-by-native-animated-module-need-advice-f
+* Android app
+* tablet app
+* desktop app
