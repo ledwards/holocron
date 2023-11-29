@@ -1,18 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  useColorScheme,
-  StatusBar,
-  Platform,
-  Appearance,
-} from 'react-native';
-import {BlurView} from '@react-native-community/blur';
+import {View, useColorScheme, Appearance} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
-import DeviceInfo from 'react-native-device-info';
 
-import SearchableCardList from './src/components/SearchableCardList';
+import TabNavigation from './src/components/TabNavigation';
 
 import downloadCardDefinitions from './src/lib/DownloadCardDefinitions';
 import downloadExpansionSets from './src/lib/DownloadExpansionSets';
@@ -21,30 +12,6 @@ import loadExpansionSets from './src/lib/LoadExpansionSets';
 
 import themeDark from './src/styles/themeDark';
 import themeLight from './src/styles/themeLight';
-
-const statusBarHeight = () =>
-  Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
-
-const headerHeight = () => {
-  if (Platform.OS === 'android') {
-    return 0;
-  } else if (DeviceInfo.hasNotch()) {
-    return 44;
-  } else {
-    return 0;
-  }
-};
-
-const nativeHeaderHeight = () => statusBarHeight() + headerHeight();
-const nativeFooterHeight = () => {
-  if (Platform.OS === 'android') {
-    return 0;
-  } else if (DeviceInfo.hasNotch()) {
-    return 44;
-  } else {
-    return 30;
-  }
-};
 
 const App = () => {
   const initialTheme = useColorScheme();
@@ -107,46 +74,10 @@ const App = () => {
   }, [isCardDownloadReady, isSetsDownloadReady]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-      <StatusBar barStyle={theme.statusBarStyle} />
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: theme.backgroundColor,
-        }}>
-        {allCards && allCards.length > 0 ? (
-          <>
-            <SearchableCardList
-              cards={allCards}
-              theme={theme}
-              nativeHeaderHeight={nativeHeaderHeight()}
-              nativeFooterHeight={nativeFooterHeight()}
-            />
-            <BlurView
-              style={{
-                position: 'absolute',
-                top: 0,
-                width: '100%',
-                height: nativeHeaderHeight(),
-              }}
-              blurType={theme.name}
-              blurAmount={10}
-              reducedTransparencyFallbackColor={
-                theme.translucentBackgroundColor
-              }
-            />
-          </>
-        ) : (
-          <Text style={{textAlign: 'center'}}>
-            {internetConnection
-              ? 'Loading...'
-              : 'Waiting for Internet connection...'}
-          </Text>
-        )}
-      </View>
+    <View style={{width: '100%', height: '100%', backgroundColor: 'purple'}}>
+      <NavigationContainer>
+        <TabNavigation theme={theme} />
+      </NavigationContainer>
     </View>
   );
 };

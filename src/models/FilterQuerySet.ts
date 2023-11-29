@@ -27,7 +27,7 @@ class FilterQuerySet {
 
   // TODO: move this to a presenter
   viewHeight() {
-    return 73 + 25 * this.length() + (this.length() > 1 ? 35 : 0);
+    return 45 + 25 * this.length() + (this.length() > 1 ? 35 : 0);
   }
 
   execute(cards: Card[]) {

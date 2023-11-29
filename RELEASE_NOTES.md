@@ -1,6 +1,7 @@
 # Release Notes
 
 ## 1.0.1
+- Navigation bar!
 
 ## 1.0.0 (current)
 - Initial release

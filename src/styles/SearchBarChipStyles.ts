@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 4,
     paddingVertical: 0,
-    marginTop: 6,
+    marginTop: 0,
     marginHorizontal: 2,
   },
   chipContainer: {
