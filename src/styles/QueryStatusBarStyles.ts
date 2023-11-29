@@ -2,8 +2,9 @@ import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   filterQueryContainer: {
-    paddingLeft: 7,
-    paddingRight: 7,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingBottom: 8,
     flex: 1,
     flexDirection: 'row',
   },

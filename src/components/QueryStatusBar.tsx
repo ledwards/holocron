@@ -20,11 +20,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
   <>
     {props.filterQuerySet.filterQueries.map(
       (filterQuery: FilterQuery, i: number) => (
-        <View
-          key={`filterQuery-${i}`}
-          style={{
-            ...styles.filterQueryContainer,
-          }}>
+        <View key={`filterQuery-${i}`} style={styles.filterQueryContainer}>
           {props.searchMode.index == 1 && filterQuery.query && (
             <SearchBarChip
               title={filterQuery.displayFieldName()}
@@ -86,7 +82,6 @@ const QueryStatusBar = (props: QueryStatusBarProps) => (
       <Text
         style={{
           color: props.theme.foregroundColor,
-          backgroundColor: 'transparent',
           ...styles.combinedResultsCount,
         }}>
         {`(combined ${props.data.length} results)`}

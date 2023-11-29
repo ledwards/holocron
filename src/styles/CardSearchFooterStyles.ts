@@ -1,12 +1,13 @@
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
-  defaultTextContainer: {
+  modeCoachTip: {
     alignSelf: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-    marginTop: 7,
+    marginTop: 5,
+    marginBottom: 10,
   },
   defaultTextIcon: {
     marginLeft: 5,
@@ -27,9 +28,11 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     borderTopWidth: 0, // must specify individually for some reason
     borderBottomWidth: 0, // must specify individually for some reason
+    paddingTop: 0,
+    paddingBottom: 0,
+    margin: 0,
     backgroundColor: 'transparent',
     width: '100%',
-    position: 'absolute',
   },
   filterQuerySetContainer: {
     position: 'absolute',

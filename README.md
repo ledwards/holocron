@@ -8,7 +8,7 @@ React Native iOS app for Star Wars CCG card browsing
 `npx react-native start --reset-cache`
 
 ## Release
-* `npm i && cd ios && pod install && cd ..`
+* `npx pod-install ios`
 * (Optional) try release build with: `npx react-native run-ios --mode Release`
 * run `npm version patch|minor|major`
 * (Optional): `npx react-native-version --never-amend`

@@ -32,6 +32,10 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     fontSize: 16,
   },
+  flatListContentContainer: {
+    flexGrow: 1,
+    marginTop: 1,
+  },
 });
 
 export default styles;
