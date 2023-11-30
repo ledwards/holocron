@@ -3,7 +3,6 @@
 FEATURES
 ========
 * swipe on any expanded card to show card details broken out as text
-* Put entire app under tab bar menu
 * Tab: Settings (switch Dark/Light/inherit mode)
 * Tab: PDF Rules
 * Tab: Decklists
@@ -50,7 +49,6 @@ FUNCTIONALITY IMPROVEMENTS
 * if results include both alias and exact title, list alias last (or sort by score)
 * possibly want to include fuzzy search on advanced search values as well...?
 * Field might want a true name vs display name that shows in the chip, e.g. "underlyingcardfor" vs "undercard for"
-* show card details by swiping on a card
 
 
 UX IMPROVEMENTS
@@ -58,7 +56,6 @@ UX IMPROVEMENTS
 * tap a site rotates it 180 degrees
 * acronyms resolve to their expanded selves in the green filter query area (even for basic search)
 * Advanced search (for small phones) on press, hide the detailed view of the advanced query and leave just "combined reuslts" showing, on focus on the input field, show again
-* on default state of the lsit view, lock scrolling
 * on advanced search, if i start scrolling, collapse my advanced search filter queries
 
 
@@ -111,4 +108,4 @@ ONE DAY
 * desktop app
 * put all the data behind an API
 * Collections
-* CV ingestion of cards
+* CV ingestion of cards for decks, and lookups for Search/Rules
