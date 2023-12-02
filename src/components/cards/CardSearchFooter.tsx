@@ -4,11 +4,11 @@ import {BlurView} from '@react-native-community/blur';
 import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
 import QueryStatusBar from './QueryStatusBar';
-import Card from '../models/Card';
-import FilterQuerySet from '../models/FilterQuerySet';
+import Card from '../../models/Card';
+import FilterQuerySet from '../../models/FilterQuerySet';
 
-import styles from '../styles/CardSearchFooterStyles';
-import layout from '../constants/layout';
+import styles from '../../styles/CardSearchFooterStyles';
+import layout from '../../constants/layout';
 
 type CardSearchFooterProps = {
   theme: any;

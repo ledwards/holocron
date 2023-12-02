@@ -3,9 +3,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext"
+    "module": "esnext",
+    "moduleResolution": "node"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
