@@ -4,11 +4,11 @@ import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
 import CardListItem from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
-import CardPresenter from '../presenters/CardPresenter';
-import FilterQuerySet from '../models/FilterQuerySet';
+import CardPresenter from '../../presenters/CardPresenter';
+import FilterQuerySet from '../../models/FilterQuerySet';
 
-import styles from '../styles/SearchableCardListStyles';
-import layout from '../constants/layout';
+import styles from '../../styles/SearchableCardListStyles';
+import layout from '../../constants/layout';
 
 class SearchableCardList extends Component {
   constructor(props) {

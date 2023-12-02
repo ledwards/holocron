@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {View, useColorScheme, Appearance} from 'react-native';
+import {Text, View, useColorScheme, Appearance} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 
-import TabNavigation from './src/components/TabNavigation';
+import TabNavigation from './src/components/navigation/TabNavigation';
 
 import downloadCardDefinitions from './src/lib/DownloadCardDefinitions';
 import downloadExpansionSets from './src/lib/DownloadExpansionSets';
@@ -76,7 +76,11 @@ const App = () => {
   return (
     <View style={{width: '100%', height: '100%', backgroundColor: 'purple'}}>
       <NavigationContainer>
-        <TabNavigation theme={theme} />
+        <TabNavigation
+          allCards={allCards}
+          expansionSets={expansionSets}
+          theme={theme}
+        />
       </NavigationContainer>
     </View>
   );

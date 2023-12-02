@@ -26,7 +26,7 @@ const nativeFooterHeight = () => {
 };
 
 const searchBarHeight = () => 30;
-const tabBarHeight = () => 0;
+const tabBarHeight = () => 44;
 
 const filterQuerySetHeight = (filterQuerySet: FilterQuerySet) =>
   45 + 25 * filterQuerySet.length() + (filterQuerySet.length() > 1 ? 35 : 0);

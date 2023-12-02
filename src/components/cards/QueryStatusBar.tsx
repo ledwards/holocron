@@ -1,11 +1,11 @@
 import {View, Text} from 'react-native';
 import SearchBarChip from './SearchBarChip';
 
-import FilterQuerySet from '../models/FilterQuery';
-import FilterQuery from '../models/FilterQuery';
-import Card from '../models/Card';
+import FilterQuerySet from '../../models/FilterQuery';
+import FilterQuery from '../../models/FilterQuery';
+import Card from '../../models/Card';
 
-import styles from '../styles/QueryStatusBarStyles';
+import styles from '../../styles/QueryStatusBarStyles';
 
 type QueryStatusBarProps = {
   theme: any;

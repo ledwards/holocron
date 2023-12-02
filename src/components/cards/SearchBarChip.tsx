@@ -1,5 +1,5 @@
 import {Chip} from 'react-native-elements';
-import styles from '../styles/SearchBarChipStyles';
+import styles from '../../styles/SearchBarChipStyles';
 
 type SearchBarChipProps = {
   title: string;
