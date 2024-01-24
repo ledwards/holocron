@@ -95,7 +95,7 @@ class CardPresenter {
     this.twoSided = this.backImageUrl != null;
     this.height = this.sideways ? 339 : 475;
     this.width = this.sideways ? 475 : 339;
-    this.aspectRatio = this.sideways ? 339 / 475 : 475 / 339;
+    this.aspectRatio = this.height / this.width;
 
     if (this.displayType.includes('Test')) {
       this.offsetY = 0;

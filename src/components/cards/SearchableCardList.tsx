@@ -1,6 +1,5 @@
 import {Component} from 'react';
 import {View, ActivityIndicator, Text, Animated} from 'react-native';
-import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
 import CardListItem from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
@@ -213,83 +212,79 @@ class SearchableCardList extends Component {
     }
 
     return (
-      <BottomTabBarHeightContext.Consumer>
-        {tabBarHeight => (
-          <>
-            <Animated.FlatList
-              ref={ref => {
-                this.state.flatListRef = ref;
-              }}
-              contentContainerStyle={styles.flatListContentContainer}
-              data={this.state.query ? this.state.data : []}
-              renderItem={({item, index}) => (
-                <CardListItem
-                  theme={this.state.theme}
-                  item={new CardPresenter(item)}
-                  index={index}
-                  flatListRef={this.state.flatListRef}
-                  scrollToIndex={(i: number) =>
-                    this.state.flatListRef.scrollToIndex({
-                      animated: true,
-                      index: i,
-                      // viewPosition: 0.5,
-                      viewOffset: layout.nativeHeaderHeight(),
-                    })
-                  }
-                />
-              )}
-              ListEmptyComponent={() =>
-                this.state.query
-                  ? this.NoResultsListComponent()
-                  : this.EmptyListComponent()
-              }
-              ListHeaderComponent={() => <></>}
-              ListHeaderComponentStyle={{
-                backgroundColor: this.state.theme.backgroundColor,
-                borderColor: this.state.theme.dividerColor,
-                borderBottomWidth:
-                  this.state.query && this.state.data.length > 0 ? 2 : 0,
-                height: layout.nativeHeaderHeight(),
-              }}
-              ListFooterComponent={() => <></>}
-              ListFooterComponentStyle={{
-                flexGrow: 1, // important!
-                backgroundColor: this.state.theme.backgroundColor,
-                height: layout.footerHeight(
-                  layout.tabBarHeight(),
-                  this.state.filterQuerySet,
-                ),
-                borderTopWidth:
-                  this.state.query && this.state.data.length > 0 ? 2 : 0,
-                borderColor: this.state.theme.dividerColor,
-              }}
-              keyExtractor={(item, index) => `${index}_${item.id}`}
-              ItemSeparatorComponent={this.SeparatorComponent}
-              keyboardShouldPersistTaps="handled"
-              //
-              // Performance settings:
-              initialNumToRender={10} // Reduce initial render amount
-              removeClippedSubviews={true} // Unmount components when outside of window
-              maxToRenderPerBatch={10} // Reduce number in each render batch
-              updateCellsBatchingPeriod={100} // Increase time between renders
-              windowSize={10} // Reduce the window size
-            />
-            <CardSearchFooter
+      <>
+        <Animated.FlatList
+          ref={ref => {
+            this.state.flatListRef = ref;
+          }}
+          contentContainerStyle={styles.flatListContentContainer}
+          data={this.state.query ? this.state.data : []}
+          renderItem={({item, index}) => (
+            <CardListItem
               theme={this.state.theme}
-              query={this.state.query}
-              filterQuerySet={this.state.filterQuerySet}
-              nativeFooterHeight={layout.nativeFooterHeight()}
-              searchBarHeight={layout.searchBarHeight()}
-              tabBarHeight={layout.tabBarHeight()}
-              searchMode={this.currentSearchMode()}
-              allCards={this.state.allCards}
-              data={this.state.data}
-              searchCallback={this.searchRouter}
-              toggleSearchMode={this.toggleSearchMode}
+              item={new CardPresenter(item)}
+              index={index}
+              flatListRef={this.state.flatListRef}
+              scrollToIndex={(i: number) =>
+                this.state.flatListRef.scrollToIndex({
+                  animated: true,
+                  index: i,
+                  // viewPosition: 0.5,
+                  viewOffset: layout.nativeHeaderHeight(),
+                })
+              }
             />
-          </>
-        )}
-      </BottomTabBarHeightContext.Consumer>
+          )}
+          ListEmptyComponent={() =>
+            this.state.query
+              ? this.NoResultsListComponent()
+              : this.EmptyListComponent()
+          }
+          ListHeaderComponent={() => <></>}
+          ListHeaderComponentStyle={{
+            backgroundColor: this.state.theme.backgroundColor,
+            borderColor: this.state.theme.dividerColor,
+            borderBottomWidth:
+              this.state.query && this.state.data.length > 0 ? 2 : 0,
+            height: layout.nativeHeaderHeight(),
+          }}
+          ListFooterComponent={() => <></>}
+          ListFooterComponentStyle={{
+            flexGrow: 1, // important!
+            backgroundColor: this.state.theme.backgroundColor,
+            height: layout.footerHeight(
+              layout.tabBarHeight(),
+              this.state.filterQuerySet,
+            ),
+            borderTopWidth:
+              this.state.query && this.state.data.length > 0 ? 2 : 0,
+            borderColor: this.state.theme.dividerColor,
+          }}
+          keyExtractor={(item, index) => `${index}_${item.id}`}
+          ItemSeparatorComponent={this.SeparatorComponent}
+          keyboardShouldPersistTaps="handled"
+          //
+          // Performance settings:
+          initialNumToRender={10} // Reduce initial render amount
+          removeClippedSubviews={true} // Unmount components when outside of window
+          maxToRenderPerBatch={10} // Reduce number in each render batch
+          updateCellsBatchingPeriod={100} // Increase time between renders
+          windowSize={10} // Reduce the window size
+        />
+        <CardSearchFooter
+          theme={this.state.theme}
+          query={this.state.query}
+          filterQuerySet={this.state.filterQuerySet}
+          nativeFooterHeight={layout.nativeFooterHeight()}
+          searchBarHeight={layout.searchBarHeight()}
+          tabBarHeight={layout.tabBarHeight()}
+          searchMode={this.currentSearchMode()}
+          allCards={this.state.allCards}
+          data={this.state.data}
+          searchCallback={this.searchRouter}
+          toggleSearchMode={this.toggleSearchMode}
+        />
+      </>
     );
   }
 }

@@ -12,36 +12,11 @@ type SearchScreenProps = {
 };
 
 const CardsScreen = (props: SearchScreenProps) => (
-  <View
-    style={{
-      flex: 1,
-    }}>
-    <StatusBar barStyle={props.theme.statusBarStyle} />
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: props.theme.backgroundColor,
-      }}>
-      {props.allCards && props.allCards.length > 0 && (
-        <>
-          <SearchableCardList cards={props.allCards} theme={props.theme} />
-          <BlurView
-            style={{
-              position: 'absolute',
-              top: 0,
-              width: '100%',
-              height: layout.nativeHeaderHeight(),
-            }}
-            blurType={props.theme.name}
-            blurAmount={10}
-            reducedTransparencyFallbackColor={
-              props.theme.translucentBackgroundColor
-            }
-          />
-        </>
-      )}
-    </View>
-  </View>
+  <>
+    {props.allCards && props.allCards.length > 0 && (
+      <SearchableCardList cards={props.allCards} theme={props.theme} />
+    )}
+  </>
 );
 
 export default CardsScreen;

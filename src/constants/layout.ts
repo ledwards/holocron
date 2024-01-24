@@ -40,7 +40,7 @@ const footerHeight = (tabBarHeight: number, filterQuerySet: FilterQuerySet) =>
   nativeFooterHeight() +
   tabBarHeight +
   searchBarHeight() +
-  filterQuerySetHeight(filterQuerySet);
+  (filterQuerySet ? filterQuerySetHeight(filterQuerySet) : 0);
 
 const searchBottomPosition = (tabBarHeight: number) =>
   nativeFooterHeight() + tabBarHeight + searchBarHeight();
