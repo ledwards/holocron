@@ -27,7 +27,7 @@ const loadCardDefinitions = expansionSets => {
               const card = new Card(c, expansionSet);
               return card;
             })
-            .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
+            .filter(c => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
             .filter(c => c.type != 'Game Aid')
             .sort((a, b) =>
               a.sortTitle > b.sortTitle

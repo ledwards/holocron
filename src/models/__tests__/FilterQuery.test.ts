@@ -14,7 +14,7 @@ const allCards = [...darkCards.cards, ...lightCards.cards]
         expansionSets.find(s => s.id === c.set),
       ),
   )
-  .filter(c => !c.title.includes('AI)')) // excludes (AI) and (Holo AI)
+  .filter(c => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
   .filter(c => c.type != 'Game Aid')
   .sort((a, b) =>
     a.sortTitle > b.sortTitle ? 1 : b.sortTitle > a.sortTitle ? -1 : 0,

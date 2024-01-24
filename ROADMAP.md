@@ -61,6 +61,8 @@ UX IMPROVEMENTS
 
 DESIGN
 ======
+* iPhone SE (maybe both) should have less padding above navigation tabs
+* background on the hint above nav could be transparent, might look better
 * empty list state has holocron art - maybe dependent on light vs. dark mode; or maybe just more instructive coach tips
 * Sideways starships and weapons show a bit of the green or blue chrome in the list view
 * nice designs for bottom bar tabs
@@ -70,6 +72,9 @@ DESIGN
 REFACTORS
 =========
 * test coverage
+* types for every props object
+* turn class components into functional components
+* extract the blur footer into a layer on the navbar itself (if that's the final design for the bar)
 * build a tokenizer for the advanced search, that takes the first step of taking any string and turning it into a list of tokens
 * Rename `FilterQuerySet` to `FilterQueryGroup`
 * SearchMode should be a class instead of a couple hashes
