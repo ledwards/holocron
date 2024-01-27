@@ -1,0 +1,15 @@
+grid view
+- ERROR  Warning: Cannot update a component (`StackNavigator`) while rendering a different component
+(`DecklistsScreenListView`). To locate the bad setState() call inside `DecklistsScreenListView`,
+follow the stack trace as described in https://reactjs.org/link/setstate-in-render
+- Grid View: tap targets on sites are shifted left
+
+
+TODO:
+- click an inactive card to make current active inactive
+- two-sided cards should flip on first click, collapse on second click
+- third view - list
+- remember view preference
+- convert to class components (use import { useHeaderHeight } from '@react-navigation/elements';)
+- EBO is fucked up in the grid view
+- flip DS syetms 180

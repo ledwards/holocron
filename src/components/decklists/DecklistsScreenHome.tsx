@@ -1,17 +1,18 @@
+import React, {useEffect, useState, useContext} from 'react';
 import {View} from 'react-native';
+import {LogBox} from 'react-native';
 import SearchableDecklistList from './SearchableDecklistList';
 import {useNavigation} from '@react-navigation/native';
 
-import {LogBox} from 'react-native';
+import ThemeContext from '../../contexts/ThemeContext';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-// TODO: 3rd option, cardlist
-
 const DecklistsScreenHome = ({route}) => {
   const navigation = useNavigation();
+  const theme = useContext(ThemeContext);
 
   return (
     <View>
@@ -20,7 +21,7 @@ const DecklistsScreenHome = ({route}) => {
           <SearchableDecklistList
             allDecklists={route.params.allDecklists}
             data={route.params.allDecklists}
-            theme={route.params.theme}
+            theme={theme}
             navigation={navigation}
           />
         )}

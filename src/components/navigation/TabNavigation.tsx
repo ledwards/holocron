@@ -1,16 +1,18 @@
+import React, {useContext} from 'react';
 import {View} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CardsScreen from '../cards/CardsScreen';
 import DecklistsScreen from '../decklists/DecklistsScreen';
+
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
+import ThemeContext from '../../contexts/ThemeContext';
 
 const Tab = createBottomTabNavigator();
 
 type TabNavigationProps = {
-  theme: any;
   allCards: any;
   expansionSets: any;
   allDecklists: any;
@@ -18,6 +20,7 @@ type TabNavigationProps = {
 
 function TabNavigation(props: TabNavigationProps) {
   const iconSize = 24;
+  const theme = useContext(ThemeContext);
 
   return (
     <Tab.Navigator
@@ -40,12 +43,11 @@ function TabNavigation(props: TabNavigationProps) {
           <View
             style={{
               flex: 1,
-              backgroundColor: props.theme.backgroundColor,
+              backgroundColor: theme.backgroundColor,
             }}>
             <CardsScreen
               allCards={props.allCards}
               expansionSets={props.expansionSets}
-              theme={props.theme}
             />
           </View>
         )}
@@ -55,7 +57,7 @@ function TabNavigation(props: TabNavigationProps) {
             <Icon
               name={'search-outline'}
               type="ionicon"
-              color={props.theme.foregroundColor}
+              color={theme.foregroundColor}
               size={iconSize}
             />
           ),
@@ -67,13 +69,12 @@ function TabNavigation(props: TabNavigationProps) {
           <View
             style={{
               flex: 1,
-              backgroundColor: props.theme.backgroundColor,
+              backgroundColor: theme.backgroundColor,
             }}>
             <DecklistsScreen
               allCards={props.allCards}
               expansionSets={props.expansionSets}
               allDecklists={props.allDecklists}
-              theme={props.theme}
             />
           </View>
         )}
@@ -81,10 +82,9 @@ function TabNavigation(props: TabNavigationProps) {
           tabBarLabel: 'Decklists',
           tabBarIcon: () => (
             <Icon
-              // name={'file-tray-full-outline'}
               name={'trophy-outline'}
               type="ionicon"
-              color={props.theme.foregroundColor}
+              color={theme.foregroundColor}
               size={iconSize}
             />
           ),

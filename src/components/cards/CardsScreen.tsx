@@ -1,22 +1,22 @@
-import {View, StatusBar} from 'react-native';
-import {BlurView} from '@react-native-community/blur';
-
+import React, {useContext} from 'react';
 import SearchableCardList from './SearchableCardList';
-
-import layout from '../../constants/layout';
+import ThemeContext from '../../contexts/ThemeContext';
 
 type SearchScreenProps = {
   allCards: any;
   expansionSets: any;
-  theme: any;
 };
 
-const CardsScreen = (props: SearchScreenProps) => (
-  <>
-    {props.allCards && props.allCards.length > 0 && (
-      <SearchableCardList cards={props.allCards} theme={props.theme} />
-    )}
-  </>
-);
+const CardsScreen = (props: SearchScreenProps) => {
+  const theme = useContext(ThemeContext);
+
+  return (
+    <>
+      {props.allCards && props.allCards.length > 0 && (
+        <SearchableCardList cards={props.allCards} theme={theme} />
+      )}
+    </>
+  );
+};
 
 export default CardsScreen;

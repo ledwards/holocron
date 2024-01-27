@@ -20,7 +20,9 @@ const styles = StyleSheet.create({
   decklistGridInner: {
     flexDirection: 'row',
   },
-  decklistGridImage: {},
+  decklistGridImage: {
+    borderRadius: 5,
+  },
 });
 
 export default styles;
