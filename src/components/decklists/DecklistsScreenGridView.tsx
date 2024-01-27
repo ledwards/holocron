@@ -1,15 +1,13 @@
+import React, {PureComponent, useRef, createRef} from 'react';
 import {Text, View, ScrollView} from 'react-native';
-// import DecklistsScreenGridItem from './DecklistsScreenGridItem';
+// import {useHeaderHeight} from '@react-navigation/elements';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
-import React, {PureComponent} from 'react';
+import DecklistEmptyFooter from './DecklistEmptyFooter';
 
+import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
 
-// TODO: translucent bottom bar
-
-const cardsPerRow = 4;
-
-class DecklistsScreenView extends PureComponent {
+class DecklistsScreenGridView extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -17,33 +15,18 @@ class DecklistsScreenView extends PureComponent {
       title: props.route.params.decklist.displaySubtitle,
     });
 
+    this.scrollViewRef = createRef();
+    // this.headerHeight = useHeaderHeight();
+
     this.state = {
       activeIndex: null,
-      theme: this.props.route.params.theme,
     };
-  }
-
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      theme: this.props.route.params.theme,
-    });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevProps.route.params.theme.name != this.props.route.params.theme.name
-    ) {
-      this.setState({
-        ...this.state,
-        theme: this.props.route.params.theme,
-      });
-    }
   }
 
   render() {
     const decklist = this.props.route.params.decklist;
-    let items: any[] = [];
+
+    let items = [];
     this.props.route.params.decklist.cards.forEach(card => {
       for (let i = 0; i < card.quantity; i++) {
         items.push(card);
@@ -51,29 +34,40 @@ class DecklistsScreenView extends PureComponent {
     });
 
     return (
-      <ScrollView
-        contentContainerStyle={{
-          alignContent: 'flex-start',
-          alignItems: 'flex-start',
-          alignSelf: 'flex-start',
-          flex: 2,
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        }}
-        style={{}}>
-        {items.map((item, index) => {
-          return (
-            <DecklistsScreenGridItem
-              key={index}
-              item={item}
-              decklist={decklist}
-              index={index}
-            />
-          );
-        })}
-      </ScrollView>
+      <>
+        <ScrollView
+          ref={this.scrollViewRef}
+          contentContainerStyle={{
+            alignContent: 'flex-start',
+            alignItems: 'flex-start',
+            alignSelf: 'flex-start',
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            backgroundColor: 'transparent',
+            paddingBottom: layout.footerHeight() + 150,
+            // paddingTop: layout.nativeHeaderHeight,
+            // paddingTop: this.headerHeight,
+          }}>
+          {items.map((item, index) => {
+            return (
+              <DecklistsScreenGridItem
+                key={index}
+                item={item}
+                decklist={decklist}
+                index={index}
+                scrollViewRef={this.scrollViewRef}
+              />
+            );
+          })}
+        </ScrollView>
+        <DecklistEmptyFooter
+          nativeFooterHeight={layout.nativeFooterHeight()}
+          tabBarHeight={layout.tabBarHeight()}
+        />
+      </>
     );
   }
 }
-export default DecklistsScreenView;
+export default DecklistsScreenGridView;

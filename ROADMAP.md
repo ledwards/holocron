@@ -20,7 +20,6 @@ GENERAL BUGS
 
 DATA-RELATED BUGS
 =================
-* "Emperor's Prize / Emperor's Prize" and "Jabba's Prize / Jabba's Prize" have name twice. (Mythrol only shows once)
 
 
 ADVANCED SEARCH BUGS

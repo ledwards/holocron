@@ -6,11 +6,12 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 
 import styles from '../../styles/DecklistsScreenGridViewStyles';
+import layout from '../../constants/layout';
 
 // TODO: translucent bottom bar
 
@@ -26,9 +27,15 @@ const cardIsSideways = (card: any) => {
   return card.subType == 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const DecklistsScreenGridItem = ({item, decklist, index}) => {
+const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef}) => {
   const navigation = useNavigation();
 
+  const [state, setState] = React.useState({
+    expanded: false,
+    showingBack: false,
+  });
+
+  const windowHeight = Dimensions.get('window').height;
   const windowWidth = Dimensions.get('window').width;
   const cardsPerRow = 4;
   const cardWidth = windowWidth / cardsPerRow;
@@ -39,26 +46,49 @@ const DecklistsScreenGridItem = ({item, decklist, index}) => {
   const cardMaxHeight = windowWidth / decklist.aspectRatio;
 
   const minScale = cardIsSideways(item) ? cardHeight / cardWidth : 1;
-  const maxScale = (minScale * cardMaxHeight) / cardMinHeight;
+  const maxScale = cardMaxHeight / cardMinHeight;
+  const scale = useRef(new Animated.Value(minScale)).current;
 
   const initialRelativeLeft = 0;
-  const maxRelativeLeft = -1 * (((index % cardsPerRow) - 1.5) * cardWidth);
-
-  const [state, setState] = React.useState({
-    expanded: false,
-    showingBack: false,
-  });
-
-  const scale = useRef(new Animated.Value(minScale)).current;
+  const maxRelativeLeft =
+    (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
   const relativeLeft = useRef(new Animated.Value(0)).current;
 
-  navigation.setOptions({
-    title: decklist.displaySubtitle,
-  });
+  const initialRelativeTop = 0;
+  let maxRelativeTop = 0;
+
+  const topHeaderHeight = layout.nativeHeaderTopHeight() == 0 ? 68 : 75;
+  const rowNumber = Math.floor(index / cardsPerRow);
+
+  switch (rowNumber) {
+    case 0:
+      maxRelativeTop = cardMinHeight + topHeaderHeight;
+      if (cardIsSideways(item)) {
+        maxRelativeTop = maxRelativeTop - 0.42 * cardMinHeight;
+      }
+      break;
+    case 1:
+      maxRelativeTop = 0.25 * cardMinHeight + topHeaderHeight;
+      if (cardIsSideways(item)) {
+        maxRelativeTop = maxRelativeTop - 0.19 * cardMinHeight;
+      }
+      break;
+  }
+
+  const relativeTop = useRef(new Animated.Value(0)).current;
+
+  const [scrollView, setScrollView] = useState(null);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: decklist.displaySubtitle,
+    });
+    setScrollView(scrollViewRef.current);
+  }, []);
 
   item.twoSided = item.backImageUrl != null;
 
-  const toggleExpanded = (item: any) => {
+  const toggleExpanded = (event, item, index) => {
     Keyboard.dismiss();
     const needsToExpand = !state.expanded;
     const needsToFlip = item.twoSided && state.expanded && !state.showingBack;
@@ -73,19 +103,42 @@ const DecklistsScreenGridItem = ({item, decklist, index}) => {
           expanded: needsToExpand,
           showingBack: needsToFlip,
         });
+
+        const topOfCard =
+          Math.floor(index / cardsPerRow) * cardMinHeight -
+          (windowHeight - cardMaxHeight) / 2 -
+          layout.tabBarHeight() -
+          100;
+
+        scrollView.scrollTo({
+          y: topOfCard,
+          animated: true,
+        });
       }
+
+      const t = 200;
+      const easingOut = Easing.ease;
+      const easingIn = Easing.ease;
 
       Animated.sequence([
         Animated.parallel([
           Animated.timing(scale, {
             toValue: needsToExpand ? maxScale : minScale,
-            duration: 250,
+            duration: t,
             useNativeDriver: false,
+            easing: needsToExpand ? easingOut : easingIn,
           }),
           Animated.timing(relativeLeft, {
             toValue: needsToExpand ? 1 : 0,
-            duration: 250,
+            duration: t,
             useNativeDriver: false,
+            easing: needsToExpand ? easingOut : easingIn,
+          }),
+          Animated.timing(relativeTop, {
+            toValue: needsToExpand ? 1 : 0,
+            duration: t,
+            useNativeDriver: false,
+            easing: needsToExpand ? easingOut : easingIn,
           }),
         ]),
       ]).start(() => {
@@ -110,6 +163,11 @@ const DecklistsScreenGridItem = ({item, decklist, index}) => {
     outputRange: [initialRelativeLeft, maxRelativeLeft],
   });
 
+  let topAnim = relativeTop.interpolate({
+    inputRange: [0, 1],
+    outputRange: [initialRelativeTop, maxRelativeTop],
+  });
+
   return (
     <>
       <View
@@ -119,14 +177,18 @@ const DecklistsScreenGridItem = ({item, decklist, index}) => {
           flex: `${(1 / cardsPerRow) * 100}%`,
           transform: [{scale: minScale}],
         }}>
-        <TouchableOpacity onPress={() => toggleExpanded(item)}>
+        <TouchableOpacity
+          onPress={event => toggleExpanded(event, item, index)}
+          activeOpacity={1}>
           <FastImage
             source={{uri: item.imageUrl}}
             style={{
               ...styles.decklistGridImage,
               width: cardMinWidth,
               height: cardMinHeight,
-              transform: cardIsSideways(item) ? [{rotate: '270deg'}] : [],
+              transform: cardIsSideways(item)
+                ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
+                : [],
             }}
             resizeMode={FastImage.resizeMode.contain}
           />
@@ -144,16 +206,21 @@ const DecklistsScreenGridItem = ({item, decklist, index}) => {
             position: 'relative',
             zIndex: state.expanded ? 1 : 0,
             left: leftAnim,
+            top: topAnim,
             transform: [{scale: scaleAnim}],
           }}>
-          <TouchableOpacity onPress={() => toggleExpanded(item)}>
+          <TouchableOpacity
+            onPress={event => toggleExpanded(event, item, index)}
+            activeOpacity={1}>
             <FastImage
               source={{uri: item.imageUrl}}
               style={{
                 ...styles.decklistGridImage,
                 width: cardWidth,
                 height: cardHeight,
-                transform: cardIsSideways(item) ? [{rotate: '270deg'}] : [],
+                transform: cardIsSideways(item)
+                  ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
+                  : [],
               }}
               resizeMode={FastImage.resizeMode.contain}
             />

@@ -2,6 +2,10 @@ import Tournament from './Tournament';
 import Archetype from './Archetype';
 import Player from './Player';
 
+// TODO: searchData() should be an attribute to avoid:
+//  WARN  Non-serializable values were found in the navigation state. Check:
+// Decklists > Tournament Decklists > params.allDecklists[0].searchData (Function)
+
 class Decklist {
   id: string;
   title: string;
@@ -71,10 +75,12 @@ class Decklist {
       ${this.archetype.name}
       ${this.archetype.shortName}
       ${this.archetype.aliases.join(' ')}
-      ${this.tournament}
+      ${this.tournament.name}
       ${this.tournament.shortName}
       ${this.tournament.date}
       ${this.tournamentRound}`
+      .replace('undefined', '')
+      .replace(/\s+/g, ' ')
       .toLowerCase()
       .trim();
 }

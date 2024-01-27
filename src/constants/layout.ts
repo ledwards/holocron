@@ -36,11 +36,14 @@ const nativeHeaderHeight = () => statusBarHeight() + nativeHeaderTopHeight();
 const keyboardVerticalOffset = () =>
   -1 * (nativeFooterHeight() + tabBarHeight());
 
-const footerHeight = (tabBarHeight: number, filterQuerySet: FilterQuerySet) =>
+const footerHeight = (
+  propTabBarHeight: number | undefined,
+  filterQuerySet: FilterQuerySet | undefined,
+) =>
   nativeFooterHeight() +
-  tabBarHeight +
+  (propTabBarHeight || tabBarHeight()) +
   searchBarHeight() +
-  (filterQuerySet ? filterQuerySetHeight(filterQuerySet) : 0);
+  (filterQuerySet ? filterQuerySetHeight(filterQuerySet) : 70);
 
 const searchBottomPosition = (tabBarHeight: number) =>
   nativeFooterHeight() + tabBarHeight + searchBarHeight();

@@ -15,7 +15,6 @@ const themeDark = {
   iconColor: foregroundColor,
 
   translucentBackgroundColor: colors.alphaBlack,
-  // translucentBackgroundColor: 'transparent',
   dividerColor: colors.black,
   chipYesTextColor: colors.terminalGreen,
   chipNoTextColor: colors.red,

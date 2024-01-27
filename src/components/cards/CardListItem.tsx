@@ -29,7 +29,7 @@ class CardListItem extends PureComponent {
       minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth,
       posY: 0,
-      theme: this.props.theme,
+      theme: props.theme,
     };
   }
 
@@ -120,7 +120,7 @@ class CardListItem extends PureComponent {
           id={this.props.index}
           style={{marginLeft: -15}}
           button
-          onPress={this.toggleExpanded}
+          onPress={() => this.toggleExpanded()}
           containerStyle={{
             ...styles.cardListItemContainer,
             ...(this.props.item.side == 'Dark'

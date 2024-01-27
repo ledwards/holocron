@@ -5,6 +5,7 @@ import {
   Text,
   Animated,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 import DecklistListItem from './DecklistListItem';
@@ -49,55 +50,34 @@ class SearchableDecklistList extends Component {
   }
 
   searchHandler = (text: string) => {
+    const query = text.toLowerCase();
+
     this.setState({
-      query: text,
+      query: query,
     });
 
-    this.searchFilterFunction(text);
+    this.searchFilterFunction(query);
   };
 
   searchFilterFunction = (text: string) => {
-    const newData = this.state.allDecklists.filter(decklist => {
-      const textData = text;
-      const itemData = decklist.searchData();
+    const newData = this.state.allDecklists
+      .filter(decklist => {
+        const textData = text;
+        const itemData = decklist.searchData();
 
-      // Allow for unorderd word matches
-      const textDataList = textData.split(' ');
-      const matches = textDataList.filter(
-        (w: string) => itemData.indexOf(w) > -1,
-      );
+        // Allow for unorderd word matches
+        const textDataList = textData.split(' ');
+        const matches = textDataList.filter(
+          (w: string) => itemData.indexOf(w) > -1,
+        );
 
-      return matches.length === textDataList.length;
-    });
+        return matches.length === textDataList.length;
+      })
+      .reverse();
 
     this.setState({
       data: newData,
     });
-  };
-
-  EmptyListComponent = () => {
-    return (
-      <View
-        style={{
-          height: '100%',
-          backgroundColor: this.state.theme.backgroundColor,
-        }}>
-        <Text
-          style={{
-            color: this.state.theme.foregroundColor,
-            ...styles.defaultTextTitle,
-          }}>
-          Tournament Decklists
-        </Text>
-        <Text
-          style={{
-            color: this.state.theme.foregroundColor,
-            ...styles.defaultTextDescription,
-          }}>
-          (empty list component)
-        </Text>
-      </View>
-    );
   };
 
   NoResultsListComponent = () => (
@@ -138,17 +118,21 @@ class SearchableDecklistList extends Component {
           ref={ref => {
             this.state.flatListRef = ref;
           }}
-          contentContainerStyle={styles.flatListContentContainer}
+          contentContainerStyle={{
+            ...styles.flatListContentContainer,
+            minHeight: Dimensions.get('window').height,
+          }}
           data={this.state.data}
           renderItem={({item, index}) => (
             <TouchableOpacity
               onPress={() => {
-                this.props.navigation.navigate('View', {
-                  theme: this.props.theme,
+                this.props.navigation.navigate('View Decklist', {
+                  theme: this.state.theme,
                   allCards: this.props.allCards,
                   decklist: new DecklistPresenter(item),
                 });
-              }}>
+              }}
+              activeOpacity={1}>
               <DecklistListItem
                 theme={this.state.theme}
                 item={new DecklistPresenter(item)}
@@ -158,18 +142,13 @@ class SearchableDecklistList extends Component {
                   this.state.flatListRef.scrollToIndex({
                     animated: true,
                     index: i,
-                    // viewPosition: 0.5,
                     viewOffset: layout.nativeHeaderHeight(),
                   })
                 }
               />
             </TouchableOpacity>
           )}
-          ListEmptyComponent={() =>
-            this.state.query
-              ? this.NoResultsListComponent()
-              : this.EmptyListComponent()
-          }
+          ListEmptyComponent={() => this.NoResultsListComponent()}
           ListHeaderComponent={() => <></>}
           ListHeaderComponentStyle={{
             backgroundColor: this.state.theme.backgroundColor,
@@ -183,6 +162,7 @@ class SearchableDecklistList extends Component {
             flexGrow: 1, // important!
             backgroundColor: this.state.theme.backgroundColor,
             height: layout.footerHeight(layout.tabBarHeight(), null),
+            // height: 800,
             borderTopWidth:
               this.state.query && this.state.data.length > 0 ? 2 : 0,
             borderColor: this.state.theme.dividerColor,
@@ -199,7 +179,6 @@ class SearchableDecklistList extends Component {
           windowSize={10} // Reduce the window size
         />
         <DecklistSearchFooter
-          theme={this.state.theme}
           query={this.state.query}
           nativeFooterHeight={layout.nativeFooterHeight()}
           searchBarHeight={layout.searchBarHeight()}

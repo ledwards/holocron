@@ -9,6 +9,8 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 
+// TODO: Refactor into functional component so we can use Contexts
+
 class SearchableCardList extends Component {
   constructor(props) {
     super(props);
@@ -272,7 +274,6 @@ class SearchableCardList extends Component {
           windowSize={10} // Reduce the window size
         />
         <CardSearchFooter
-          theme={this.state.theme}
           query={this.state.query}
           filterQuerySet={this.state.filterQuerySet}
           nativeFooterHeight={layout.nativeFooterHeight()}

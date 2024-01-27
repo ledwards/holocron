@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, useColorScheme, Appearance, StatusBar} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 
 import TabNavigation from './src/components/navigation/TabNavigation';
@@ -16,6 +16,8 @@ import loadDecklists from './src/lib/LoadDecklists';
 import themeDark from './src/styles/themeDark';
 import themeLight from './src/styles/themeLight';
 import layout from './src/constants/layout';
+
+import ThemeContext from './src/contexts/ThemeContext';
 
 const App = () => {
   const initialTheme = useColorScheme();
@@ -97,40 +99,48 @@ const App = () => {
     isDecklistsDownloadReady,
   ]);
 
+  const NavigationContainerTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.backgroundColor,
+    },
+  };
+
   return (
-    <View style={{width: '100%', height: '100%', backgroundColor: 'purple'}}>
-      <View
-        style={{
-          flex: 1,
-        }}>
-        <StatusBar barStyle={theme.statusBarStyle} />
-        <NavigationContainer>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: theme.backgroundColor,
-            }}>
-            <TabNavigation
-              allCards={allCards}
-              expansionSets={expansionSets}
-              allDecklists={allDecklists}
-              theme={theme}
-            />
-          </View>
-        </NavigationContainer>
-        <BlurView
+    <ThemeContext.Provider value={theme}>
+      <View style={{width: '100%', height: '100%'}}>
+        <View
           style={{
-            position: 'absolute',
-            top: 0,
-            width: '100%',
-            height: layout.nativeHeaderHeight(),
-          }}
-          blurType={theme.name}
-          blurAmount={10}
-          reducedTransparencyFallbackColor={theme.translucentBackgroundColor}
-        />
+            flex: 1,
+          }}>
+          <StatusBar barStyle={theme.statusBarStyle} />
+          <NavigationContainer theme={NavigationContainerTheme}>
+            <View
+              style={{
+                flex: 1,
+              }}>
+              <TabNavigation
+                allCards={allCards}
+                expansionSets={expansionSets}
+                allDecklists={allDecklists}
+              />
+            </View>
+          </NavigationContainer>
+          <BlurView
+            style={{
+              position: 'absolute',
+              top: 0,
+              width: '100%',
+              height: layout.nativeHeaderHeight(),
+            }}
+            blurType={theme.name}
+            blurAmount={10}
+            reducedTransparencyFallbackColor={theme.translucentBackgroundColor}
+          />
+        </View>
       </View>
-    </View>
+    </ThemeContext.Provider>
   );
 };
 
