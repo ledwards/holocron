@@ -1,57 +1,142 @@
-import {useContext} from 'react';
-import {ScrollView, Text} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useContext, useState, useEffect} from 'react';
+import {
+  ScrollView,
+  View,
+  ActivityIndicator,
+  Text,
+  Animated,
+} from 'react-native';
 
-import Card from '../../models/Card';
-import Decklist from '../../models/Decklist';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
+import CardListItem from '../cards/CardListItem';
+import CardPresenter from '../../presenters/CardPresenter';
+import AllCardsContext from '../../contexts/AllCardsContext';
 
+import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
-import styles from '../../styles/DecklistsScreenListViewStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 
 const DecklistsScreenListView = ({route}) => {
-  const navigation = useNavigation();
-  navigation.setOptions({
-    title: route.params.decklist.displaySubtitle,
+  const theme = useContext(ThemeContext);
+  const allCards = useContext(AllCardsContext);
+
+  const [data, setData] = useState([]);
+  const [state, setState] = useState({
+    loading: false,
+    error: null,
+    allCards: [],
+    flatListRef: null,
   });
 
-  const theme = useContext(ThemeContext);
+  useEffect(() => {
+    let items = [];
+    route.params.decklist.cards.forEach(card => {
+      for (let i = 0; i < card.quantity; i++) {
+        items.push(card);
+      }
+    });
 
-  return (
-    <>
-      <ScrollView
-        contentContainerStyle={{
-          ...styles.decklistView,
+    const cards = items.map(card => allCards.find(c => c.id === card.id));
+
+    setState({
+      ...state,
+      loading: false,
+      error: null,
+      allCards: cards,
+      flatListRef: null,
+    });
+    setData(cards);
+  }, []);
+
+  const EmptyListComponent = () => {
+    return (
+      <View
+        style={{
+          height: '100%',
           backgroundColor: theme.backgroundColor,
-          paddingEnd: layout.nativeHeaderHeight(),
         }}>
         <Text
           style={{
-            ...styles.decklistViewTitle,
             color: theme.foregroundColor,
-          }}>
-          {route.params.decklist.displayTitle}
-        </Text>
+            ...styles.defaultTextTitle,
+          }}></Text>
         <Text
           style={{
-            ...styles.decklistViewSubtitle,
             color: theme.foregroundColor,
-          }}>
-          {route.params.decklist.displaySubtitle}
-          {/* {route.params.decklist.url} */}
-        </Text>
-        <Text
-          style={{
-            ...styles.decklistViewBody,
-            color: theme.foregroundColor,
-          }}>
-          {route.params.decklist.plaintext}
-        </Text>
-      </ScrollView>
-      <DecklistEmptyFooter
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        tabBarHeight={layout.tabBarHeight()}
+            ...styles.defaultTextDescription,
+          }}></Text>
+      </View>
+    );
+  };
+
+  const SeparatorComponent = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: theme.dividerColor,
+          ...styles.separator,
+        }}
+      />
+    );
+  };
+
+  if (state.loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <>
+      <Animated.FlatList
+        ref={ref => {
+          state.flatListRef = ref;
+        }}
+        contentContainerStyle={styles.flatListContentContainer}
+        data={data}
+        renderItem={({item, index}) => (
+          <CardListItem
+            theme={theme}
+            item={new CardPresenter(item)}
+            index={index}
+            flatListRef={state.flatListRef}
+            scrollToIndex={(i: number) =>
+              state.flatListRef.scrollToIndex({
+                animated: true,
+                index: i,
+                // viewPosition: 0.5,
+                viewOffset: layout.nativeHeaderHeight(),
+              })
+            }
+          />
+        )}
+        ListEmptyComponent={() => EmptyListComponent()}
+        ListHeaderComponent={() => <></>}
+        ListHeaderComponentStyle={{
+          backgroundColor: theme.backgroundColor,
+          borderColor: theme.dividerColor,
+          borderBottomWidth: 0,
+        }}
+        ListFooterComponent={() => <></>}
+        ListFooterComponentStyle={{
+          flexGrow: 1, // important!
+          backgroundColor: theme.backgroundColor,
+          height: layout.footerHeight(layout.tabBarHeight()),
+          borderTopWidth: 0,
+          borderColor: theme.dividerColor,
+        }}
+        keyExtractor={(item, index) => `${index}_${item.id}`}
+        ItemSeparatorComponent={SeparatorComponent}
+        keyboardShouldPersistTaps="handled"
+        //
+        // Performance settings:
+        initialNumToRender={10} // Reduce initial render amount
+        removeClippedSubviews={true} // Unmount components when outside of window
+        maxToRenderPerBatch={10} // Reduce number in each render batch
+        updateCellsBatchingPeriod={100} // Increase time between renders
+        windowSize={10} // Reduce the window size
       />
       <DecklistEmptyFooter
         nativeFooterHeight={layout.nativeFooterHeight()}
@@ -60,4 +145,5 @@ const DecklistsScreenListView = ({route}) => {
     </>
   );
 };
-export default DecklistsScreenListView;
+
+export default React.memo(DecklistsScreenListView);

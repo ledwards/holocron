@@ -18,6 +18,9 @@ import themeLight from './src/styles/themeLight';
 import layout from './src/constants/layout';
 
 import ThemeContext from './src/contexts/ThemeContext';
+import AllCardsContext from './src/contexts/AllCardsContext';
+import AllDecklistsContext from './src/contexts/AllDecklistsContext';
+import AllExpansionsContext from './src/contexts/AllExpansionsContext';
 
 const App = () => {
   const initialTheme = useColorScheme();
@@ -108,39 +111,47 @@ const App = () => {
   };
 
   return (
-    <ThemeContext.Provider value={theme}>
-      <View style={{width: '100%', height: '100%'}}>
-        <View
-          style={{
-            flex: 1,
-          }}>
-          <StatusBar barStyle={theme.statusBarStyle} />
-          <NavigationContainer theme={NavigationContainerTheme}>
-            <View
-              style={{
-                flex: 1,
-              }}>
-              <TabNavigation
-                allCards={allCards}
-                expansionSets={expansionSets}
-                allDecklists={allDecklists}
-              />
+    <AllDecklistsContext.Provider value={allDecklists}>
+      <AllCardsContext.Provider value={allCards}>
+        <AllExpansionsContext.Provider value={expansionSets}>
+          <ThemeContext.Provider value={theme}>
+            <View style={{width: '100%', height: '100%'}}>
+              <View
+                style={{
+                  flex: 1,
+                }}>
+                <StatusBar barStyle={theme.statusBarStyle} />
+                <NavigationContainer theme={NavigationContainerTheme}>
+                  <View
+                    style={{
+                      flex: 1,
+                    }}>
+                    <TabNavigation
+                      allCards={allCards}
+                      expansionSets={expansionSets}
+                      allDecklists={allDecklists}
+                    />
+                  </View>
+                </NavigationContainer>
+                <BlurView
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    width: '100%',
+                    height: layout.nativeHeaderHeight(),
+                  }}
+                  blurType={theme.name}
+                  blurAmount={10}
+                  reducedTransparencyFallbackColor={
+                    theme.translucentBackgroundColor
+                  }
+                />
+              </View>
             </View>
-          </NavigationContainer>
-          <BlurView
-            style={{
-              position: 'absolute',
-              top: 0,
-              width: '100%',
-              height: layout.nativeHeaderHeight(),
-            }}
-            blurType={theme.name}
-            blurAmount={10}
-            reducedTransparencyFallbackColor={theme.translucentBackgroundColor}
-          />
-        </View>
-      </View>
-    </ThemeContext.Provider>
+          </ThemeContext.Provider>
+        </AllExpansionsContext.Provider>
+      </AllCardsContext.Provider>
+    </AllDecklistsContext.Provider>
   );
 };
 

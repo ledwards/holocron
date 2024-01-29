@@ -7,12 +7,7 @@ import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
 
 const DecklistsScreenGridView = props => {
-  props.navigation.setOptions({
-    title: props.route.params.decklist.displaySubtitle,
-  });
-
   const scrollViewRef = createRef();
-
   const decklist = props.route.params.decklist;
 
   let items = [];
