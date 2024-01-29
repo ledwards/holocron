@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {View, KeyboardAvoidingView} from 'react-native';
 import {SearchBar, Icon, Text} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
@@ -22,6 +22,27 @@ type DecklistSearchFooterProps = {
 
 const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   const theme = useContext(ThemeContext);
+  const [query, setQuery] = useState('');
+  const [allDecklists, setAllDecklists] = useState(props.allDecklists);
+  const [data, setData] = useState();
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    setQuery(props.query);
+    setData(props.data);
+  }, []);
+
+  useEffect(() => {
+    setQuery(props.query);
+    setData(props.data);
+  }, [props.query, props.data]);
+
+  const onChangeText = (text: string) => {
+    setQuery(text);
+    props.searchCallback(text);
+    // setData(props.data);
+  };
 
   return (
     <BottomTabBarHeightContext.Consumer>
@@ -48,11 +69,12 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
               }
             />
             <SearchBar
+              ref={inputRef}
               placeholder="Search by tournament, player, or archetype"
               round
-              onChangeText={text => props.searchCallback(text)}
+              onChangeText={onChangeText}
               autoCorrect={false}
-              value={props.query}
+              value={query}
               containerStyle={{
                 ...styles.searchBarContainer,
                 position: 'absolute',
@@ -73,13 +95,9 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
                 ...styles.filterQuerySetContainer,
               }}>
               {!props.query ? (
-                coachTipComponent(theme, props.allDecklists)
+                coachTipComponent(theme, allDecklists)
               ) : (
-                <DecklistsQueryStatusBar
-                  query={props.query}
-                  allDecklists={props.allDecklists}
-                  data={props.data}
-                />
+                <DecklistsQueryStatusBar query={query} data={data} />
               )}
             </View>
           </View>

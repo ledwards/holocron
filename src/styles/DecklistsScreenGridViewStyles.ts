@@ -23,6 +23,17 @@ const styles = StyleSheet.create({
   decklistGridImage: {
     borderRadius: 5,
   },
+
+  scrollView: {
+    alignContent: 'flex-start',
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: 'transparent',
+  },
 });
 
 export default styles;

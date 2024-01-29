@@ -24,6 +24,8 @@ type CardSearchFooterProps = {
   toggleSearchMode: () => void;
 };
 
+// TODO: Try putting ThemeContext.Consumer here too
+
 const modeCoachTipComponent = (theme: any, searchMode: any) => (
   <View style={styles.modeCoachTip}>
     <Text

@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import {useEffect, useState} from 'react';
 import {
   View,
   ActivityIndicator,
@@ -15,54 +15,51 @@ import DecklistPresenter from '../../presenters/DecklistPresenter';
 import styles from '../../styles/SearchableDecklistListStyles';
 import layout from '../../constants/layout';
 
-class SearchableDecklistList extends Component {
-  constructor(props) {
-    super(props);
+// TODO: once it works use context for theme
+// and perhaps break out most of state god object?
 
-    this.state = {
+const SearchableDecklistList = props => {
+  const [query, setQuery] = useState('');
+  const [data, setData] = useState([]);
+  const [state, setState] = useState({
+    loading: true,
+    theme: props.theme,
+    allDecklists: [],
+  });
+
+  useEffect(() => {
+    setState({
+      ...state,
       loading: false,
-      error: null,
-      allDecklists: [], // all decklists, doesn't change
-      data: [], // currently filtered decklists
-      query: '',
+      allDecklists: props.allDecklists,
       flatListRef: null,
-      theme: this.props.theme,
-      nativeHeaderHeight: this.props.nativeHeaderHeight,
-      nativeFooterHeight: this.props.nativeFooterHeight,
-    };
-  }
-
-  componentDidMount() {
-    this.setState({
-      data: this.props.allDecklists,
-      allDecklists: this.props.allDecklists,
-      theme: this.props.theme,
+      theme: props.theme,
+      nativeHeaderHeight: props.nativeHeaderHeight,
+      nativeFooterHeight: props.nativeFooterHeight,
       error: null,
     });
-  }
+    setData(props.allDecklists.reverse());
+    setQuery('');
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.theme.name != this.props.theme.name) {
-      this.setState({
-        theme: this.props.theme,
-      });
+  useEffect(() => {
+    if (query == '') {
+      setData(props.allDecklists.reverse());
+    } else {
+      searchFilterFunction();
     }
-  }
+  }, [query]);
 
-  searchHandler = (text: string) => {
-    const query = text.toLowerCase();
-
-    this.setState({
-      query: query,
-    });
-
-    this.searchFilterFunction(query);
+  const searchHandler = (text: string) => {
+    const newInput = text.toLowerCase();
+    setQuery(newInput);
+    // this will trigger the searchFilterFunction via useEffect
   };
 
-  searchFilterFunction = (text: string) => {
-    const newData = this.state.allDecklists
+  const searchFilterFunction = () => {
+    const newData = state.allDecklists
       .filter(decklist => {
-        const textData = text;
+        const textData = query;
         const itemData = decklist.searchData();
 
         // Allow for unorderd word matches
@@ -75,16 +72,14 @@ class SearchableDecklistList extends Component {
       })
       .reverse();
 
-    this.setState({
-      data: newData,
-    });
+    setData(newData);
   };
 
-  NoResultsListComponent = () => (
+  const NoResultsListComponent = () => (
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
-          color: this.state.theme.foregroundColor,
+          color: state.theme.foregroundColor,
           ...styles.emptyListText,
         }}>
         No results found
@@ -92,104 +87,100 @@ class SearchableDecklistList extends Component {
     </View>
   );
 
-  SeparatorComponent = () => {
+  const SeparatorComponent = () => {
     return (
       <View
         style={{
-          backgroundColor: this.state.theme.dividerColor,
+          backgroundColor: state.theme.dividerColor,
           ...styles.separator,
         }}
       />
     );
   };
 
-  render() {
-    if (this.state.loading) {
-      return (
-        <View style={styles.loading}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
+  if (state.loading) {
     return (
-      <>
-        <Animated.FlatList
-          ref={ref => {
-            this.state.flatListRef = ref;
-          }}
-          contentContainerStyle={{
-            ...styles.flatListContentContainer,
-            minHeight: Dimensions.get('window').height,
-          }}
-          data={this.state.data}
-          renderItem={({item, index}) => (
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('View Decklist', {
-                  theme: this.state.theme,
-                  allCards: this.props.allCards,
-                  decklist: new DecklistPresenter(item),
-                });
-              }}
-              activeOpacity={1}>
-              <DecklistListItem
-                theme={this.state.theme}
-                item={new DecklistPresenter(item)}
-                index={index}
-                flatListRef={this.state.flatListRef}
-                scrollToIndex={(i: number) =>
-                  this.state.flatListRef.scrollToIndex({
-                    animated: true,
-                    index: i,
-                    viewOffset: layout.nativeHeaderHeight(),
-                  })
-                }
-              />
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={() => this.NoResultsListComponent()}
-          ListHeaderComponent={() => <></>}
-          ListHeaderComponentStyle={{
-            backgroundColor: this.state.theme.backgroundColor,
-            borderColor: this.state.theme.dividerColor,
-            borderBottomWidth:
-              this.state.query && this.state.data.length > 0 ? 2 : 0,
-            height: layout.nativeHeaderHeight(),
-          }}
-          ListFooterComponent={() => <></>}
-          ListFooterComponentStyle={{
-            flexGrow: 1, // important!
-            backgroundColor: this.state.theme.backgroundColor,
-            height: layout.footerHeight(layout.tabBarHeight(), null),
-            // height: 800,
-            borderTopWidth:
-              this.state.query && this.state.data.length > 0 ? 2 : 0,
-            borderColor: this.state.theme.dividerColor,
-          }}
-          keyExtractor={(item, index) => `${index}_${item.id}`}
-          ItemSeparatorComponent={this.SeparatorComponent}
-          keyboardShouldPersistTaps="handled"
-          //
-          // Performance settings:
-          initialNumToRender={10} // Reduce initial render amount
-          removeClippedSubviews={true} // Unmount components when outside of window
-          maxToRenderPerBatch={10} // Reduce number in each render batch
-          updateCellsBatchingPeriod={100} // Increase time between renders
-          windowSize={10} // Reduce the window size
-        />
-        <DecklistSearchFooter
-          query={this.state.query}
-          nativeFooterHeight={layout.nativeFooterHeight()}
-          searchBarHeight={layout.searchBarHeight()}
-          tabBarHeight={layout.tabBarHeight()}
-          allDecklists={this.state.allDecklists}
-          data={this.state.data}
-          searchCallback={this.searchHandler}
-        />
-      </>
+      <View style={styles.loading}>
+        <ActivityIndicator />
+      </View>
     );
   }
-}
+
+  return (
+    <>
+      <Animated.FlatList
+        ref={ref => {
+          state.flatListRef = ref;
+        }}
+        contentContainerStyle={{
+          ...styles.flatListContentContainer,
+          minHeight: Dimensions.get('window').height,
+        }}
+        data={data}
+        renderItem={({item, index}) => (
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate('View Decklist', {
+                theme: state.theme,
+                allCards: props.allCards,
+                decklist: new DecklistPresenter(item),
+              });
+            }}
+            activeOpacity={1}>
+            <DecklistListItem
+              theme={state.theme}
+              item={new DecklistPresenter(item)}
+              index={index}
+              flatListRef={state.flatListRef}
+              scrollToIndex={(i: number) =>
+                state.flatListRef.scrollToIndex({
+                  animated: true,
+                  index: i,
+                  viewOffset: layout.nativeHeaderHeight(),
+                })
+              }
+            />
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={() => NoResultsListComponent()}
+        ListHeaderComponent={() => <></>}
+        ListHeaderComponentStyle={{
+          backgroundColor: state.theme.backgroundColor,
+          borderColor: state.theme.dividerColor,
+          borderBottomWidth: query && data.length > 0 ? 2 : 0,
+          height: layout.nativeHeaderHeight(),
+        }}
+        ListFooterComponent={() => <></>}
+        ListFooterComponentStyle={{
+          flexGrow: 1, // important!
+          backgroundColor: state.theme.backgroundColor,
+          height: layout.footerHeight(layout.tabBarHeight(), null),
+          // height: 800,
+          borderTopWidth: query && data.length > 0 ? 2 : 0,
+          borderColor: state.theme.dividerColor,
+        }}
+        keyExtractor={(item, index) => `${index}_${item.id}`}
+        ItemSeparatorComponent={SeparatorComponent}
+        keyboardShouldPersistTaps="handled"
+        //
+        // Performance settings:
+        initialNumToRender={10} // Reduce initial render amount
+        removeClippedSubviews={true} // Unmount components when outside of window
+        maxToRenderPerBatch={10} // Reduce number in each render batch
+        updateCellsBatchingPeriod={100} // Increase time between renders
+        windowSize={10} // Reduce the window size
+      />
+      <DecklistSearchFooter
+        query={query}
+        nativeFooterHeight={layout.nativeFooterHeight()}
+        searchBarHeight={layout.searchBarHeight()}
+        tabBarHeight={layout.tabBarHeight()}
+        allDecklists={state.allDecklists}
+        data={data}
+        searchCallback={searchHandler}
+      />
+    </>
+  );
+};
 
 export default SearchableDecklistList;
