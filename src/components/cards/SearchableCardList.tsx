@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import {useState, useEffect} from 'react';
 import {View, ActivityIndicator, Text, Animated} from 'react-native';
 
 import CardListItem from './CardListItem';
@@ -9,28 +9,39 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 
-// TODO: Refactor into functional component so we can use Contexts
+const SearchableCardList = props => {
+  const [query, setQuery] = useState('');
+  const [data, setData] = useState([]);
+  const [filterQuerySet, setFilterQuerySet] = useState();
+  const [state, setState] = useState({
+    loading: false,
+    error: null,
+    allCards: props.cards,
+    searchModeIndex: 0,
+    flatListRef: null,
+    theme: props.theme,
+    nativeHeaderHeight: props.nativeHeaderHeight,
+    nativeFooterHeight: props.nativeFooterHeight,
+  });
 
-class SearchableCardList extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
+  useEffect(() => {
+    setState({
+      ...state,
       loading: false,
       error: null,
-      allCards: [], // all cards, doesn't change
-      data: [], // currently filtered cards
+      allCards: props.cards,
       searchModeIndex: 0,
-      query: '',
-      filterQuerySet: new FilterQuerySet(''),
       flatListRef: null,
-      theme: this.props.theme,
-      nativeHeaderHeight: this.props.nativeHeaderHeight,
-      nativeFooterHeight: this.props.nativeFooterHeight,
-    };
-  }
+      theme: props.theme,
+      nativeHeaderHeight: props.nativeHeaderHeight,
+      nativeFooterHeight: props.nativeFooterHeight,
+    });
+    setData([]);
+    setQuery('');
+    setFilterQuerySet(new FilterQuerySet(''));
+  }, []);
 
-  readonly searchModes = {
+  const searchModes = {
     0: {
       index: 0, // existence of this is proof that this should be a class
       label: 'title',
@@ -48,28 +59,11 @@ class SearchableCardList extends Component {
     },
   };
 
-  componentDidMount() {
-    this.setState({
-      data: this.props.cards,
-      allCards: this.props.cards,
-      theme: this.props.theme,
-      error: null,
-    });
-  }
+  const currentSearchMode = () => {
+    return searchModes[state.searchModeIndex] || 0;
+  };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.theme.name != this.props.theme.name) {
-      this.setState({
-        theme: this.props.theme,
-      });
-    }
-  }
-
-  currentSearchMode() {
-    return this.searchModes[this.state.searchModeIndex] || 0;
-  }
-
-  debugger = filterQuerySet => {
+  const debug = filterQuerySet => {
     console.log('====');
     console.log('text entry: ', text);
     console.log('====');
@@ -90,45 +84,41 @@ class SearchableCardList extends Component {
     console.log('\n');
   };
 
-  searchRouter = (text: string) => {
+  const searchRouter = (text: string) => {
     text = text.toLowerCase();
 
-    this.setState({
-      query: text,
-    });
+    setQuery(text);
 
-    switch (this.state.searchModeIndex) {
+    switch (state.searchModeIndex) {
       case 0:
-        this.searchFilterFunction(text);
+        searchFilterFunction(text);
         break;
       case 1:
-        this.queryFilterFunction(text);
+        queryFilterFunction(text);
         break;
     }
   };
 
-  queryFilterFunction = (text: string) => {
+  const queryFilterFunction = (text: string) => {
     const filterQuerySet = new FilterQuerySet(text);
 
-    this.setState({
-      query: text,
-      filterQuerySet: filterQuerySet,
-    });
+    setQuery(text);
+    setFilterQuerySet(filterQuerySet);
 
-    // this.debugger(filterQuerySet); // Uncomment to help debug insane queries
+    // debug(filterQuerySet); // Uncomment to help debug insane queries
 
     if (filterQuerySet.valid()) {
-      const newData = filterQuerySet.execute(this.state.allCards);
-      this.setState({data: newData});
+      const newData = filterQuerySet.execute(state.allCards);
+      setData(newData);
     } else {
-      this.setState({data: []});
+      setData([]);
     }
 
     return filterQuerySet.valid();
   };
 
-  searchFilterFunction = (text: string) => {
-    const newData = this.state.allCards.filter(card => {
+  const searchFilterFunction = (text: string) => {
+    const newData = state.allCards.filter(card => {
       const textData = text;
       const itemData = `${card.title} ${card.sortTitle} ${card.abbr || ' '}`
         .toLowerCase()
@@ -143,49 +133,48 @@ class SearchableCardList extends Component {
       return matches.length === textDataList.length;
     });
 
-    this.setState({
-      data: newData,
+    setData(newData);
+  };
+
+  const toggleSearchMode = () => {
+    setQuery(null);
+    searchRouter('');
+    setState({
+      ...state,
+      searchModeIndex: (state.searchModeIndex + 1) % 2,
     });
   };
 
-  toggleSearchMode = () => {
-    this.setState({query: null});
-    this.searchRouter('');
-    this.setState({
-      searchModeIndex: (this.state.searchModeIndex + 1) % 2,
-    });
-  };
-
-  EmptyListComponent = () => {
+  const EmptyListComponent = () => {
     return (
       <View
         style={{
           height: '100%',
-          backgroundColor: this.state.theme.backgroundColor,
+          backgroundColor: state.theme.backgroundColor,
         }}>
         <Text
           style={{
-            color: this.state.theme.foregroundColor,
+            color: state.theme.foregroundColor,
             ...styles.defaultTextTitle,
           }}>
-          {this.currentSearchMode().title}
+          {currentSearchMode().title}
         </Text>
         <Text
           style={{
-            color: this.state.theme.foregroundColor,
+            color: state.theme.foregroundColor,
             ...styles.defaultTextDescription,
           }}>
-          {this.currentSearchMode().description}
+          {currentSearchMode().description}
         </Text>
       </View>
     );
   };
 
-  NoResultsListComponent = () => (
+  const NoResultsListComponent = () => (
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
-          color: this.state.theme.foregroundColor,
+          color: state.theme.foregroundColor,
           ...styles.emptyListText,
         }}>
         No results found
@@ -193,101 +182,92 @@ class SearchableCardList extends Component {
     </View>
   );
 
-  SeparatorComponent = () => {
+  const SeparatorComponent = () => {
     return (
       <View
         style={{
-          backgroundColor: this.state.theme.dividerColor,
+          backgroundColor: state.theme.dividerColor,
           ...styles.separator,
         }}
       />
     );
   };
 
-  render() {
-    if (this.state.loading) {
-      return (
-        <View style={styles.loading}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
+  if (state.loading) {
     return (
-      <>
-        <Animated.FlatList
-          ref={ref => {
-            this.state.flatListRef = ref;
-          }}
-          contentContainerStyle={styles.flatListContentContainer}
-          data={this.state.query ? this.state.data : []}
-          renderItem={({item, index}) => (
-            <CardListItem
-              theme={this.state.theme}
-              item={new CardPresenter(item)}
-              index={index}
-              flatListRef={this.state.flatListRef}
-              scrollToIndex={(i: number) =>
-                this.state.flatListRef.scrollToIndex({
-                  animated: true,
-                  index: i,
-                  // viewPosition: 0.5,
-                  viewOffset: layout.nativeHeaderHeight(),
-                })
-              }
-            />
-          )}
-          ListEmptyComponent={() =>
-            this.state.query
-              ? this.NoResultsListComponent()
-              : this.EmptyListComponent()
-          }
-          ListHeaderComponent={() => <></>}
-          ListHeaderComponentStyle={{
-            backgroundColor: this.state.theme.backgroundColor,
-            borderColor: this.state.theme.dividerColor,
-            borderBottomWidth:
-              this.state.query && this.state.data.length > 0 ? 2 : 0,
-            height: layout.nativeHeaderHeight(),
-          }}
-          ListFooterComponent={() => <></>}
-          ListFooterComponentStyle={{
-            flexGrow: 1, // important!
-            backgroundColor: this.state.theme.backgroundColor,
-            height: layout.footerHeight(
-              layout.tabBarHeight(),
-              this.state.filterQuerySet,
-            ),
-            borderTopWidth:
-              this.state.query && this.state.data.length > 0 ? 2 : 0,
-            borderColor: this.state.theme.dividerColor,
-          }}
-          keyExtractor={(item, index) => `${index}_${item.id}`}
-          ItemSeparatorComponent={this.SeparatorComponent}
-          keyboardShouldPersistTaps="handled"
-          //
-          // Performance settings:
-          initialNumToRender={10} // Reduce initial render amount
-          removeClippedSubviews={true} // Unmount components when outside of window
-          maxToRenderPerBatch={10} // Reduce number in each render batch
-          updateCellsBatchingPeriod={100} // Increase time between renders
-          windowSize={10} // Reduce the window size
-        />
-        <CardSearchFooter
-          query={this.state.query}
-          filterQuerySet={this.state.filterQuerySet}
-          nativeFooterHeight={layout.nativeFooterHeight()}
-          searchBarHeight={layout.searchBarHeight()}
-          tabBarHeight={layout.tabBarHeight()}
-          searchMode={this.currentSearchMode()}
-          allCards={this.state.allCards}
-          data={this.state.data}
-          searchCallback={this.searchRouter}
-          toggleSearchMode={this.toggleSearchMode}
-        />
-      </>
+      <View style={styles.loading}>
+        <ActivityIndicator />
+      </View>
     );
   }
-}
+
+  return (
+    <>
+      <Animated.FlatList
+        ref={ref => {
+          state.flatListRef = ref;
+        }}
+        contentContainerStyle={styles.flatListContentContainer}
+        data={query ? data : []}
+        renderItem={({item, index}) => (
+          <CardListItem
+            theme={state.theme}
+            item={new CardPresenter(item)}
+            index={index}
+            flatListRef={state.flatListRef}
+            scrollToIndex={(i: number) =>
+              state.flatListRef.scrollToIndex({
+                animated: true,
+                index: i,
+                // viewPosition: 0.5,
+                viewOffset: layout.nativeHeaderHeight(),
+              })
+            }
+          />
+        )}
+        ListEmptyComponent={() =>
+          query ? NoResultsListComponent() : EmptyListComponent()
+        }
+        ListHeaderComponent={() => <></>}
+        ListHeaderComponentStyle={{
+          backgroundColor: state.theme.backgroundColor,
+          borderColor: state.theme.dividerColor,
+          borderBottomWidth: query && data.length > 0 ? 2 : 0,
+          height: layout.nativeHeaderHeight(),
+        }}
+        ListFooterComponent={() => <></>}
+        ListFooterComponentStyle={{
+          flexGrow: 1, // important!
+          backgroundColor: state.theme.backgroundColor,
+          height: layout.footerHeight(layout.tabBarHeight(), filterQuerySet),
+          borderTopWidth: query && data.length > 0 ? 2 : 0,
+          borderColor: state.theme.dividerColor,
+        }}
+        keyExtractor={(item, index) => `${index}_${item.id}`}
+        ItemSeparatorComponent={SeparatorComponent}
+        keyboardShouldPersistTaps="handled"
+        //
+        // Performance settings:
+        initialNumToRender={10} // Reduce initial render amount
+        removeClippedSubviews={true} // Unmount components when outside of window
+        maxToRenderPerBatch={10} // Reduce number in each render batch
+        updateCellsBatchingPeriod={100} // Increase time between renders
+        windowSize={10} // Reduce the window size
+      />
+      <CardSearchFooter
+        query={query}
+        filterQuerySet={filterQuerySet}
+        nativeFooterHeight={layout.nativeFooterHeight()}
+        searchBarHeight={layout.searchBarHeight()}
+        tabBarHeight={layout.tabBarHeight()}
+        searchMode={currentSearchMode()}
+        allCards={state.allCards}
+        data={data}
+        searchCallback={searchRouter}
+        toggleSearchMode={toggleSearchMode}
+      />
+    </>
+  );
+};
 
 export default SearchableCardList;

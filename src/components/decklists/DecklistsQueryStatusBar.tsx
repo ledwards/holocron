@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
 import SearchBarChip from '../cards/SearchBarChip';
 
@@ -9,26 +9,35 @@ import ThemeContext from '../../contexts/ThemeContext';
 
 type DecklistsQueryStatusBarProps = {
   query: string;
-  allDecklists: Decklist[];
   data: Decklist[];
 };
 
 const DecklistsQueryStatusBar = (props: DecklistsQueryStatusBarProps) => {
   const theme = useContext(ThemeContext);
+  const [query, setQuery] = useState('');
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setQuery(props.query);
+    setData(props.data);
+  }, []);
+
+  useEffect(() => {
+    setQuery(props.query);
+    setData(props.data);
+  }, [props.query, props.data]);
 
   return (
     <>
       <View style={styles.filterQueryContainer}>
-        {props.query != '' && (
-          <SearchBarChip title={props.query} colorConditional={true} />
-        )}
+        {query != '' && <SearchBarChip title={query} colorConditional={true} />}
 
         <Text
           style={{
             color: theme.foregroundColor,
             ...styles.resultsCount,
           }}>
-          {props.query ? `(${props.data.length} results)` : ''}
+          {query ? `(${data.length} results)` : ''}
         </Text>
       </View>
     </>

@@ -1,22 +1,22 @@
-import {PureComponent} from 'react';
+import {useState, useEffect} from 'react';
 import {Animated, Easing, Dimensions, Keyboard} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
 import styles from '../../styles/CardListItemStyles';
 
-class CardListItem extends PureComponent {
-  constructor(props) {
-    super(props);
+const CardListItem = props => {
+  const windowWidth = Dimensions.get('window').width;
+  const fillPercent = 0.55;
 
-    const windowWidth = Dimensions.get('window').width;
-    const fillPercent = 0.55;
+  const startingHeight = props.item.sideways
+    ? ((windowWidth / props.item.aspectRatio) * fillPercent) / 2.5
+    : (windowWidth * props.item.aspectRatio * fillPercent) / 2.5;
 
-    const startingHeight = this.props.item.sideways
-      ? ((windowWidth / this.props.item.aspectRatio) * fillPercent) / 2.5
-      : (windowWidth * this.props.item.aspectRatio * fillPercent) / 2.5;
+  const [state, setState] = useState({});
 
-    this.state = {
+  useEffect(() => {
+    setState({
       expanded: false,
       showingBack: false,
       screenWidth: windowWidth,
@@ -25,42 +25,23 @@ class CardListItem extends PureComponent {
       containerHeightAnim: new Animated.Value(startingHeight / 2),
       labelOpacityAnim: new Animated.Value(1.0),
       minHeight: startingHeight,
-      maxHeight: windowWidth * this.props.item.aspectRatio,
+      maxHeight: windowWidth * props.item.aspectRatio,
       minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth,
       posY: 0,
-      theme: props.theme,
-    };
-  }
-
-  componentDidMount() {
-    this.setState({
-      theme: this.props.theme,
     });
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.theme.name != this.props.theme.name) {
-      this.setState({
-        theme: this.props.theme,
-      });
-    }
-  }
-
-  toggleExpanded = () => {
+  const toggleExpanded = () => {
     Keyboard.dismiss();
-    const needsToExpand = !this.state.expanded;
+    const needsToExpand = !state.expanded;
     const needsToFlip =
-      this.props.item.twoSided &&
-      this.state.expanded &&
-      !this.state.showingBack;
+      props.item.twoSided && state.expanded && !state.showingBack;
     const needsToCollapse =
-      (this.props.item.twoSided &&
-        this.state.expanded &&
-        this.state.showingBack) ||
-      (!this.props.item.twoSided && this.state.expanded);
+      (props.item.twoSided && state.expanded && state.showingBack) ||
+      (!props.item.twoSided && state.expanded);
 
-    this.props.scrollToIndex(this.props.index);
+    props.scrollToIndex(props.index);
 
     const t = 300;
     const easing = Easing.elastic(0);
@@ -68,32 +49,26 @@ class CardListItem extends PureComponent {
     if (needsToExpand || needsToCollapse) {
       Animated.sequence([
         Animated.parallel([
-          Animated.timing(this.state.heightAnim, {
-            toValue: this.state.expanded
-              ? this.state.minHeight
-              : this.state.maxHeight,
+          Animated.timing(state.heightAnim, {
+            toValue: state.expanded ? state.minHeight : state.maxHeight,
             duration: t,
             useNativeDriver: false,
             easing: easing,
           }),
-          Animated.timing(this.state.widthAnim, {
-            toValue: this.state.expanded
-              ? this.state.minWidth
-              : this.state.maxWidth,
+          Animated.timing(state.widthAnim, {
+            toValue: state.expanded ? state.minWidth : state.maxWidth,
             duration: t,
             useNativeDriver: false,
             easing: easing,
           }),
-          Animated.timing(this.state.containerHeightAnim, {
-            toValue: this.state.expanded
-              ? this.state.minHeight / 2
-              : this.state.maxHeight,
+          Animated.timing(state.containerHeightAnim, {
+            toValue: state.expanded ? state.minHeight / 2 : state.maxHeight,
             duration: t,
             useNativeDriver: false,
             easing: easing,
           }),
-          Animated.timing(this.state.labelOpacityAnim, {
-            toValue: this.state.expanded ? 1.0 : 0.0,
+          Animated.timing(state.labelOpacityAnim, {
+            toValue: state.expanded ? 1.0 : 0.0,
             duration: t,
             useNativeDriver: false,
             easing: easing,
@@ -101,91 +76,90 @@ class CardListItem extends PureComponent {
         ]),
       ])
         // We scroll a second time, because items at the bottom of the list require it
-        .start(() => this.props.scrollToIndex(this.props.index));
+        .start(() => props.scrollToIndex(props.index));
     }
 
-    this.setState({
+    setState({
+      ...state,
       showingBack: needsToFlip,
       expanded: !needsToCollapse,
     });
   };
 
-  render() {
-    return (
-      <Animated.View
-        style={{
-          height: this.state.containerHeightAnim,
+  return (
+    <Animated.View
+      style={{
+        height: state.containerHeightAnim,
+      }}>
+      <ListItem
+        id={props.index}
+        style={{marginLeft: -15}}
+        button
+        onPress={() => toggleExpanded()}
+        containerStyle={{
+          ...styles.cardListItemContainer,
+          ...(props.item.side == 'Dark'
+            ? styles.cardListItemContainerDarkSide
+            : styles.cardListItemContainerLightSide),
         }}>
-        <ListItem
-          id={this.props.index}
-          style={{marginLeft: -15}}
-          button
-          onPress={() => this.toggleExpanded()}
-          containerStyle={{
-            ...styles.cardListItemContainer,
-            ...(this.props.item.side == 'Dark'
-              ? styles.cardListItemContainerDarkSide
-              : styles.cardListItemContainerLightSide),
+        <Animated.View
+          style={{
+            ...styles.cardListItem,
+            height: state.heightAnim,
+            width: state.widthAnim,
+            ...(!state.expanded
+              ? {
+                  ...styles.cardListItemExpanded,
+                  top: 0 + props.item.offsetY,
+                }
+              : styles.cardListItemCollapsed),
           }}>
-          <Animated.View
+          <FastImage
+            source={{
+              uri: state.showingBack
+                ? props.item.displayBackImageUrl
+                : props.item.displayImageUrl,
+            }}
+            alpha={FastImage.resizeMode.cover}
             style={{
-              ...styles.cardListItem,
-              height: this.state.heightAnim,
-              width: this.state.widthAnim,
-              ...(!this.state.expanded
-                ? {
-                    ...styles.cardListItemExpanded,
-                    top: 0 + this.props.item.offsetY,
-                  }
+              ...styles.cardListItemImage,
+              ...(!state.expanded
+                ? styles.cardListItemImageExpanded
                 : styles.cardListItemCollapsed),
-            }}>
-            <FastImage
-              source={{
-                uri: this.state.showingBack
-                  ? this.props.item.displayBackImageUrl
-                  : this.props.item.displayImageUrl,
-              }}
-              alpha={FastImage.resizeMode.cover}
+            }}
+          />
+        </Animated.View>
+        <Animated.View
+          style={{
+            opacity: state.labelOpacityAnim,
+          }}>
+          <ListItem.Content>
+            <ListItem.Title
               style={{
-                ...styles.cardListItemImage,
-                ...(!this.state.expanded
-                  ? styles.cardListItemImageExpanded
-                  : styles.cardListItemCollapsed),
-              }}
-            />
-          </Animated.View>
-          <Animated.View
-            style={{
-              opacity: this.state.labelOpacityAnim,
-            }}>
-            <ListItem.Content>
-              <ListItem.Title
-                style={{
-                  ...styles.cardListItemTitle,
-                  ...(this.props.item.displayTitle.includes('\n')
-                    ? styles.cardListItemTitleLong
-                    : styles.cardListItemTitleShort),
-                  ...(this.props.item.side == 'Light'
-                    ? styles.cardListItemTitleLight
-                    : styles.cardListItemTitleDark),
-                }}>
-                {`${this.props.item.displayTitle}`}
-              </ListItem.Title>
-              <ListItem.Subtitle
-                style={{
-                  ...styles.cardListItemSubtitle,
-                  ...(this.props.item.side == 'Light'
-                    ? styles.cardListItemSubtitleLight
-                    : styles.cardListItemSubtitleDark),
-                }}>
-                {`${this.props.item.displayExpansionSet} • ${this.props.item.type} • ${this.props.item.rarity}`}
-              </ListItem.Subtitle>
-            </ListItem.Content>
-          </Animated.View>
-        </ListItem>
-      </Animated.View>
-    );
-  }
-}
+                ...styles.cardListItemTitle,
+                ...(props.item.displayTitle.includes('\n')
+                  ? styles.cardListItemTitleLong
+                  : styles.cardListItemTitleShort),
+                ...(props.item.side == 'Light'
+                  ? styles.cardListItemTitleLight
+                  : styles.cardListItemTitleDark),
+              }}>
+              {`${props.item.displayTitle}`}
+            </ListItem.Title>
+            <ListItem.Subtitle
+              style={{
+                ...styles.cardListItemSubtitle,
+                ...(props.item.side == 'Light'
+                  ? styles.cardListItemSubtitleLight
+                  : styles.cardListItemSubtitleDark),
+              }}>
+              {`${props.item.displayExpansionSet} • ${props.item.type} • ${props.item.rarity}`}
+            </ListItem.Subtitle>
+          </ListItem.Content>
+        </Animated.View>
+      </ListItem>
+    </Animated.View>
+  );
+};
 
 export default CardListItem;
