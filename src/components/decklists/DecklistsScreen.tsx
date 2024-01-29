@@ -6,11 +6,10 @@ import {BlurView} from '@react-native-community/blur';
 import DecklistsScreenHome from './DecklistsScreenHome';
 import DecklistsScreenListView from './DecklistsScreenListView';
 import DecklistsScreenGridView from './DecklistsScreenGridView';
+import DecklistsScreenTextView from './DecklistsScreenTextView';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import ThemeContext from '../../contexts/ThemeContext';
-
-import layout from '../../constants/layout';
 
 type DecklistScreenProps = {
   allDecklists: any;
@@ -31,30 +30,32 @@ const DecklistsScreen = (props: DecklistScreenProps) => {
       index: 0,
       label: 'list',
       icon: 'list-outline',
+      view: DecklistsScreenListView,
     },
     1: {
       index: 1,
       label: 'grid',
       icon: 'grid-outline',
+      view: DecklistsScreenGridView,
+    },
+    2: {
+      index: 2,
+      label: 'text',
+      icon: 'document-text-outline',
+      view: DecklistsScreenTextView,
     },
   };
 
   const toggleDisplayMode = () => {
-    if (displayMode === 0) {
-      setDisplayMode(1);
-    } else {
-      setDisplayMode(0);
-    }
+    setDisplayMode((displayMode + 1) % 3);
   };
+
+  const currentDisplayMode = () => displayModes[displayMode];
+  const nextDisplayMode = () => displayModes[(displayMode + 1) % 3];
 
   return (
     <>
-      <Stack.Navigator
-        screenOptions={
-          {
-            // headerTransparent: true,
-          }
-        }>
+      <Stack.Navigator>
         <Stack.Screen
           name="Tournament Decklists"
           component={DecklistsScreenHome}
@@ -64,9 +65,7 @@ const DecklistsScreen = (props: DecklistScreenProps) => {
           }}></Stack.Screen>
         <Stack.Screen
           name="View Decklist"
-          component={
-            displayMode == 0 ? DecklistsScreenListView : DecklistsScreenGridView
-          }
+          component={currentDisplayMode().view}
           options={() => ({
             headerShown: true,
             headerStyle: {},
@@ -74,7 +73,7 @@ const DecklistsScreen = (props: DecklistScreenProps) => {
             headerTitleStyle: {},
             headerRight: () => (
               <Icon
-                name={displayModes[displayMode].icon}
+                name={nextDisplayMode().icon}
                 type="ionicon"
                 color={theme.foregroundColor}
                 size={24}

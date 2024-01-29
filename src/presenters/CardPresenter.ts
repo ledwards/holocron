@@ -33,6 +33,8 @@ class CardPresenter {
   twoSided: boolean;
 
   constructor(card: Card) {
+    console.log(card);
+
     this.id = card.id;
     this.title = card.title;
     this.type = card.type;
