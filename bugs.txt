@@ -6,10 +6,11 @@ follow the stack trace as described in https://reactjs.org/link/setstate-in-rend
 
 
 TODO:
-- click an inactive card to make current active inactive
+- make headers transparent (use import { useHeaderHeight } from '@react-navigation/elements';)
+- show Qty on CardsListView
+
 - two-sided cards should flip on first click, collapse on second click
-- third view - list
-- remember view preference
-- convert to class components (use import { useHeaderHeight } from '@react-navigation/elements';)
 - EBO is fucked up in the grid view
-- flip DS syetms 180
+- order the views correctly
+- refactor everything to use cards/decklists contextx
+- click an inactive card to make current active inactive

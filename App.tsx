@@ -75,7 +75,10 @@ const App = () => {
   }, [internetConnection]);
 
   useEffect(() => {
-    if (isCardsDownloadReady && isExpansionSetsDownloadReady) {
+    if (
+      !internetConnection ||
+      (isCardsDownloadReady && isExpansionSetsDownloadReady)
+    ) {
       loadExpansionSets()
         .then(sets => {
           setExpansionSets(sets);
@@ -91,7 +94,7 @@ const App = () => {
         });
     }
 
-    if (isDecklistsDownloadReady) {
+    if (!internetConnection || isDecklistsDownloadReady) {
       loadDecklists().then(decklists => {
         setAllDecklists(decklists);
       });

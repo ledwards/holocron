@@ -24,27 +24,29 @@ const DecklistsScreenListView = ({route}) => {
   const [state, setState] = useState({
     loading: false,
     error: null,
-    allCards: [],
     flatListRef: null,
   });
 
   useEffect(() => {
-    let items = [];
-    route.params.decklist.cards.forEach(card => {
-      for (let i = 0; i < card.quantity; i++) {
-        items.push(card);
-      }
-    });
-
-    const cards = items.map(card => allCards.find(c => c.id === card.id));
+    // let items = [];
+    // route.params.decklist.cards.forEach(card => {
+    //   for (let i = 0; i < card.quantity; i++) {
+    //     items.push(card);
+    //   }
+    // });
+    // //
 
     setState({
       ...state,
       loading: false,
       error: null,
-      allCards: cards,
       flatListRef: null,
     });
+
+    const decklistCards = route.params.decklist.cards;
+    const cards = decklistCards.map(card =>
+      allCards.find(c => c.id === card.id),
+    );
     setData(cards);
   }, []);
 
@@ -98,8 +100,10 @@ const DecklistsScreenListView = ({route}) => {
         data={data}
         renderItem={({item, index}) => (
           <CardListItem
-            theme={theme}
             item={new CardPresenter(item)}
+            quantity={
+              route.params.decklist.cards.find(c => c.id === item.id).quantity
+            }
             index={index}
             flatListRef={state.flatListRef}
             scrollToIndex={(i: number) =>
