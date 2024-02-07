@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {View, ActivityIndicator, Text, Animated} from 'react-native';
 
 import CardListItem from './CardListItem';
@@ -8,6 +8,8 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 
 import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
+import AllCardsContext from '../../contexts/AllCardsContext';
+import ThemeContext from '../../contexts/ThemeContext';
 
 const SearchableCardList = props => {
   const [query, setQuery] = useState('');
@@ -19,20 +21,19 @@ const SearchableCardList = props => {
     allCards: props.cards,
     searchModeIndex: 0,
     flatListRef: null,
-    theme: props.theme,
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
+  const theme = useContext(ThemeContext);
+  const allCards = useContext(AllCardsContext);
 
   useEffect(() => {
     setState({
       ...state,
       loading: false,
       error: null,
-      allCards: props.cards,
       searchModeIndex: 0,
       flatListRef: null,
-      theme: props.theme,
       nativeHeaderHeight: props.nativeHeaderHeight,
       nativeFooterHeight: props.nativeFooterHeight,
     });
@@ -108,7 +109,7 @@ const SearchableCardList = props => {
     // debug(filterQuerySet); // Uncomment to help debug insane queries
 
     if (filterQuerySet.valid()) {
-      const newData = filterQuerySet.execute(state.allCards);
+      const newData = filterQuerySet.execute(allCards);
       setData(newData);
     } else {
       setData([]);
@@ -118,7 +119,7 @@ const SearchableCardList = props => {
   };
 
   const searchFilterFunction = (text: string) => {
-    const newData = state.allCards.filter(card => {
+    const newData = allCards.filter(card => {
       const textData = text;
       const itemData = `${card.title} ${card.sortTitle} ${card.abbr || ' '}`
         .toLowerCase()
@@ -150,18 +151,18 @@ const SearchableCardList = props => {
       <View
         style={{
           height: '100%',
-          backgroundColor: state.theme.backgroundColor,
+          backgroundColor: theme.backgroundColor,
         }}>
         <Text
           style={{
-            color: state.theme.foregroundColor,
+            color: theme.foregroundColor,
             ...styles.defaultTextTitle,
           }}>
           {currentSearchMode().title}
         </Text>
         <Text
           style={{
-            color: state.theme.foregroundColor,
+            color: theme.foregroundColor,
             ...styles.defaultTextDescription,
           }}>
           {currentSearchMode().description}
@@ -174,7 +175,7 @@ const SearchableCardList = props => {
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
-          color: state.theme.foregroundColor,
+          color: theme.foregroundColor,
           ...styles.emptyListText,
         }}>
         No results found
@@ -186,7 +187,7 @@ const SearchableCardList = props => {
     return (
       <View
         style={{
-          backgroundColor: state.theme.dividerColor,
+          backgroundColor: theme.dividerColor,
           ...styles.separator,
         }}
       />
@@ -211,7 +212,7 @@ const SearchableCardList = props => {
         data={query ? data : []}
         renderItem={({item, index}) => (
           <CardListItem
-            theme={state.theme}
+            theme={theme}
             item={new CardPresenter(item)}
             index={index}
             flatListRef={state.flatListRef}
@@ -230,18 +231,18 @@ const SearchableCardList = props => {
         }
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
-          backgroundColor: state.theme.backgroundColor,
-          borderColor: state.theme.dividerColor,
+          backgroundColor: theme.backgroundColor,
+          borderColor: theme.dividerColor,
           borderBottomWidth: query && data.length > 0 ? 2 : 0,
           height: layout.nativeHeaderHeight(),
         }}
         ListFooterComponent={() => <></>}
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
-          backgroundColor: state.theme.backgroundColor,
+          backgroundColor: theme.backgroundColor,
           height: layout.footerHeight(layout.tabBarHeight(), filterQuerySet),
           borderTopWidth: query && data.length > 0 ? 2 : 0,
-          borderColor: state.theme.dividerColor,
+          borderColor: theme.dividerColor,
         }}
         keyExtractor={(item, index) => `${index}_${item.id}`}
         ItemSeparatorComponent={SeparatorComponent}
@@ -261,7 +262,7 @@ const SearchableCardList = props => {
         searchBarHeight={layout.searchBarHeight()}
         tabBarHeight={layout.tabBarHeight()}
         searchMode={currentSearchMode()}
-        allCards={state.allCards}
+        allCards={allCards}
         data={data}
         searchCallback={searchRouter}
         toggleSearchMode={toggleSearchMode}

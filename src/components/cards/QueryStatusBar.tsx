@@ -8,17 +8,18 @@ import Card from '../../models/Card';
 
 import styles from '../../styles/QueryStatusBarStyles';
 import ThemeContext from '../../contexts/ThemeContext';
+import AllCardsContext from '../../contexts/AllCardsContext';
 
 type QueryStatusBarProps = {
   query: string;
   filterQuerySet: FilterQuerySet;
   searchMode: any;
-  allCards: Card[];
   data: Card[];
 };
 
 const QueryStatusBar = (props: QueryStatusBarProps) => {
   const theme = useContext(ThemeContext);
+  const allCards = useContext(AllCardsContext);
 
   return (
     <>
@@ -49,8 +50,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => {
               <SearchBarChip
                 title={filterQuery.rawValue}
                 colorConditional={
-                  filterQuery.validValue() &&
-                  filterQuery.length(props.allCards) > 0
+                  filterQuery.validValue() && filterQuery.length(allCards) > 0
                 }
               />
             )}
@@ -67,7 +67,7 @@ const QueryStatusBar = (props: QueryStatusBarProps) => {
               {props.query
                 ? `(${
                     filterQuery.valid()
-                      ? filterQuery.execute(props.allCards).length
+                      ? filterQuery.execute(allCards).length
                       : props.data.length
                   } results)`
                 : ''}

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {
   View,
   ActivityIndicator,
@@ -11,9 +11,11 @@ import {
 import DecklistListItem from './DecklistListItem';
 import DecklistSearchFooter from './DecklistSearchFooter';
 import DecklistPresenter from '../../presenters/DecklistPresenter';
+import AllDecklistsContext from '../../contexts/AllDecklistsContext';
 
 import styles from '../../styles/SearchableDecklistListStyles';
 import layout from '../../constants/layout';
+import ThemeContext from '../../contexts/ThemeContext';
 
 // TODO: once it works use context for theme
 // and perhaps break out most of state god object?
@@ -23,28 +25,26 @@ const SearchableDecklistList = props => {
   const [data, setData] = useState([]);
   const [state, setState] = useState({
     loading: true,
-    theme: props.theme,
-    allDecklists: [],
   });
+  const theme = useContext(ThemeContext);
+  const allDecklists = useContext(AllDecklistsContext);
 
   useEffect(() => {
     setState({
       ...state,
       loading: false,
-      allDecklists: props.allDecklists,
       flatListRef: null,
-      theme: props.theme,
       nativeHeaderHeight: props.nativeHeaderHeight,
       nativeFooterHeight: props.nativeFooterHeight,
       error: null,
     });
-    setData(props.allDecklists.reverse());
+    setData(allDecklists.reverse());
     setQuery('');
   }, []);
 
   useEffect(() => {
     if (query == '') {
-      setData(props.allDecklists.reverse());
+      setData(allDecklists.reverse());
     } else {
       searchFilterFunction();
     }
@@ -57,7 +57,7 @@ const SearchableDecklistList = props => {
   };
 
   const searchFilterFunction = () => {
-    const newData = state.allDecklists
+    const newData = allDecklists
       .filter(decklist => {
         const textData = query;
         const itemData = decklist.searchData();
@@ -79,7 +79,7 @@ const SearchableDecklistList = props => {
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
-          color: state.theme.foregroundColor,
+          color: theme.foregroundColor,
           ...styles.emptyListText,
         }}>
         No results found
@@ -91,7 +91,7 @@ const SearchableDecklistList = props => {
     return (
       <View
         style={{
-          backgroundColor: state.theme.dividerColor,
+          backgroundColor: theme.dividerColor,
           ...styles.separator,
         }}
       />
@@ -121,14 +121,14 @@ const SearchableDecklistList = props => {
           <TouchableOpacity
             onPress={() => {
               props.navigation.navigate('View Decklist', {
-                theme: state.theme,
+                theme: theme,
                 allCards: props.allCards,
                 decklist: new DecklistPresenter(item),
               });
             }}
             activeOpacity={1}>
             <DecklistListItem
-              theme={state.theme}
+              theme={theme}
               item={new DecklistPresenter(item)}
               index={index}
               flatListRef={state.flatListRef}
@@ -145,19 +145,19 @@ const SearchableDecklistList = props => {
         ListEmptyComponent={() => NoResultsListComponent()}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
-          backgroundColor: state.theme.backgroundColor,
-          borderColor: state.theme.dividerColor,
+          backgroundColor: theme.backgroundColor,
+          borderColor: theme.dividerColor,
           borderBottomWidth: query && data.length > 0 ? 2 : 0,
           height: layout.nativeHeaderHeight(),
         }}
         ListFooterComponent={() => <></>}
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
-          backgroundColor: state.theme.backgroundColor,
+          backgroundColor: theme.backgroundColor,
           height: layout.footerHeight(layout.tabBarHeight(), null),
           // height: 800,
           borderTopWidth: query && data.length > 0 ? 2 : 0,
-          borderColor: state.theme.dividerColor,
+          borderColor: theme.dividerColor,
         }}
         keyExtractor={(item, index) => `${index}_${item.id}`}
         ItemSeparatorComponent={SeparatorComponent}
@@ -175,7 +175,6 @@ const SearchableDecklistList = props => {
         nativeFooterHeight={layout.nativeFooterHeight()}
         searchBarHeight={layout.searchBarHeight()}
         tabBarHeight={layout.tabBarHeight()}
-        allDecklists={state.allDecklists}
         data={data}
         searchCallback={searchHandler}
       />

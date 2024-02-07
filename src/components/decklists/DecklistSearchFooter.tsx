@@ -15,7 +15,6 @@ type DecklistSearchFooterProps = {
   query: string;
   nativeFooterHeight: number;
   searchBarHeight: number;
-  allDecklists: Decklist[];
   data: Decklist[];
   searchCallback: (query: string) => void;
 };
@@ -23,8 +22,7 @@ type DecklistSearchFooterProps = {
 const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   const theme = useContext(ThemeContext);
   const [query, setQuery] = useState('');
-  const [allDecklists, setAllDecklists] = useState(props.allDecklists);
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
 
   const inputRef = useRef(null);
 
@@ -41,7 +39,6 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   const onChangeText = (text: string) => {
     setQuery(text);
     props.searchCallback(text);
-    // setData(props.data);
   };
 
   return (
@@ -95,7 +92,7 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
                 ...styles.filterQuerySetContainer,
               }}>
               {!props.query ? (
-                coachTipComponent(theme, allDecklists)
+                coachTipComponent(theme, data)
               ) : (
                 <DecklistsQueryStatusBar query={query} data={data} />
               )}
@@ -107,13 +104,13 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   );
 };
 
-const coachTipComponent = (theme: any, allDecklists) => (
+const coachTipComponent = (theme: any, decklists) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{
         color: theme.foregroundColor,
       }}>
-      {`Searching ${allDecklists.length} decklists`}
+      {`Searching ${decklists.length} decklists`}
     </Text>
   </View>
 );

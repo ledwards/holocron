@@ -12,13 +12,7 @@ import ThemeContext from '../../contexts/ThemeContext';
 
 const Tab = createBottomTabNavigator();
 
-type TabNavigationProps = {
-  allCards: any;
-  expansionSets: any;
-  allDecklists: any;
-};
-
-function TabNavigation(props: TabNavigationProps) {
+function TabNavigation(props) {
   const iconSize = 24;
   const theme = useContext(ThemeContext);
 
@@ -45,10 +39,7 @@ function TabNavigation(props: TabNavigationProps) {
               flex: 1,
               backgroundColor: theme.backgroundColor,
             }}>
-            <CardsScreen
-              allCards={props.allCards}
-              expansionSets={props.expansionSets}
-            />
+            <CardsScreen />
           </View>
         )}
         options={{
@@ -71,11 +62,7 @@ function TabNavigation(props: TabNavigationProps) {
               flex: 1,
               backgroundColor: theme.backgroundColor,
             }}>
-            <DecklistsScreen
-              allCards={props.allCards}
-              expansionSets={props.expansionSets}
-              allDecklists={props.allDecklists}
-            />
+            <DecklistsScreen />
           </View>
         )}
         options={{

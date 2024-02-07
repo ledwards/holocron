@@ -11,17 +11,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import ThemeContext from '../../contexts/ThemeContext';
 
-type DecklistScreenProps = {
-  allDecklists: any;
-};
-
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
 const Stack = createStackNavigator();
 
-const DecklistsScreen = (props: DecklistScreenProps) => {
+const DecklistsScreen = props => {
   const [displayMode, setDisplayMode] = useState(0);
   const theme = useContext(ThemeContext);
 
@@ -59,10 +55,7 @@ const DecklistsScreen = (props: DecklistScreenProps) => {
         <Stack.Screen
           name="Tournament Decklists"
           component={DecklistsScreenHome}
-          options={{headerShown: false}}
-          initialParams={{
-            allDecklists: props.allDecklists,
-          }}></Stack.Screen>
+          options={{headerShown: false}}></Stack.Screen>
         <Stack.Screen
           name="View Decklist"
           component={currentDisplayMode().view}
