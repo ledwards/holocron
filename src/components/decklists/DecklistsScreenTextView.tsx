@@ -1,8 +1,6 @@
 import React, {useContext} from 'react';
 import {ScrollView, Text} from 'react-native';
 
-import Card from '../../models/Card';
-import Decklist from '../../models/Decklist';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';

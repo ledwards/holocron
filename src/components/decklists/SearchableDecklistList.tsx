@@ -121,8 +121,6 @@ const SearchableDecklistList = props => {
           <TouchableOpacity
             onPress={() => {
               props.navigation.navigate('View Decklist', {
-                theme: theme,
-                allCards: props.allCards,
                 decklist: new DecklistPresenter(item),
               });
             }}

@@ -1,7 +1,8 @@
 import {useState, useEffect, useContext} from 'react';
-import {Animated, Easing, Dimensions, Keyboard, Text} from 'react-native';
+import {Animated, Easing, Dimensions, Keyboard, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
+import {BlurView} from '@react-native-community/blur';
 
 import styles from '../../styles/CardListItemStyles';
 import ThemeContext from '../../contexts/ThemeContext';
@@ -160,22 +161,28 @@ const CardListItem = props => {
           </ListItem.Content>
         </Animated.View>
         {props.quantity && (
-          <Text
+          <View
             style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
+              ...styles.cardListItemQuantityContainer,
               height: state.minHeight,
-              width: '10%',
-              fontWeight: 'bold',
-              textAlign: 'center',
-              paddingTop: '65%',
-              color: theme.foregroundColor,
-              backgroundColor: theme.translucentBackgroundColor,
               opacity: state.expanded ? 0 : 1,
             }}>
-            {props.quantity}
-          </Text>
+            <BlurView
+              style={styles.cardListItemQuantityBlur}
+              blurType={theme.name}
+              blurAmount={5}
+              reducedTransparencyFallbackColor={
+                theme.translucentBackgroundColor
+              }
+            />
+            <Text
+              style={{
+                ...styles.cardListItemQuantityText,
+                color: theme.foregroundColor,
+              }}>
+              {props.quantity}
+            </Text>
+          </View>
         )}
       </ListItem>
     </Animated.View>
