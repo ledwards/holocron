@@ -63,6 +63,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.alphaDark,
     color: colors.light,
   },
+  cardListItemQuantityContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: '12%',
+  },
+  cardListItemQuantityBlur: {
+    width: '100%',
+    height: '100%',
+  },
+  cardListItemQuantityText: {
+    fontWeight: 'bold',
+    position: 'absolute',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingTop: '45%',
+    width: '100%',
+    height: '100%',
+  },
 });
 
 export default styles;

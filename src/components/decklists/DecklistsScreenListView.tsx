@@ -98,24 +98,26 @@ const DecklistsScreenListView = ({route}) => {
         }}
         contentContainerStyle={styles.flatListContentContainer}
         data={data}
-        renderItem={({item, index}) => (
-          <CardListItem
-            item={new CardPresenter(item)}
-            quantity={
-              route.params.decklist.cards.find(c => c.id === item.id).quantity
-            }
-            index={index}
-            flatListRef={state.flatListRef}
-            scrollToIndex={(i: number) =>
-              state.flatListRef.scrollToIndex({
-                animated: true,
-                index: i,
-                // viewPosition: 0.5,
-                viewOffset: layout.nativeHeaderHeight(),
-              })
-            }
-          />
-        )}
+        renderItem={({item, index}) =>
+          item && (
+            <CardListItem
+              item={new CardPresenter(item)}
+              quantity={
+                route.params.decklist.cards.find(c => c.id === item.id).quantity
+              }
+              index={index}
+              flatListRef={state.flatListRef}
+              scrollToIndex={(i: number) =>
+                state.flatListRef.scrollToIndex({
+                  animated: true,
+                  index: i,
+                  // viewPosition: 0.5,
+                  viewOffset: layout.nativeHeaderHeight(),
+                })
+              }
+            />
+          )
+        }
         ListEmptyComponent={() => EmptyListComponent()}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
@@ -131,7 +133,7 @@ const DecklistsScreenListView = ({route}) => {
           borderTopWidth: 0,
           borderColor: theme.dividerColor,
         }}
-        keyExtractor={(item, index) => `${index}_${item.id}`}
+        keyExtractor={(item, index) => `${index}_${item ? item.id : 0}`}
         ItemSeparatorComponent={SeparatorComponent}
         keyboardShouldPersistTaps="handled"
         //

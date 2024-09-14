@@ -7,7 +7,9 @@ follow the stack trace as described in https://reactjs.org/link/setstate-in-rend
 
 TODO:
 - make headers transparent (use import { useHeaderHeight } from '@react-navigation/elements';)
-- show Qty on CardsListView
+
+NEXT:
+- show Qty on DecklistsGridView
 
 - two-sided cards should flip on first click, collapse on second click
 - EBO is fucked up in the grid view
