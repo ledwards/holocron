@@ -69,7 +69,7 @@ function TabNavigation(props) {
           tabBarLabel: 'Decklists',
           tabBarIcon: () => (
             <Icon
-              name={'trophy-outline'}
+              name={'receipt-outline'}
               type="ionicon"
               color={theme.foregroundColor}
               size={iconSize}
