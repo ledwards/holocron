@@ -69,7 +69,7 @@ function TabNavigation(props) {
           tabBarLabel: 'Decklists',
           tabBarIcon: () => (
             <Icon
-              name={'receipt-outline'}
+              name={'file-tray-full-outline'}
               type="ionicon"
               color={theme.foregroundColor}
               size={iconSize}

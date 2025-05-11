@@ -27,7 +27,7 @@ const cardIsSideways = (card: any) => {
   return card.subType == 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef}) => {
+const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow}) => {
   const navigation = useNavigation();
 
   const [state, setState] = React.useState({
@@ -36,8 +36,6 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef}) => {
   });
 
   const windowHeight = Dimensions.get('window').height;
-  const windowWidth = Dimensions.get('window').width;
-  const cardsPerRow = 4;
   const cardWidth = windowWidth / cardsPerRow;
   const cardHeight = cardWidth / decklist.aspectRatio;
   const cardMinWidth = cardWidth;
@@ -173,19 +171,21 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef}) => {
       <View
         style={{
           ...styles.decklistGridInner,
-          display: state.expanded ? 'none' : 'block',
-          flex: `${(1 / cardsPerRow) * 100}%`,
+          display: state.expanded ? 'none' : 'flex',
+          width: '100%',
+          height: '100%',
           transform: [{scale: minScale}],
         }}>
         <TouchableOpacity
           onPress={event => toggleExpanded(event, item, index)}
-          activeOpacity={1}>
+          activeOpacity={1}
+          style={{width: '100%', height: '100%'}}>
           <FastImage
             source={{uri: item.imageUrl}}
             style={{
               ...styles.decklistGridImage,
-              width: cardMinWidth,
-              height: cardMinHeight,
+              width: '100%',
+              height: '100%',
               transform: cardIsSideways(item)
                 ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
                 : [],
@@ -211,13 +211,14 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef}) => {
           }}>
           <TouchableOpacity
             onPress={event => toggleExpanded(event, item, index)}
-            activeOpacity={1}>
+            activeOpacity={1}
+            style={{width: '100%', height: '100%'}}>
             <FastImage
               source={{uri: item.imageUrl}}
               style={{
                 ...styles.decklistGridImage,
-                width: cardWidth,
-                height: cardHeight,
+                width: '100%',
+                height: '100%',
                 transform: cardIsSideways(item)
                   ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
                   : [],
