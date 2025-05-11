@@ -1,5 +1,5 @@
 import React, {createRef, useEffect, useState} from 'react';
-import {ScrollView, View, Dimensions} from 'react-native';
+import {ScrollView, View, Dimensions, StyleSheet} from 'react-native';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
@@ -10,6 +10,7 @@ const DecklistsScreenGridView = props => {
   const scrollViewRef = createRef();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+  const [expandedCardIndex, setExpandedCardIndex] = useState(-1);
   const cardsPerRow = 4;
 
   // Handle screen rotation/dimension changes
@@ -43,7 +44,8 @@ const DecklistsScreenGridView = props => {
           flexDirection: 'row',
           flexWrap: 'wrap',
           justifyContent: 'flex-start',
-          width: '100%'
+          width: '100%',
+          position: 'relative'
         }}>
           {items.map((item, index) => {
             return (
@@ -53,6 +55,8 @@ const DecklistsScreenGridView = props => {
                   width: windowWidth / cardsPerRow,
                   height: windowWidth / cardsPerRow / (item.aspectRatio || decklist.aspectRatio || 0.7),
                   padding: 2,
+                  position: 'relative',
+                  zIndex: expandedCardIndex === index ? 1 : 0,
                 }}
               >
                 <DecklistsScreenGridItem
@@ -62,6 +66,10 @@ const DecklistsScreenGridView = props => {
                   scrollViewRef={scrollViewRef}
                   windowWidth={windowWidth}
                   cardsPerRow={cardsPerRow}
+                  isExpanded={expandedCardIndex === index}
+                  onExpand={() => setExpandedCardIndex(index)}
+                  onCollapse={() => setExpandedCardIndex(-1)}
+                  closeOtherCards={expandedCardIndex !== -1 && expandedCardIndex !== index}
                 />
               </View>
             );
@@ -71,6 +79,11 @@ const DecklistsScreenGridView = props => {
       <DecklistEmptyFooter
         nativeFooterHeight={layout.nativeFooterHeight()}
         tabBarHeight={layout.tabBarHeight()}
+      />
+      <View 
+        style={StyleSheet.absoluteFill} 
+        pointerEvents="none" 
+        collapsable={false} 
       />
     </>
   );
