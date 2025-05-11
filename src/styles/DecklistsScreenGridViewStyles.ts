@@ -18,20 +18,19 @@ const styles = StyleSheet.create({
 
   decklistGridColumn: {},
   decklistGridInner: {
-    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   decklistGridImage: {
     borderRadius: 5,
+    width: '100%',
+    height: '100%',
   },
 
   scrollView: {
-    alignContent: 'flex-start',
-    alignItems: 'flex-start',
-    alignSelf: 'flex-start',
-    flexGrow: 1,
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'flex-start',
     backgroundColor: 'transparent',
   },
 });
