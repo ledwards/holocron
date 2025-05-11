@@ -24,15 +24,15 @@ const DecklistsScreen = props => {
   const displayModes = {
     0: {
       index: 0,
-      label: 'list',
-      icon: 'list-outline',
-      view: DecklistsScreenListView,
-    },
-    1: {
-      index: 1,
       label: 'grid',
       icon: 'grid-outline',
       view: DecklistsScreenGridView,
+    },
+    1: {
+      index: 1,
+      label: 'list',
+      icon: 'list-outline',
+      view: DecklistsScreenListView,
     },
     2: {
       index: 2,

@@ -27,13 +27,23 @@ const cardIsSideways = (card: any) => {
   return card.subType == 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow}) => {
+const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow, isExpanded, onExpand, onCollapse, closeOtherCards}) => {
   const navigation = useNavigation();
 
   const [state, setState] = React.useState({
     expanded: false,
     showingBack: false,
   });
+  
+  // When parent tells us to close due to another card expanding
+  useEffect(() => {
+    if (closeOtherCards && state.expanded) {
+      setState({
+        expanded: false,
+        showingBack: false,
+      });
+    }
+  }, [closeOtherCards]);
 
   const windowHeight = Dimensions.get('window').height;
   const cardWidth = windowWidth / cardsPerRow;
@@ -88,6 +98,8 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
 
   const toggleExpanded = (event, item, index) => {
     Keyboard.dismiss();
+    event.stopPropagation();
+    
     const needsToExpand = !state.expanded;
     const needsToFlip = item.twoSided && state.expanded && !state.showingBack;
     const needsToCollapse =
@@ -101,6 +113,11 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
           expanded: needsToExpand,
           showingBack: needsToFlip,
         });
+        
+        // Notify parent about expansion
+        if (onExpand) {
+          onExpand();
+        }
 
         const topOfCard =
           Math.floor(index / cardsPerRow) * cardMinHeight -
@@ -146,6 +163,11 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
             expanded: needsToExpand,
             showingBack: needsToFlip,
           });
+          
+          // Notify parent about collapse
+          if (onCollapse) {
+            onCollapse();
+          }
         }
       });
     }
@@ -196,17 +218,28 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
       </View>
 
       <Animated.View
+        collapsable={false}
         style={{
-          display: state.expanded ? 'block' : 'none',
-          zIndex: state.expanded ? 1 : 0,
+          display: state.expanded ? 'flex' : 'none',
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          zIndex: 1,
           transform: [{scale: minScale}],
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
         }}>
         <Animated.View
+          collapsable={false}
           style={{
-            position: 'relative',
-            zIndex: state.expanded ? 1 : 0,
+            position: 'absolute',
+            zIndex: 1,
             left: leftAnim,
             top: topAnim,
+            width: cardWidth,
+            height: cardHeight,
             transform: [{scale: scaleAnim}],
           }}>
           <TouchableOpacity
