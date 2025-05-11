@@ -1,5 +1,5 @@
 import React, {createRef, useEffect, useState} from 'react';
-import {ScrollView, View, Dimensions, StyleSheet} from 'react-native';
+import {ScrollView, View, Dimensions, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
@@ -10,7 +10,10 @@ const DecklistsScreenGridView = props => {
   const scrollViewRef = createRef();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+  // Track which card is logically expanded
   const [expandedCardIndex, setExpandedCardIndex] = useState(-1);
+  // Track which card should have high zIndex (including during collapse animation)
+  const [visibleCardIndex, setVisibleCardIndex] = useState(-1);
   const cardsPerRow = 4;
 
   // Handle screen rotation/dimension changes
@@ -32,6 +35,32 @@ const DecklistsScreenGridView = props => {
     }
   });
 
+  // Handle card tap at grid level
+  const handleCardTap = (index) => {
+    if (expandedCardIndex === index) {
+      // Tapping the currently expanded card - collapse it
+      // Update expandedCardIndex immediately but keep visibleCardIndex
+      setExpandedCardIndex(-1);
+      // visibleCardIndex will be updated after animation completes
+    } else if (expandedCardIndex === -1) {
+      // No card is expanded - expand the tapped one
+      setExpandedCardIndex(index);
+      setVisibleCardIndex(index);
+    } else {
+      // Another card is expanded - just collapse it
+      setExpandedCardIndex(-1);
+      // Keep the visible index until animation completes
+    }
+  };
+
+  // Called when a card finishes its collapse animation
+  const handleCollapseComplete = (index) => {
+    if (visibleCardIndex === index) {
+      // Only reset the visible index if it matches the card that just finished animating
+      setVisibleCardIndex(-1);
+    }
+  };
+
   return (
     <>
       <ScrollView
@@ -47,16 +76,18 @@ const DecklistsScreenGridView = props => {
           width: '100%',
           position: 'relative'
         }}>
-          {items.map((item, index) => {
-            return (
+          {items.map((item, index) => (
+            <TouchableWithoutFeedback 
+              key={index}
+              onPress={() => handleCardTap(index)}
+            >
               <View 
-                key={index} 
                 style={{
                   width: windowWidth / cardsPerRow,
                   height: windowWidth / cardsPerRow / (item.aspectRatio || decklist.aspectRatio || 0.7),
                   padding: 2,
                   position: 'relative',
-                  zIndex: expandedCardIndex === index ? 1 : 0,
+                  zIndex: visibleCardIndex === index ? 10 : 0,
                 }}
               >
                 <DecklistsScreenGridItem
@@ -67,13 +98,11 @@ const DecklistsScreenGridView = props => {
                   windowWidth={windowWidth}
                   cardsPerRow={cardsPerRow}
                   isExpanded={expandedCardIndex === index}
-                  onExpand={() => setExpandedCardIndex(index)}
-                  onCollapse={() => setExpandedCardIndex(-1)}
-                  closeOtherCards={expandedCardIndex !== -1 && expandedCardIndex !== index}
+                  onCollapseAnimationComplete={handleCollapseComplete}
                 />
               </View>
-            );
-          })}
+            </TouchableWithoutFeedback>
+          ))}
         </View>
       </ScrollView>
       <DecklistEmptyFooter
