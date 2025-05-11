@@ -2,9 +2,7 @@ import {
   View,
   Animated,
   Easing,
-  Keyboard,
   Dimensions,
-  TouchableOpacity,
 } from 'react-native';
 import React, {useRef, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -27,7 +25,7 @@ const cardIsSideways = (card: any) => {
   return card.subType == 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow, isExpanded, onExpand, onCollapse, closeOtherCards}) => {
+const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow, isExpanded, onCollapseAnimationComplete}) => {
   const navigation = useNavigation();
 
   const [state, setState] = React.useState({
@@ -35,15 +33,16 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
     showingBack: false,
   });
   
-  // When parent tells us to close due to another card expanding
+  // Watch for changes to isExpanded prop
   useEffect(() => {
-    if (closeOtherCards && state.expanded) {
-      setState({
-        expanded: false,
-        showingBack: false,
-      });
+    if (isExpanded && !state.expanded) {
+      // Expand the card
+      handleExpand();
+    } else if (!isExpanded && state.expanded) {
+      // Collapse the card with animation
+      handleCollapse();
     }
-  }, [closeOtherCards]);
+  }, [isExpanded]);
 
   const windowHeight = Dimensions.get('window').height;
   const cardWidth = windowWidth / cardsPerRow;
@@ -96,81 +95,84 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
 
   item.twoSided = item.backImageUrl != null;
 
-  const toggleExpanded = (event, item, index) => {
-    Keyboard.dismiss();
-    event.stopPropagation();
-    
-    const needsToExpand = !state.expanded;
-    const needsToFlip = item.twoSided && state.expanded && !state.showingBack;
-    const needsToCollapse =
-      (item.twoSided && state.expanded && state.showingBack) ||
-      (!item.twoSided && state.expanded);
+  const handleExpand = () => {
+    setState({
+      expanded: true,
+      showingBack: false,
+    });
 
-    if (needsToExpand || needsToCollapse) {
-      // things to do before the animation
-      if (needsToExpand) {
-        setState({
-          expanded: needsToExpand,
-          showingBack: needsToFlip,
-        });
-        
-        // Notify parent about expansion
-        if (onExpand) {
-          onExpand();
-        }
+    const topOfCard =
+      Math.floor(index / cardsPerRow) * cardMinHeight -
+      (windowHeight - cardMaxHeight) / 2 -
+      layout.tabBarHeight() -
+      100;
 
-        const topOfCard =
-          Math.floor(index / cardsPerRow) * cardMinHeight -
-          (windowHeight - cardMaxHeight) / 2 -
-          layout.tabBarHeight() -
-          100;
+    scrollView?.scrollTo({
+      y: topOfCard,
+      animated: true,
+    });
 
-        scrollView.scrollTo({
-          y: topOfCard,
-          animated: true,
-        });
-      }
+    // Run expansion animation
+    const t = 200;
+    const easingOut = Easing.ease;
 
-      const t = 200;
-      const easingOut = Easing.ease;
-      const easingIn = Easing.ease;
+    Animated.parallel([
+      Animated.timing(scale, {
+        toValue: maxScale,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingOut,
+      }),
+      Animated.timing(relativeLeft, {
+        toValue: 1,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingOut,
+      }),
+      Animated.timing(relativeTop, {
+        toValue: 1,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingOut,
+      }),
+    ]).start();
+  };
 
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(scale, {
-            toValue: needsToExpand ? maxScale : minScale,
-            duration: t,
-            useNativeDriver: false,
-            easing: needsToExpand ? easingOut : easingIn,
-          }),
-          Animated.timing(relativeLeft, {
-            toValue: needsToExpand ? 1 : 0,
-            duration: t,
-            useNativeDriver: false,
-            easing: needsToExpand ? easingOut : easingIn,
-          }),
-          Animated.timing(relativeTop, {
-            toValue: needsToExpand ? 1 : 0,
-            duration: t,
-            useNativeDriver: false,
-            easing: needsToExpand ? easingOut : easingIn,
-          }),
-        ]),
-      ]).start(() => {
-        // things to do after the animation
-        if (needsToCollapse) {
-          setState({
-            expanded: needsToExpand,
-            showingBack: needsToFlip,
-          });
-          
-          // Notify parent about collapse
-          if (onCollapse) {
-            onCollapse();
-          }
-        }
+  const handleCollapse = () => {
+    // Run collapse animation
+    const t = 200;
+    const easingIn = Easing.ease;
+
+    Animated.parallel([
+      Animated.timing(scale, {
+        toValue: minScale,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingIn,
+      }),
+      Animated.timing(relativeLeft, {
+        toValue: 0,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingIn,
+      }),
+      Animated.timing(relativeTop, {
+        toValue: 0,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingIn,
+      }),
+    ]).start(() => {
+      setState({
+        expanded: false,
+        showingBack: false,
       });
-    }
+      
+      // Notify parent that collapse animation is complete
+      if (onCollapseAnimationComplete) {
+        onCollapseAnimationComplete(index);
+      }
+    });
   };
 
   let scaleAnim = scale.interpolate({
@@ -198,23 +200,18 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
           height: '100%',
           transform: [{scale: minScale}],
         }}>
-        <TouchableOpacity
-          onPress={event => toggleExpanded(event, item, index)}
-          activeOpacity={1}
-          style={{width: '100%', height: '100%'}}>
-          <FastImage
-            source={{uri: item.imageUrl}}
-            style={{
-              ...styles.decklistGridImage,
-              width: '100%',
-              height: '100%',
-              transform: cardIsSideways(item)
-                ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
-                : [],
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        </TouchableOpacity>
+        <FastImage
+          source={{uri: item.imageUrl}}
+          style={{
+            ...styles.decklistGridImage,
+            width: '100%',
+            height: '100%',
+            transform: cardIsSideways(item)
+              ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
+              : [],
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
       </View>
 
       <Animated.View
@@ -242,23 +239,18 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
             height: cardHeight,
             transform: [{scale: scaleAnim}],
           }}>
-          <TouchableOpacity
-            onPress={event => toggleExpanded(event, item, index)}
-            activeOpacity={1}
-            style={{width: '100%', height: '100%'}}>
-            <FastImage
-              source={{uri: item.imageUrl}}
-              style={{
-                ...styles.decklistGridImage,
-                width: '100%',
-                height: '100%',
-                transform: cardIsSideways(item)
-                  ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
-                  : [],
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          </TouchableOpacity>
+          <FastImage
+            source={{uri: item.imageUrl}}
+            style={{
+              ...styles.decklistGridImage,
+              width: '100%',
+              height: '100%',
+              transform: cardIsSideways(item)
+                ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
+                : [],
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
         </Animated.View>
       </Animated.View>
     </>
