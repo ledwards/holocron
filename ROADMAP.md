@@ -5,7 +5,6 @@ FEATURES
 * swipe on any expanded card to show card details broken out as text
 * Tab: Settings (switch Dark/Light/inherit mode)
 * Tab: PDF Rules
-* Tab: Decklists
 * Add login screen for gemp
 * Browse your own decks
 * Tab: Deckbuilder
@@ -52,7 +51,6 @@ FUNCTIONALITY IMPROVEMENTS
 
 UX IMPROVEMENTS
 ===============
-* tap a site rotates it 180 degrees
 * acronyms resolve to their expanded selves in the green filter query area (even for basic search)
 * Advanced search (for small phones) on press, hide the detailed view of the advanced query and leave just "combined reuslts" showing, on focus on the input field, show again
 * on advanced search, if i start scrolling, collapse my advanced search filter queries
@@ -93,14 +91,15 @@ REFACTORS
 * `FilterQuery` maybe needs a Presenter that can wrap display logic
 * every view should actually have a presenter...
 * change component architecture of SearchScreen to be more intuitive
+* CardPresenter has lots of List view logic, so should be a presenter for that class only
+* make presenter for GridView cards as well
+* both inherit from a base card presenter class that has common attributes and methods
+* cleanup the code in the grid view that was AI generated and kind of messy (eg two stateful variables to track the active/enlarged card)
 
 
 APP STORE / OPS
 ===============
 * webpage home for app
-* create deploy script
-* setup Xcode Cloud
-* (setup Fastlane?)
 * migrate this list to a project management tool - Linear?
 
 

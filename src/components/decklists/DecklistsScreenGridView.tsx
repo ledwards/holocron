@@ -6,6 +6,13 @@ import DecklistEmptyFooter from './DecklistEmptyFooter';
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
 
+// List of cards that have two sides
+const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
+
+const isTwoSided = card => {
+  return card.type == 'Objective' || TWO_SIDED_CARDS.includes(card.title);
+};
+
 const DecklistsScreenGridView = props => {
   const scrollViewRef = createRef();
   const decklist = props.route.params.decklist;
@@ -16,6 +23,9 @@ const DecklistsScreenGridView = props => {
   
   // Track which card should have high zIndex (including during collapse animation)
   const [visibleCardIndex, setVisibleCardIndex] = useState(-1);
+  
+  // Track when a card is showing its back side
+  const [showingBackSide, setShowingBackSide] = useState(false);
   
   const cardsPerRow = 4;
 
@@ -40,16 +50,28 @@ const DecklistsScreenGridView = props => {
 
   // Handle card tap at grid level
   const handleCardTap = (index) => {
+    const card = items[index];
+    const cardIsTwoSided = isTwoSided(card);
+    
     if (expandedCardIndex === index) {
-      // Tapping the currently expanded card - collapse it
-      setExpandedCardIndex(-1);
+      // Tapping the currently expanded card
+      if (cardIsTwoSided && !showingBackSide) {
+        // If card is two-sided and showing front, flip it to show back
+        setShowingBackSide(true);
+      } else {
+        // If card is not two-sided or already showing back, collapse it
+        setExpandedCardIndex(-1);
+        setShowingBackSide(false);
+      }
     } else if (expandedCardIndex === -1) {
       // No card is expanded - expand the tapped one
       setExpandedCardIndex(index);
       setVisibleCardIndex(index);
+      setShowingBackSide(false);
     } else {
       // Another card is expanded - just collapse it
       setExpandedCardIndex(-1);
+      setShowingBackSide(false);
     }
   };
 
@@ -58,6 +80,7 @@ const DecklistsScreenGridView = props => {
     if (visibleCardIndex === index) {
       // Only reset the visible index if it matches the card that just finished animating
       setVisibleCardIndex(-1);
+      setShowingBackSide(false);
     }
   };
 
@@ -107,6 +130,7 @@ const DecklistsScreenGridView = props => {
                     cardsPerRow={cardsPerRow}
                     isExpanded={expandedCardIndex === index}
                     onCollapseAnimationComplete={handleCollapseComplete}
+                    showingBackSide={expandedCardIndex === index && showingBackSide}
                   />
                 </View>
               </TouchableWithoutFeedback>
