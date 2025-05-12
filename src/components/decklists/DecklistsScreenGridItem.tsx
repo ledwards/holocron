@@ -11,9 +11,7 @@ import FastImage from 'react-native-fast-image';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
 import layout from '../../constants/layout';
 
-// TODO: translucent bottom bar
-
-// TODO: DecklistCard class
+// List of cards that should be displayed sideways
 const SIDEWAYS_CARDS = [
   'Executor',
   'Flagship Executor',
@@ -21,14 +19,24 @@ const SIDEWAYS_CARDS = [
   "Maul's Double-Bladed Lightsaber",
 ];
 
-const cardIsSideways = (card: any) => {
-  return card.subType == 'Site' || SIDEWAYS_CARDS.includes(card.title);
+const isSideways = (card) => {
+  return card.subType === 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWidth, cardsPerRow, isExpanded, onCollapseAnimationComplete}) => {
+const DecklistsScreenGridItem = ({
+  item, 
+  decklist, 
+  index, 
+  scrollViewRef, 
+  windowWidth, 
+  cardsPerRow, 
+  isExpanded, 
+  onCollapseAnimationComplete
+}) => {
   const navigation = useNavigation();
-
-  const [state, setState] = React.useState({
+  const cardSideways = isSideways(item);
+  
+  const [state, setState] = useState({
     expanded: false,
     showingBack: false,
   });
@@ -36,29 +44,28 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
   // Watch for changes to isExpanded prop
   useEffect(() => {
     if (isExpanded && !state.expanded) {
-      // Expand the card
       handleExpand();
     } else if (!isExpanded && state.expanded) {
-      // Collapse the card with animation
       handleCollapse();
     }
   }, [isExpanded]);
 
   const windowHeight = Dimensions.get('window').height;
   const cardWidth = windowWidth / cardsPerRow;
-  const cardHeight = cardWidth / decklist.aspectRatio;
+  const aspectRatio = item.aspectRatio || decklist.aspectRatio || 0.7;
+  const cardHeight = cardWidth / aspectRatio;
+  
   const cardMinWidth = cardWidth;
   const cardMaxWidth = windowWidth;
   const cardMinHeight = cardHeight;
-  const cardMaxHeight = windowWidth / decklist.aspectRatio;
+  const cardMaxHeight = windowWidth / aspectRatio;
 
-  const minScale = cardIsSideways(item) ? cardHeight / cardWidth : 1;
+  const minScale = 1;
   const maxScale = cardMaxHeight / cardMinHeight;
   const scale = useRef(new Animated.Value(minScale)).current;
 
   const initialRelativeLeft = 0;
-  const maxRelativeLeft =
-    (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
+  const maxRelativeLeft = (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
   const relativeLeft = useRef(new Animated.Value(0)).current;
 
   const initialRelativeTop = 0;
@@ -70,20 +77,19 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
   switch (rowNumber) {
     case 0:
       maxRelativeTop = cardMinHeight + topHeaderHeight;
-      if (cardIsSideways(item)) {
+      if (cardSideways) {
         maxRelativeTop = maxRelativeTop - 0.42 * cardMinHeight;
       }
       break;
     case 1:
       maxRelativeTop = 0.25 * cardMinHeight + topHeaderHeight;
-      if (cardIsSideways(item)) {
+      if (cardSideways) {
         maxRelativeTop = maxRelativeTop - 0.19 * cardMinHeight;
       }
       break;
   }
 
   const relativeTop = useRef(new Animated.Value(0)).current;
-
   const [scrollView, setScrollView] = useState(null);
 
   useEffect(() => {
@@ -168,92 +174,126 @@ const DecklistsScreenGridItem = ({item, decklist, index, scrollViewRef, windowWi
         showingBack: false,
       });
       
-      // Notify parent that collapse animation is complete
       if (onCollapseAnimationComplete) {
         onCollapseAnimationComplete(index);
       }
     });
   };
 
-  let scaleAnim = scale.interpolate({
+  const scaleAnim = scale.interpolate({
     inputRange: [minScale, maxScale],
     outputRange: [minScale, maxScale],
   });
 
-  let leftAnim = relativeLeft.interpolate({
+  const leftAnim = relativeLeft.interpolate({
     inputRange: [0, 1],
     outputRange: [initialRelativeLeft, maxRelativeLeft],
   });
 
-  let topAnim = relativeTop.interpolate({
+  const topAnim = relativeTop.interpolate({
     inputRange: [0, 1],
     outputRange: [initialRelativeTop, maxRelativeTop],
   });
 
-  return (
-    <>
+  // Calculate rotation based on card type and deck side
+  const rotationDegrees = cardSideways
+    ? (decklist.side === 'Dark' ? '90deg' : '270deg')
+    : '0deg';
+
+  // For sideways cards, we need to adjust dimensions to ensure they fill properly after rotation
+  const cardDimensions = cardSideways
+    ? { width: cardHeight, height: cardWidth }
+    : { width: '100%', height: '100%' };
+
+  // Normal (non-expanded) view of the card
+  const normalView = (
+    <View
+      style={{
+        display: state.expanded ? 'none' : 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'visible',
+      }}>
       <View
         style={{
-          ...styles.decklistGridInner,
-          display: state.expanded ? 'none' : 'flex',
-          width: '100%',
-          height: '100%',
-          transform: [{scale: minScale}],
+          position: cardSideways ? 'absolute' : 'relative',
+          width: cardDimensions.width,
+          height: cardDimensions.height,
+          transform: cardSideways ? [{ rotate: rotationDegrees }] : [],
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
         <FastImage
           source={{uri: item.imageUrl}}
           style={{
-            ...styles.decklistGridImage,
             width: '100%',
             height: '100%',
-            transform: cardIsSideways(item)
-              ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
-              : [],
           }}
           resizeMode={FastImage.resizeMode.contain}
         />
       </View>
+    </View>
+  );
 
+  // Expanded view of the card
+  const expandedView = (
+    <Animated.View
+      collapsable={false}
+      style={{
+        display: state.expanded ? 'flex' : 'none',
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+        overflow: 'visible',
+      }}>
       <Animated.View
         collapsable={false}
         style={{
-          display: state.expanded ? 'flex' : 'none',
           position: 'absolute',
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-          transform: [{scale: minScale}],
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          left: leftAnim,
+          top: topAnim,
+          width: cardWidth,
+          height: cardHeight,
+          transform: [{ scale: scaleAnim }],
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'visible',
         }}>
-        <Animated.View
-          collapsable={false}
+        <View
           style={{
-            position: 'absolute',
-            zIndex: 1,
-            left: leftAnim,
-            top: topAnim,
-            width: cardWidth,
-            height: cardHeight,
-            transform: [{scale: scaleAnim}],
+            position: cardSideways ? 'absolute' : 'relative',
+            width: cardDimensions.width,
+            height: cardDimensions.height,
+            transform: cardSideways ? [{ rotate: rotationDegrees }] : [],
+            justifyContent: 'center',
+            alignItems: 'center',
           }}>
           <FastImage
             source={{uri: item.imageUrl}}
             style={{
-              ...styles.decklistGridImage,
               width: '100%',
               height: '100%',
-              transform: cardIsSideways(item)
-                ? [{rotate: decklist.side == 'Dark' ? '90deg' : '270deg'}]
-                : [],
             }}
             resizeMode={FastImage.resizeMode.contain}
           />
-        </Animated.View>
+        </View>
       </Animated.View>
+    </Animated.View>
+  );
+
+  return (
+    <>
+      {normalView}
+      {expandedView}
     </>
   );
 };
+
 export default DecklistsScreenGridItem;
