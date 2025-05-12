@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   decklistGridImage: {
-    borderRadius: 6,
+    borderRadius: 5,
     width: '100%',
     height: '100%',
   },

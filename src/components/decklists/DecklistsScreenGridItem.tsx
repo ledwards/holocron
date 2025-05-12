@@ -1,4 +1,9 @@
-import {View, Animated, Easing, Dimensions} from 'react-native';
+import {
+  View,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import React, {useRef, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -13,7 +18,7 @@ const SIDEWAYS_CARDS = [
   'Finalizer',
   "Maul's Double-Bladed Lightsaber",
 ];
-//
+
 // List of cards that have two sides
 const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
 
@@ -26,24 +31,25 @@ const isTwoSided = card => {
 };
 
 const DecklistsScreenGridItem = ({
-  item,
-  decklist,
-  index,
-  scrollViewRef,
-  windowWidth,
-  cardsPerRow,
-  isExpanded,
+  item, 
+  decklist, 
+  index, 
+  scrollViewRef, 
+  windowWidth, 
+  cardsPerRow, 
+  isExpanded, 
   showingBackSide,
-  onCollapseAnimationComplete,
+  onCollapseAnimationComplete
 }) => {
   const navigation = useNavigation();
   const cardSideways = isSideways(item);
-
+  const cardIsTwoSided = isTwoSided(item);
+  
   const [state, setState] = useState({
     expanded: false,
     showingBack: false,
   });
-
+  
   useEffect(() => {
     if (isExpanded && !state.expanded) {
       handleExpand();
@@ -64,11 +70,9 @@ const DecklistsScreenGridItem = ({
 
   const windowHeight = Dimensions.get('window').height;
   const cardWidth = windowWidth / cardsPerRow;
-
-  // Remove decklist.aspectRatio fallback
   const aspectRatio = item.aspectRatio || 0.7;
   const cardHeight = cardWidth / aspectRatio;
-
+  
   const cardMinWidth = cardWidth;
   const cardMaxWidth = windowWidth;
   const cardMinHeight = cardHeight;
@@ -79,20 +83,30 @@ const DecklistsScreenGridItem = ({
   const scale = useRef(new Animated.Value(minScale)).current;
 
   const initialRelativeLeft = 0;
-  const maxRelativeLeft =
-    (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
+  const maxRelativeLeft = (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
   const relativeLeft = useRef(new Animated.Value(0)).current;
+  
+  // Animation value for rotation (0 = sideways, 1 = upright)
+  const rotationValue = useRef(new Animated.Value(0)).current;
 
   const initialRelativeTop = 0;
   const topHeaderHeight = layout.nativeHeaderTopHeight() == 0 ? 68 : 75;
   const rowNumber = Math.floor(index / cardsPerRow);
-
-  // Standard target vertical position calculation - same for all cards
+  
+  // Target vertical position calculation with special handling for sideways cards
   let maxRelativeTop = 0;
   if (rowNumber === 0) {
     maxRelativeTop = cardMinHeight + topHeaderHeight;
+    // Shift sideways cards up by one grid height
+    if (cardSideways) {
+      maxRelativeTop -= cardHeight;
+    }
   } else if (rowNumber === 1) {
     maxRelativeTop = 0.25 * cardMinHeight + topHeaderHeight;
+    // Shift sideways cards up by half a grid height
+    if (cardSideways) {
+      maxRelativeTop -= cardHeight / 2;
+    }
   }
 
   const relativeTop = useRef(new Animated.Value(0)).current;
@@ -105,8 +119,10 @@ const DecklistsScreenGridItem = ({
     setScrollView(scrollViewRef.current);
   }, []);
 
-  // Use the defined isTwoSided function
-  const cardIsTwoSided = isTwoSided(item);
+  // Get image URL based on card side
+  const imageUrl = state.showingBack && cardIsTwoSided
+    ? item.imageBackUrl
+    : item.imageUrl;
 
   const handleExpand = () => {
     setState({
@@ -115,8 +131,7 @@ const DecklistsScreenGridItem = ({
     });
 
     // Standard scroll position calculation for all cards
-    const topOfCard =
-      Math.floor(index / cardsPerRow) * cardMinHeight -
+    const topOfCard = Math.floor(index / cardsPerRow) * cardMinHeight -
       (windowHeight - cardMaxHeight) / 2 -
       layout.tabBarHeight() -
       100;
@@ -148,6 +163,13 @@ const DecklistsScreenGridItem = ({
         useNativeDriver: false,
         easing: easingOut,
       }),
+      // Add rotation animation for sideways cards
+      Animated.timing(rotationValue, {
+        toValue: cardSideways ? 1 : 0,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingOut,
+      }),
     ]).start();
   };
 
@@ -174,12 +196,19 @@ const DecklistsScreenGridItem = ({
         useNativeDriver: false,
         easing: easingIn,
       }),
+      // Return rotation to original state
+      Animated.timing(rotationValue, {
+        toValue: 0,
+        duration: t,
+        useNativeDriver: false,
+        easing: easingIn,
+      }),
     ]).start(() => {
       setState({
         expanded: false,
         showingBack: false,
       });
-
+      
       if (onCollapseAnimationComplete) {
         onCollapseAnimationComplete(index);
       }
@@ -201,17 +230,18 @@ const DecklistsScreenGridItem = ({
     outputRange: [initialRelativeTop, maxRelativeTop],
   });
 
-  const rotationDegrees = cardSideways
+  // Card rotation based on type and side
+  const baseRotation = cardSideways
     ? decklist.side === 'Dark'
       ? '90deg'
-      : '270deg'
+      : '-90deg'
     : '0deg';
-
-  // For sideways cards, we need to adjust dimensions to ensure they fill properly after rotation
-  // For normal cards, explicitly use cardWidth and cardHeight instead of percentages
-  const cardDimensions = cardSideways
-    ? {width: cardHeight, height: cardWidth}
-    : {width: cardWidth, height: cardHeight};
+    
+  // Animated rotation for sideways cards (rotate to upright when expanded)
+  const rotationDegrees = rotationValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [baseRotation, '0deg'],
+  });
 
   return (
     <>
@@ -224,31 +254,25 @@ const DecklistsScreenGridItem = ({
           height: cardHeight,
           justifyContent: 'center',
           alignItems: 'center',
-          overflow: 'visible',
         }}>
         <View
           style={{
-            position: cardSideways ? 'absolute' : 'relative',
-            width: cardDimensions.width,
-            height: cardDimensions.height,
-            transform: cardSideways ? [{rotate: rotationDegrees}] : [],
+            width: cardSideways ? cardHeight : cardWidth,
+            height: cardSideways ? cardWidth : cardHeight,
+            transform: [{ rotate: baseRotation }],
             justifyContent: 'center',
             alignItems: 'center',
+            overflow: 'hidden',
+            borderRadius: styles.decklistGridImage.borderRadius,
           }}>
           <FastImage
-            source={{
-              uri:
-                state.showingBack && cardIsTwoSided
-                  ? item.imageBackUrl
-                  : item.imageUrl,
-            }}
+            source={{ uri: imageUrl }}
             style={{
-              ...styles.decklistGridImage,
               width: '100%',
               height: '100%',
+              borderRadius: styles.decklistGridImage.borderRadius,
             }}
             resizeMode={FastImage.resizeMode.contain}
-
           />
         </View>
       </View>
@@ -268,7 +292,6 @@ const DecklistsScreenGridItem = ({
           left: 0,
           right: 0,
           bottom: 0,
-          overflow: 'visible',
         }}>
         <Animated.View
           collapsable={false}
@@ -279,36 +302,30 @@ const DecklistsScreenGridItem = ({
             top: topAnim,
             width: cardWidth,
             height: cardHeight,
-            transform: [{scale: scaleAnim}],
+            transform: [{ scale: scaleAnim }],
             justifyContent: 'center',
             alignItems: 'center',
-            overflow: 'visible',
           }}>
-          <View
+          <Animated.View
             style={{
-              position: cardSideways ? 'absolute' : 'relative',
-              width: cardDimensions.width,
-              height: cardDimensions.height,
-              transform: cardSideways ? [{rotate: rotationDegrees}] : [],
+              width: cardWidth,
+              height: cardHeight,
+              transform: [{ rotate: rotationDegrees }],
               justifyContent: 'center',
               alignItems: 'center',
+              overflow: 'hidden',
+              borderRadius: styles.decklistGridImage.borderRadius,
             }}>
             <FastImage
-              source={{
-                uri:
-                  state.showingBack && cardIsTwoSided
-                    ? item.imageBackUrl
-                    : item.imageUrl,
-              }}
+              source={{ uri: imageUrl }}
               style={{
-                ...styles.decklistGridImage,
                 width: '100%',
                 height: '100%',
+                borderRadius: styles.decklistGridImage.borderRadius,
               }}
               resizeMode={FastImage.resizeMode.contain}
-
             />
-          </View>
+          </Animated.View>
         </Animated.View>
       </Animated.View>
     </>
