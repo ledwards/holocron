@@ -78,7 +78,7 @@ const DecklistsScreenGridView = props => {
         }}>
           {items.map((item, index) => {
             const cardWidth = windowWidth / cardsPerRow;
-            const aspectRatio = item.aspectRatio || decklist.aspectRatio || 0.7;
+            const aspectRatio = item.aspectRatio || 0.7;
             const cardHeight = cardWidth / aspectRatio;
             
             return (
@@ -90,10 +90,12 @@ const DecklistsScreenGridView = props => {
                   style={{
                     width: cardWidth,
                     height: cardHeight,
-                    padding: 2,
+                    padding: 1,
                     position: 'relative',
                     zIndex: visibleCardIndex === index ? 10 : 0,
                     overflow: 'visible',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   <DecklistsScreenGridItem
