@@ -51,8 +51,12 @@ const DecklistsScreenGridItem = ({
 
   const windowHeight = Dimensions.get('window').height;
   const cardWidth = windowWidth / cardsPerRow;
-  const aspectRatio = item.aspectRatio || decklist.aspectRatio || 0.7;
+  
+  // Remove decklist.aspectRatio fallback
+  const aspectRatio = item.aspectRatio || 0.7;
   const cardHeight = cardWidth / aspectRatio;
+  
+
   
   const cardMinWidth = cardWidth;
   const cardMaxWidth = windowWidth;
@@ -188,9 +192,10 @@ const DecklistsScreenGridItem = ({
     : '0deg';
 
   // For sideways cards, we need to adjust dimensions to ensure they fill properly after rotation
+  // For normal cards, explicitly use cardWidth and cardHeight instead of percentages
   const cardDimensions = cardSideways
     ? { width: cardHeight, height: cardWidth }
-    : { width: '100%', height: '100%' };
+    : { width: cardWidth, height: cardHeight };
 
   return (
     <>
@@ -199,8 +204,8 @@ const DecklistsScreenGridItem = ({
         style={{
           ...styles.decklistGridInner,
           display: state.expanded ? 'none' : 'flex',
-          width: '100%',
-          height: '100%',
+          width: cardWidth,
+          height: cardHeight,
           justifyContent: 'center',
           alignItems: 'center',
           overflow: 'visible',
@@ -230,6 +235,7 @@ const DecklistsScreenGridItem = ({
       <Animated.View
         collapsable={false}
         style={{
+          ...styles.decklistExpandedOuterContainer,
           display: state.expanded ? 'flex' : 'none',
           position: 'absolute',
           width: '100%',
@@ -245,6 +251,7 @@ const DecklistsScreenGridItem = ({
         <Animated.View
           collapsable={false}
           style={{
+            ...styles.decklistExpandedContainer,
             position: 'absolute',
             left: leftAnim,
             top: topAnim,
