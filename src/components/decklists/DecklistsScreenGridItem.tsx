@@ -41,7 +41,6 @@ const DecklistsScreenGridItem = ({
     showingBack: false,
   });
   
-  // Watch for changes to isExpanded prop
   useEffect(() => {
     if (isExpanded && !state.expanded) {
       handleExpand();
@@ -69,24 +68,15 @@ const DecklistsScreenGridItem = ({
   const relativeLeft = useRef(new Animated.Value(0)).current;
 
   const initialRelativeTop = 0;
-  let maxRelativeTop = 0;
-
   const topHeaderHeight = layout.nativeHeaderTopHeight() == 0 ? 68 : 75;
   const rowNumber = Math.floor(index / cardsPerRow);
-
-  switch (rowNumber) {
-    case 0:
-      maxRelativeTop = cardMinHeight + topHeaderHeight;
-      if (cardSideways) {
-        maxRelativeTop = maxRelativeTop - 0.42 * cardMinHeight;
-      }
-      break;
-    case 1:
-      maxRelativeTop = 0.25 * cardMinHeight + topHeaderHeight;
-      if (cardSideways) {
-        maxRelativeTop = maxRelativeTop - 0.19 * cardMinHeight;
-      }
-      break;
+  
+  // Standard target vertical position calculation - same for all cards
+  let maxRelativeTop = 0;
+  if (rowNumber === 0) {
+    maxRelativeTop = cardMinHeight + topHeaderHeight;
+  } else if (rowNumber === 1) {
+    maxRelativeTop = 0.25 * cardMinHeight + topHeaderHeight;
   }
 
   const relativeTop = useRef(new Animated.Value(0)).current;
@@ -107,8 +97,8 @@ const DecklistsScreenGridItem = ({
       showingBack: false,
     });
 
-    const topOfCard =
-      Math.floor(index / cardsPerRow) * cardMinHeight -
+    // Standard scroll position calculation for all cards
+    const topOfCard = Math.floor(index / cardsPerRow) * cardMinHeight -
       (windowHeight - cardMaxHeight) / 2 -
       layout.tabBarHeight() -
       100;
@@ -118,7 +108,6 @@ const DecklistsScreenGridItem = ({
       animated: true,
     });
 
-    // Run expansion animation
     const t = 200;
     const easingOut = Easing.ease;
 
@@ -145,7 +134,6 @@ const DecklistsScreenGridItem = ({
   };
 
   const handleCollapse = () => {
-    // Run collapse animation
     const t = 200;
     const easingIn = Easing.ease;
 
@@ -195,7 +183,6 @@ const DecklistsScreenGridItem = ({
     outputRange: [initialRelativeTop, maxRelativeTop],
   });
 
-  // Calculate rotation based on card type and deck side
   const rotationDegrees = cardSideways
     ? (decklist.side === 'Dark' ? '90deg' : '270deg')
     : '0deg';
@@ -205,63 +192,15 @@ const DecklistsScreenGridItem = ({
     ? { width: cardHeight, height: cardWidth }
     : { width: '100%', height: '100%' };
 
-  // Normal (non-expanded) view of the card
-  const normalView = (
-    <View
-      style={{
-        display: state.expanded ? 'none' : 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'visible',
-      }}>
+  return (
+    <>
+      {/* Normal (non-expanded) card view */}
       <View
         style={{
-          position: cardSideways ? 'absolute' : 'relative',
-          width: cardDimensions.width,
-          height: cardDimensions.height,
-          transform: cardSideways ? [{ rotate: rotationDegrees }] : [],
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <FastImage
-          source={{uri: item.imageUrl}}
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-      </View>
-    </View>
-  );
-
-  // Expanded view of the card
-  const expandedView = (
-    <Animated.View
-      collapsable={false}
-      style={{
-        display: state.expanded ? 'flex' : 'none',
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1,
-        overflow: 'visible',
-      }}>
-      <Animated.View
-        collapsable={false}
-        style={{
-          position: 'absolute',
-          left: leftAnim,
-          top: topAnim,
-          width: cardWidth,
-          height: cardHeight,
-          transform: [{ scale: scaleAnim }],
+          ...styles.decklistGridInner,
+          display: state.expanded ? 'none' : 'flex',
+          width: '100%',
+          height: '100%',
           justifyContent: 'center',
           alignItems: 'center',
           overflow: 'visible',
@@ -278,20 +217,65 @@ const DecklistsScreenGridItem = ({
           <FastImage
             source={{uri: item.imageUrl}}
             style={{
+              ...styles.decklistGridImage,
               width: '100%',
               height: '100%',
             }}
             resizeMode={FastImage.resizeMode.contain}
           />
         </View>
-      </Animated.View>
-    </Animated.View>
-  );
+      </View>
 
-  return (
-    <>
-      {normalView}
-      {expandedView}
+      {/* Expanded view */}
+      <Animated.View
+        collapsable={false}
+        style={{
+          display: state.expanded ? 'flex' : 'none',
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          zIndex: 1,
+          transform: [{scale: minScale}],
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          overflow: 'visible',
+        }}>
+        <Animated.View
+          collapsable={false}
+          style={{
+            position: 'absolute',
+            left: leftAnim,
+            top: topAnim,
+            width: cardWidth,
+            height: cardHeight,
+            transform: [{ scale: scaleAnim }],
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'visible',
+          }}>
+          <View
+            style={{
+              position: cardSideways ? 'absolute' : 'relative',
+              width: cardDimensions.width,
+              height: cardDimensions.height,
+              transform: cardSideways ? [{ rotate: rotationDegrees }] : [],
+              justifyContent: 'center', 
+              alignItems: 'center',
+            }}>
+            <FastImage
+              source={{uri: item.imageUrl}}
+              style={{
+                ...styles.decklistGridImage,
+                width: '100%',
+                height: '100%',
+              }}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+          </View>
+        </Animated.View>
+      </Animated.View>
     </>
   );
 };
