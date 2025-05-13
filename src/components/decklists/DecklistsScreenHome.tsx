@@ -16,9 +16,15 @@ const DecklistsScreenHome = ({route}) => {
   return (
     <View>
       <>
-        {allDecklists && allDecklists.length > 0 && (
-          <SearchableDecklistList data={allDecklists} navigation={navigation} />
-        )}
+        {allDecklists.sort(
+          (x: string, y: string) => Date.parse(y) - Date.parse(x),
+        ) &&
+          allDecklists.length > 0 && (
+            <SearchableDecklistList
+              data={allDecklists}
+              navigation={navigation}
+            />
+          )}
       </>
     </View>
   );
