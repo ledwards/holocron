@@ -14,6 +14,8 @@ class DecklistPresenter {
   searchTitle: string;
   searchArchetypeName: string;
   searchTournamentName: string;
+  
+
   searchPlayerName: string;
 
   displayTitle: string;
@@ -29,7 +31,7 @@ class DecklistPresenter {
   hasObjective: boolean;
   hasStartingSite: boolean;
 
-  cards: any; // TODO: DecklistCard[] or pass in allCards and make these Card objects
+  cards: Record<string, number>; // TODO: DecklistCard[] or pass in allCards and make these Card objects
 
   constructor(decklist: Decklist) {
     this.slug = decklist.slug;

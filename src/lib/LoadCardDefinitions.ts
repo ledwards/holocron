@@ -3,7 +3,55 @@ import Card from '../models/Card';
 import ExpansionSet from '../models/ExpansionSet';
 const localCardFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
-const readCardFilePromise = (side: string): Promise<any[]> => {
+interface CardData {
+  gempId: string;
+  front: {
+    title: string;
+    type: string;
+    subType: string;
+    ability?: number;
+    armor?: number;
+    darkSideIcons?: number;
+    deploy?: number;
+    destiny?: number;
+    ferocity?: string;
+    forfeit?: number;
+    hyperspeed?: number;
+    landspeed?: number;
+    lightSideIcons?: number;
+    maneuver?: number;
+    parsec?: number;
+    politics?: number;
+    power?: number;
+    characteristics: string[];
+    icons: string[];
+    gametext?: string;
+    lore?: string;
+    imageUrl: string;
+    extraText?: string[];
+    uniqueness?: string;
+  };
+  side: string;
+  set: string;
+  rarity: string;
+  abbr?: string[];
+  back?: {
+    imageUrl?: string;
+    gametext?: string;
+    extratext?: string;
+    extraText?: string[];
+  };
+  cancels?: string[];
+  canceledBy?: string[];
+  matching?: string[];
+  matchingWeapon?: string[];
+  pulledBy?: string[];
+  pulls?: string[];
+  underlyingCardFor?: string;
+  counterpart?: string;
+}
+
+const readCardFilePromise = (side: string): Promise<CardData[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localCardFilePath}/${side}.json`, 'utf8')
     .then(data => {
@@ -22,8 +70,8 @@ const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => 
     .then(results => {
       return (results || [])
         .map(r => {
-          return (r.value as any[])
-            .map((c: any) => {
+          return (r.value as CardData[])
+            .map((c: CardData) => {
               const expansionSet = expansionSets.find((s: ExpansionSet) => s.id === c.set);
               const card = new Card(c, expansionSet);
               return card;

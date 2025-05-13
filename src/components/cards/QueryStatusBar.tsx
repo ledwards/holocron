@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {View, Text} from 'react-native';
 import SearchBarChip from './SearchBarChip';
 
-import FilterQuerySet from '../../models/FilterQuery';
+import FilterQuerySet from '../../models/FilterQuerySet';
 import FilterQuery from '../../models/FilterQuery';
 import Card from '../../models/Card';
 
@@ -10,16 +10,24 @@ import styles from '../../styles/QueryStatusBarStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 import AllCardsContext from '../../contexts/AllCardsContext';
 
+interface SearchMode {
+  index: number;
+  label: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
 type QueryStatusBarProps = {
   query: string;
   filterQuerySet: FilterQuerySet;
-  searchMode: any;
+  searchMode: SearchMode;
   data: Card[];
 };
 
 const QueryStatusBar = (props: QueryStatusBarProps) => {
   const theme = useContext(ThemeContext);
-  const allCards = useContext(AllCardsContext);
+  const allCards = useContext<Card[]>(AllCardsContext);
 
   return (
     <>

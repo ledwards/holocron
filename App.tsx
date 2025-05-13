@@ -3,6 +3,9 @@ import {View, useColorScheme, Appearance, StatusBar, ColorSchemeName} from 'reac
 import {BlurView} from '@react-native-community/blur';
 import {NavigationContainer, DefaultTheme, Theme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
+import Card from './src/models/Card';
+import ExpansionSet from './src/models/ExpansionSet';
+import Decklist from './src/models/Decklist';
 
 import TabNavigation from './src/components/navigation/TabNavigation';
 
@@ -30,9 +33,9 @@ const App = () => {
     useState<boolean>(false);
   const [isDecklistsDownloadReady, setIsDecklistsDownloadReady] =
     useState<boolean>(false);
-  const [allCards, setAllCards] = useState<any[]>([]);
-  const [expansionSets, setExpansionSets] = useState<any[]>([]);
-  const [allDecklists, setAllDecklists] = useState<any[]>([]);
+  const [allCards, setAllCards] = useState<Card[]>([]);
+  const [expansionSets, setExpansionSets] = useState<ExpansionSet[]>([]);
+  const [allDecklists, setAllDecklists] = useState<Decklist[]>([]);
   const [internetConnection, setInternetConnection] = useState<boolean>(false);
   const [theme, setTheme] = useState(
     initialTheme === 'light' ? themeLight : themeDark,

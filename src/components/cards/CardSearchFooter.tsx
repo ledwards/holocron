@@ -12,12 +12,20 @@ import styles from '../../styles/CardSearchFooterStyles';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 
+interface SearchMode {
+  index: number;
+  label: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
 type CardSearchFooterProps = {
   query: string;
   filterQuerySet: FilterQuerySet;
   nativeFooterHeight: number;
   searchBarHeight: number;
-  searchMode: any;
+  searchMode: SearchMode;
   allCards: Card[];
   data: Card[];
   searchCallback: (query: string) => void;
@@ -26,7 +34,7 @@ type CardSearchFooterProps = {
 
 // TODO: Try putting ThemeContext.Consumer here too
 
-const modeCoachTipComponent = (theme: any, searchMode: any) => (
+const modeCoachTipComponent = (theme: any, searchMode: SearchMode) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{

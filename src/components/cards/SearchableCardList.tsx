@@ -5,6 +5,7 @@ import CardListItem from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../../presenters/CardPresenter';
 import FilterQuerySet from '../../models/FilterQuerySet';
+import Card from '../../models/Card';
 
 import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
@@ -12,7 +13,7 @@ import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
 
 interface SearchableCardListProps {
-  cards: any[];
+  cards: Card[];
   nativeHeaderHeight?: number;
   nativeFooterHeight?: number;
 }
@@ -20,7 +21,7 @@ interface SearchableCardListProps {
 interface SearchableCardListState {
   loading: boolean;
   error: null | Error;
-  allCards: any[];
+  allCards: Card[];
   searchModeIndex: number;
   flatListRef: any;
   nativeHeaderHeight?: number;
@@ -29,7 +30,7 @@ interface SearchableCardListState {
 
 const SearchableCardList = (props: SearchableCardListProps) => {
   const [query, setQuery] = useState<string>('');
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Card[]>([]);
   const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet | undefined>();
   const [state, setState] = useState<SearchableCardListState>({
     loading: false,
@@ -40,8 +41,8 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
-  const theme = useContext<any>(ThemeContext);
-  const allCards = useContext<any[]>(AllCardsContext);
+  const theme = useContext(ThemeContext);
+  const allCards = useContext<Card[]>(AllCardsContext);
 
   useEffect(() => {
     setState({
