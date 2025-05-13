@@ -14,7 +14,7 @@ class Decklist {
   date: string; // TODO: Date
   side: string;
   plaintext: string;
-  cards: any; // TODO: DecklistCard[] or pass in allCards and make these Card objects
+  cards: Record<string, number>; // TODO: DecklistCard[] or pass in allCards and make these Card objects
   tournament: Tournament;
   tournamentFormat: string;
   tournamentRound: string;
@@ -22,10 +22,41 @@ class Decklist {
   player: Player;
   imageUrl: string;
   objective: string;
-  startingLocation: any;
-  startingInterrupt: any;
+  startingLocation: string | null;
+  startingInterrupt: string | null;
 
-  constructor(decklistJSON) {
+  constructor(decklistJSON: {
+    slug: string;
+    region?: string;
+    title: string;
+    url: string;
+    date: string;
+    side: string;
+    plaintext: string;
+    cards: Record<string, number>;
+    tournament?: {
+      name: string;
+      shortName: string;
+      eventName: string;
+      date: string;
+      format: string;
+      round: string;
+    };
+    archetype: {
+      name: string;
+      shortName: string;
+      aliases: string[];
+      modifiers: string[];
+      imageUrl: string;
+      objective?: string;
+      startingLocation?: string;
+      startingInterrupt?: string;
+    };
+    player: {
+      name: string;
+      aliases: string[];
+    };
+  }) {
     this.id =
       decklistJSON.slug + decklistJSON.region ? `-${decklistJSON.region}` : '';
     this.title = decklistJSON.title;
@@ -65,11 +96,11 @@ class Decklist {
     this.cards = decklistJSON.cards;
   }
 
-  get(attributeName: string) {
+  get(attributeName: string): any {
     return (this as any)[attributeName];
   }
 
-  searchData = () =>
+  searchData = (): string =>
     ` ${this.title}
       ${this.player.nameAndAliases().join(' ')}
       ${this.archetype.name}

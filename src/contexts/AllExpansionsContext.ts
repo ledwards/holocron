@@ -1,2 +1,5 @@
 import {createContext} from 'react';
-export default AllExpansionsContext = createContext(null);
+import ExpansionSet from '../models/ExpansionSet';
+
+const AllExpansionsContext = createContext<ExpansionSet[] | null>(null);
+export default AllExpansionsContext;

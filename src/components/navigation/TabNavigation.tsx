@@ -10,13 +10,15 @@ import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 import Card from '../../models/Card';
+import ExpansionSet from '../../models/ExpansionSet';
+import Decklist from '../../models/Decklist';
 
 const Tab = createBottomTabNavigator();
 
 interface TabNavigationProps {
   allCards: Card[];
-  expansionSets: any[];
-  allDecklists: any[];
+  expansionSets: ExpansionSet[];
+  allDecklists: Decklist[];
 }
 
 function TabNavigation(props: TabNavigationProps) {

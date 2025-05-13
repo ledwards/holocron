@@ -35,7 +35,15 @@ class FilterQuery {
     }
   }
 
-  parseQuery() {
+  parseQuery(): {
+    field: Field | null;
+    comparator: Comparator | null;
+    value: string | null;
+    rawField: string | null;
+    rawComparator: string | null;
+    rawValue: string | null;
+    filter?: Filter;
+  } {
     let params = {
       field: null,
       comparator: null,
@@ -76,7 +84,14 @@ class FilterQuery {
     return params;
   }
 
-  parseThreePartQuery() {
+  parseThreePartQuery(): {
+    field?: Field;
+    comparator?: Comparator;
+    value?: string;
+    rawField?: string;
+    rawComparator?: string;
+    rawValue?: string;
+  } | undefined {
     let allMatches = [];
     // should this include =, <, >, <=, >=, etc.?
     const validSeparators = ['\\s+', '$'].concat(
@@ -143,7 +158,14 @@ class FilterQuery {
     return bestMatch;
   }
 
-  parseValidComparatorInvalidField() {
+  parseValidComparatorInvalidField(): {
+    field: null;
+    comparator: Comparator;
+    value: string;
+    rawValue: string;
+    rawField: string;
+    rawComparator: string;
+  } | undefined {
     let allMatches = [];
 
     // invalid field, valid comparator
@@ -179,7 +201,14 @@ class FilterQuery {
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
 
-  parseDefaultComparator() {
+  parseDefaultComparator(): {
+    field: Field;
+    comparator: Comparator;
+    value: string;
+    rawValue: string;
+    rawField: string;
+    rawComparator: string;
+  } | undefined {
     let allMatches = [];
 
     // default comparator check, e.g. power 6, matches luke, pulls cantina
@@ -202,7 +231,7 @@ class FilterQuery {
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
 
-  valid() {
+  valid(): boolean {
     return (
       this.validField() &&
       this.validComparator() &&
@@ -211,15 +240,15 @@ class FilterQuery {
     );
   }
 
-  validField() {
+  validField(): boolean {
     return FIELDS.map(f => f.name).includes(this.field?.name);
   }
 
-  validComparator() {
+  validComparator(): boolean {
     return ALL_COMPARATORS.map(c => c.name).includes(this.comparator?.name);
   }
 
-  partiallyValidComparator() {
+  partiallyValidComparator(): boolean {
     // true when a comparator is partially typed out
     if (!this.rawComparator) {
       return false;
@@ -231,19 +260,19 @@ class FilterQuery {
     }
   }
 
-  usingDefaultComparator() {
+  usingDefaultComparator(): boolean {
     return this.comparator && this.rawComparator == '';
   }
 
-  validValue() {
+  validValue(): boolean {
     return typeof this.value !== 'undefined';
   }
 
-  validFilter() {
+  validFilter(): boolean {
     return typeof this.filter !== 'undefined';
   }
 
-  displayFieldName() {
+  displayFieldName(): string {
     if (this.field?.name == 'identities') {
       return 'is';
     } else {
@@ -251,11 +280,11 @@ class FilterQuery {
     }
   }
 
-  displayComparatorName() {
+  displayComparatorName(): string | undefined {
     return this.validComparator() ? this.comparator?.name : this.rawComparator;
   }
 
-  execute(cards: Card[]) {
+  execute(cards: Card[]): Card[] {
     const aliasResolver = new AliasResolver(cards);
     const aliasResolvedValue = aliasResolver.resolve(this.value);
 
@@ -271,7 +300,7 @@ class FilterQuery {
     return this.filter.execute(cards);
   }
 
-  length(cards: Card[]) {
+  length(cards: Card[]): number {
     return this.execute(cards).length;
   }
 }

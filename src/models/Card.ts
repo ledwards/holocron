@@ -50,7 +50,58 @@ class Card {
   sortTitle: string;
   sortAbbr: string[];
 
-  constructor(cardJSON, expansionSetJSON) {
+  constructor(cardJSON: {
+    gempId: string;
+    front: {
+      title: string;
+      type: string;
+      subType: string;
+      ability?: number;
+      armor?: number;
+      darkSideIcons?: number;
+      deploy?: number;
+      destiny?: number;
+      ferocity?: string;
+      forfeit?: number;
+      hyperspeed?: number;
+      landspeed?: number;
+      lightSideIcons?: number;
+      maneuver?: number;
+      parsec?: number;
+      politics?: number;
+      power?: number;
+      characteristics: string[];
+      icons: string[];
+      gametext?: string;
+      lore?: string;
+      imageUrl: string;
+      extraText?: string[];
+      uniqueness?: string;
+    };
+    side: string;
+    set: string;
+    rarity: string;
+    abbr?: string[];
+    back?: {
+      imageUrl?: string;
+      gametext?: string;
+      extratext?: string;
+      extraText?: string[];
+    };
+    cancels?: string[];
+    canceledBy?: string[];
+    matching?: string[];
+    matchingWeapon?: string[];
+    pulledBy?: string[];
+    pulls?: string[];
+    underlyingCardFor?: string;
+    counterpart?: string;
+  }, expansionSetJSON: {
+    id: string;
+    name: string;
+    abbr: string;
+    gempName: string;
+  }) {
     this.id = cardJSON.gempId;
     this.title = cardJSON.front.title;
     this.type = cardJSON.front.type;
@@ -115,15 +166,15 @@ class Card {
     this.set = this.expansionSet.name;
   }
 
-  nameAndAliases() {
+  nameAndAliases(): string[] {
     return [this.sortTitle, ...this.sortAbbr];
   }
 
-  get(attributeName: string) {
+  get(attributeName: string): any {
     return (this as any)[attributeName];
   }
 
-  getSanitized(attributeName: string) {
+  getSanitized(attributeName: string): string | any {
     const val = this.get(attributeName);
     return typeof val == 'string'
       ? val
