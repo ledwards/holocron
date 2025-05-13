@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {View, useColorScheme, Appearance, StatusBar} from 'react-native';
+import {View, useColorScheme, Appearance, StatusBar, ColorSchemeName} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
-import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme, Theme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 
 import TabNavigation from './src/components/navigation/TabNavigation';
@@ -25,24 +25,24 @@ import AllExpansionsContext from './src/contexts/AllExpansionsContext';
 const App = () => {
   const initialTheme = useColorScheme();
 
-  const [isCardsDownloadReady, setIsCardsDownloadReady] = useState(false);
+  const [isCardsDownloadReady, setIsCardsDownloadReady] = useState<boolean>(false);
   const [isExpansionSetsDownloadReady, setisExpansionSetsDownloadReady] =
-    useState(false);
+    useState<boolean>(false);
   const [isDecklistsDownloadReady, setIsDecklistsDownloadReady] =
-    useState(false);
-  const [allCards, setAllCards] = useState([]);
-  const [expansionSets, setExpansionSets] = useState([]);
-  const [allDecklists, setAllDecklists] = useState([]);
-  const [internetConnection, setInternetConnection] = useState(false);
+    useState<boolean>(false);
+  const [allCards, setAllCards] = useState<any[]>([]);
+  const [expansionSets, setExpansionSets] = useState<any[]>([]);
+  const [allDecklists, setAllDecklists] = useState<any[]>([]);
+  const [internetConnection, setInternetConnection] = useState<boolean>(false);
   const [theme, setTheme] = useState(
-    initialTheme.colorScheme === 'light' ? themeLight : themeDark,
+    initialTheme === 'light' ? themeLight : themeDark,
   );
 
   useEffect(() => {
-    setTheme(initialTheme.colorScheme === 'light' ? themeLight : themeDark);
+    setTheme(initialTheme === 'light' ? themeLight : themeDark);
 
-    Appearance.addChangeListener(t => {
-      setTheme(t.colorScheme === 'light' ? themeLight : themeDark);
+    Appearance.addChangeListener(({colorScheme}: {colorScheme: ColorSchemeName}) => {
+      setTheme(colorScheme === 'light' ? themeLight : themeDark);
     });
 
     NetInfo.fetch().then(state => {
@@ -105,7 +105,7 @@ const App = () => {
     isDecklistsDownloadReady,
   ]);
 
-  const NavigationContainerTheme = {
+  const NavigationContainerTheme: Theme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,

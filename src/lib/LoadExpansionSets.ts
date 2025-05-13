@@ -2,16 +2,16 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import ExpansionSet from '../models/ExpansionSet';
 const localExpansionSetsFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
-const loadExpansionSets = () => {
+const loadExpansionSets = (): Promise<ExpansionSet[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localExpansionSetsFilePath}/sets.json`, 'utf8')
-    .then(data => {
+    .then((data: string) => {
       return JSON.parse(data);
     })
-    .then(results => {
+    .then((results: any[]) => {
       return (results || [])
-        .filter(s => !s.legacy) // exclude legacy sets
-        .map(s => new ExpansionSet(s));
+        .filter((s: any) => !s.legacy) // exclude legacy sets
+        .map((s: any) => new ExpansionSet(s));
     })
     .catch(err => {
       console.log(err);

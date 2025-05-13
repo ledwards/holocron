@@ -1,8 +1,9 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Card from '../models/Card';
+import ExpansionSet from '../models/ExpansionSet';
 const localCardFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
-const readCardFilePromise = side => {
+const readCardFilePromise = (side: string): Promise<any[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localCardFilePath}/${side}.json`, 'utf8')
     .then(data => {
@@ -13,7 +14,7 @@ const readCardFilePromise = side => {
     });
 };
 
-const loadCardDefinitions = expansionSets => {
+const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => {
   return Promise.allSettled([
     readCardFilePromise('Dark'),
     readCardFilePromise('Light'),
@@ -21,15 +22,15 @@ const loadCardDefinitions = expansionSets => {
     .then(results => {
       return (results || [])
         .map(r => {
-          return r.value
-            .map(c => {
-              const expansionSet = expansionSets.find(s => s.id === c.set);
+          return (r.value as any[])
+            .map((c: any) => {
+              const expansionSet = expansionSets.find((s: ExpansionSet) => s.id === c.set);
               const card = new Card(c, expansionSet);
               return card;
             })
-            .filter(c => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
-            .filter(c => c.type != 'Game Aid')
-            .sort((a, b) =>
+            .filter((c: Card) => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
+            .filter((c: Card) => c.type != 'Game Aid')
+            .sort((a: Card, b: Card) =>
               a.sortTitle > b.sortTitle
                 ? 1
                 : b.sortTitle > a.sortTitle

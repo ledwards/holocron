@@ -11,11 +11,27 @@ import layout from '../../constants/layout';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
 
-const SearchableCardList = props => {
-  const [query, setQuery] = useState('');
-  const [data, setData] = useState([]);
-  const [filterQuerySet, setFilterQuerySet] = useState();
-  const [state, setState] = useState({
+interface SearchableCardListProps {
+  cards: any[];
+  nativeHeaderHeight?: number;
+  nativeFooterHeight?: number;
+}
+
+interface SearchableCardListState {
+  loading: boolean;
+  error: null | Error;
+  allCards: any[];
+  searchModeIndex: number;
+  flatListRef: any;
+  nativeHeaderHeight?: number;
+  nativeFooterHeight?: number;
+}
+
+const SearchableCardList = (props: SearchableCardListProps) => {
+  const [query, setQuery] = useState<string>('');
+  const [data, setData] = useState<any[]>([]);
+  const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet | undefined>();
+  const [state, setState] = useState<SearchableCardListState>({
     loading: false,
     error: null,
     allCards: props.cards,
@@ -24,8 +40,8 @@ const SearchableCardList = props => {
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
-  const theme = useContext(ThemeContext);
-  const allCards = useContext(AllCardsContext);
+  const theme = useContext<any>(ThemeContext);
+  const allCards = useContext<any[]>(AllCardsContext);
 
   useEffect(() => {
     setState({
@@ -42,7 +58,15 @@ const SearchableCardList = props => {
     setFilterQuerySet(new FilterQuerySet(''));
   }, []);
 
-  const searchModes = {
+  interface SearchMode {
+    index: number;
+    label: string;
+    icon: string;
+    title: string;
+    description: string;
+  }
+
+  const searchModes: Record<number, SearchMode> = {
     0: {
       index: 0, // existence of this is proof that this should be a class
       label: 'title',
@@ -60,11 +84,11 @@ const SearchableCardList = props => {
     },
   };
 
-  const currentSearchMode = () => {
-    return searchModes[state.searchModeIndex] || 0;
+  const currentSearchMode = (): SearchMode => {
+    return searchModes[state.searchModeIndex] || searchModes[0];
   };
 
-  const debug = filterQuerySet => {
+  const debug = (filterQuerySet: FilterQuerySet): void => {
     console.log('====');
     console.log('text entry: ', text);
     console.log('====');
@@ -85,7 +109,7 @@ const SearchableCardList = props => {
     console.log('\n');
   };
 
-  const searchRouter = (text: string) => {
+  const searchRouter = (text: string): void => {
     text = text.toLowerCase();
 
     setQuery(text);
@@ -100,7 +124,7 @@ const SearchableCardList = props => {
     }
   };
 
-  const queryFilterFunction = (text: string) => {
+  const queryFilterFunction = (text: string): boolean => {
     const filterQuerySet = new FilterQuerySet(text);
 
     setQuery(text);
@@ -118,7 +142,7 @@ const SearchableCardList = props => {
     return filterQuerySet.valid();
   };
 
-  const searchFilterFunction = (text: string) => {
+  const searchFilterFunction = (text: string): void => {
     const newData = allCards.filter(card => {
       const textData = text;
       const itemData = `${card.title} ${card.sortTitle} ${card.abbr || ' '}`
@@ -137,7 +161,7 @@ const SearchableCardList = props => {
     setData(newData);
   };
 
-  const toggleSearchMode = () => {
+  const toggleSearchMode = (): void => {
     setQuery(null);
     searchRouter('');
     setState({
@@ -146,7 +170,7 @@ const SearchableCardList = props => {
     });
   };
 
-  const EmptyListComponent = () => {
+  const EmptyListComponent = (): JSX.Element => {
     return (
       <View
         style={{
@@ -171,7 +195,7 @@ const SearchableCardList = props => {
     );
   };
 
-  const NoResultsListComponent = () => (
+  const NoResultsListComponent = (): JSX.Element => (
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
@@ -183,7 +207,7 @@ const SearchableCardList = props => {
     </View>
   );
 
-  const SeparatorComponent = () => {
+  const SeparatorComponent = (): JSX.Element => {
     return (
       <View
         style={{
@@ -212,11 +236,11 @@ const SearchableCardList = props => {
         data={query ? data : []}
         renderItem={({item, index}) => (
           <CardListItem
-            theme={theme}
-            item={new CardPresenter(item)}
-            index={index}
-            flatListRef={state.flatListRef}
-            scrollToIndex={(i: number) =>
+                theme={theme}
+                item={new CardPresenter(item)}
+                index={index}
+                flatListRef={state.flatListRef}
+                scrollToIndex={(i: number) =>
               state.flatListRef.scrollToIndex({
                 animated: true,
                 index: i,

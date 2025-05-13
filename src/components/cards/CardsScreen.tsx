@@ -1,9 +1,14 @@
 import React, {useContext} from 'react';
 import SearchableCardList from './SearchableCardList';
 import AllCardsContext from '../../contexts/AllCardsContext';
+import Card from '../../models/Card';
 
-const CardsScreen = props => {
-  const allCards = useContext(AllCardsContext);
+interface CardsScreenProps {
+  // No specific props needed currently, but defining the interface for future use
+}
+
+const CardsScreen = (props: CardsScreenProps) => {
+  const allCards = useContext<Card[]>(AllCardsContext);
 
   return (
     <>

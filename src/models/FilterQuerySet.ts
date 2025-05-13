@@ -10,35 +10,35 @@ class FilterQuerySet {
     this.filterQueries = this.parseQuery();
   }
 
-  parseQuery() {
-    const subQueries = this.query.toLowerCase().split('and');
+  parseQuery(): FilterQuery[] {
+    const subQueries: string[] = this.query.toLowerCase().split('and');
     return subQueries.length < 1 && subQueries[0] === ''
       ? [new FilterQuery('')]
       : subQueries.map(sq => new FilterQuery(sq));
   }
 
-  valid() {
+  valid(): boolean {
     return this.filterQueries.map(fq => fq.valid()).every(e => e == true);
   }
 
-  length() {
+  length(): number {
     return this.filterQueries.length;
   }
 
   // TODO: move this to a presenter
-  viewHeight() {
+  viewHeight(): number {
     return 45 + 25 * this.length() + (this.length() > 1 ? 35 : 0);
   }
 
-  execute(cards: Card[]) {
+  execute(cards: Card[]): Card[] {
     if (!this.valid()) {
       return [];
     }
 
-    const results = this.filterQueries.map(fq => fq.execute(cards));
+    const results: Card[][] = this.filterQueries.map(fq => fq.execute(cards));
 
-    return results.reduce((result, currentArray) =>
-      result.filter(obj => currentArray.some(item => item.id === obj.id)),
+    return results.reduce((result: Card[], currentArray: Card[]) =>
+      result.filter((obj: Card) => currentArray.some((item: Card) => item.id === obj.id)),
     );
   }
 }
