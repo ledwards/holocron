@@ -1,2 +1,5 @@
 import {createContext} from 'react';
-export default AllCardsContext = createContext(null);
+import Card from '../models/Card';
+
+const AllCardsContext = createContext<Card[] | null>(null);
+export default AllCardsContext;

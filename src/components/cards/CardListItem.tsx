@@ -7,7 +7,26 @@ import {BlurView} from '@react-native-community/blur';
 import styles from '../../styles/CardListItemStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 
-const CardListItem = props => {
+interface CardListItemProps {
+  item: {
+    sideways: boolean;
+    aspectRatio: number;
+    displayImageUrl: string;
+    displayBackImageUrl: string;
+    displayTitle: string;
+    displayExpansionSet: string;
+    type: string;
+    rarity: string;
+    side: string;
+    twoSided: boolean;
+    offsetY: number;
+  };
+  index: number;
+  scrollToIndex: (index: number) => void;
+  quantity?: number;
+}
+
+const CardListItem = (props: CardListItemProps) => {
   const windowWidth = Dimensions.get('window').width;
   const fillPercent = 0.55;
 
@@ -15,7 +34,22 @@ const CardListItem = props => {
     ? ((windowWidth / props.item.aspectRatio) * fillPercent) / 2.5
     : (windowWidth * props.item.aspectRatio * fillPercent) / 2.5;
 
-  const [state, setState] = useState({});
+  interface CardListItemState {
+    expanded: boolean;
+    showingBack: boolean;
+    screenWidth: number;
+    heightAnim: Animated.Value;
+    widthAnim: Animated.Value;
+    containerHeightAnim: Animated.Value;
+    labelOpacityAnim: Animated.Value;
+    minHeight: number;
+    maxHeight: number;
+    minWidth: number;
+    maxWidth: number;
+    posY: number;
+  }
+
+  const [state, setState] = useState<Partial<CardListItemState>>({});
   const theme = useContext(ThemeContext);
 
   useEffect(() => {
@@ -35,7 +69,7 @@ const CardListItem = props => {
     });
   }, []);
 
-  const toggleExpanded = () => {
+  const toggleExpanded = (): void => {
     Keyboard.dismiss();
     const needsToExpand = !state.expanded;
     const needsToFlip =

@@ -9,10 +9,17 @@ import DecklistsScreen from '../decklists/DecklistsScreen';
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
+import Card from '../../models/Card';
 
 const Tab = createBottomTabNavigator();
 
-function TabNavigation(props) {
+interface TabNavigationProps {
+  allCards: Card[];
+  expansionSets: any[];
+  allDecklists: any[];
+}
+
+function TabNavigation(props: TabNavigationProps) {
   const iconSize = 24;
   const theme = useContext(ThemeContext);
 
