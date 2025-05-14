@@ -58,30 +58,30 @@ interface DecklistsScreenGridItemProps {
 }
 
 const DecklistsScreenGridItem = ({
-  item, 
-  decklist, 
-  index, 
-  scrollViewRef, 
-  windowWidth, 
-  cardsPerRow, 
-  isExpanded, 
+  item,
+  decklist,
+  index,
+  scrollViewRef,
+  windowWidth,
+  cardsPerRow,
+  isExpanded,
   showingBackSide,
   onCollapseAnimationComplete
 }: DecklistsScreenGridItemProps) => {
   const navigation = useNavigation<any>();
   const cardSideways = isSideways(item);
   const cardIsTwoSided = isTwoSided(item);
-  
+
   interface ItemState {
     expanded: boolean;
     showingBack: boolean;
   }
-  
+
   const [state, setState] = useState<ItemState>({
     expanded: false,
     showingBack: false,
   });
-  
+
   useEffect(() => {
     if (isExpanded && !state.expanded) {
       handleExpand();
@@ -104,9 +104,9 @@ const DecklistsScreenGridItem = ({
   const cardWidth = windowWidth / cardsPerRow;
   const aspectRatio = item.aspectRatio || 0.7;
   const cardHeight = cardWidth / aspectRatio;
-  
-  const cardMinWidth = cardWidth;
-  const cardMaxWidth = windowWidth;
+
+  // const cardMinWidth = cardWidth;
+  // const cardMaxWidth = windowWidth;
   const cardMinHeight = cardHeight;
   const cardMaxHeight = windowWidth / aspectRatio;
 
@@ -117,14 +117,14 @@ const DecklistsScreenGridItem = ({
   const initialRelativeLeft = 0;
   const maxRelativeLeft = (-1 * (((index % cardsPerRow) - 1.5) * cardWidth)) / minScale;
   const relativeLeft = useRef(new Animated.Value(0)).current;
-  
+
   // Animation value for rotation (0 = sideways, 1 = upright)
   const rotationValue = useRef(new Animated.Value(0)).current;
 
   const initialRelativeTop = 0;
   const topHeaderHeight = layout.nativeHeaderTopHeight() == 0 ? 68 : 75;
   const rowNumber = Math.floor(index / cardsPerRow);
-  
+
   // Target vertical position calculation with special handling for sideways cards
   let maxRelativeTop = 0;
   if (rowNumber === 0) {
@@ -240,7 +240,7 @@ const DecklistsScreenGridItem = ({
         expanded: false,
         showingBack: false,
       });
-      
+
       if (onCollapseAnimationComplete) {
         onCollapseAnimationComplete(index);
       }
@@ -268,7 +268,7 @@ const DecklistsScreenGridItem = ({
       ? '90deg'
       : '-90deg'
     : '0deg';
-    
+
   // Animated rotation for sideways cards (rotate to upright when expanded)
   const rotationDegrees = rotationValue.interpolate({
     inputRange: [0, 1],

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {View, ActivityIndicator, Text, Animated, FlatList} from 'react-native';
 
-import CardListItem, {CardListItemProps} from './CardListItem';
+import CardListItem  from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../../presenters/CardPresenter';
 import FilterQuerySet from '../../models/FilterQuerySet';
@@ -50,10 +50,10 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
-  
+
   // FlatList reference for scrolling
   const flatListRef = useRef<FlatList<Card>>(null);
-  
+
   // Get theme from context or provide default
   const themeContext = useContext(ThemeContext);
   const theme: Theme = themeContext || {
@@ -63,7 +63,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     dividerColor: '#444444',
     translucentBackgroundColor: 'rgba(0,0,0,0.5)'
   };
-  
+
   // Get cards from context or use empty array
   const allCardsContext = useContext(AllCardsContext);
   const allCards: Card[] = allCardsContext || [];

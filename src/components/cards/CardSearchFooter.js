@@ -1,17 +1,14 @@
-import React, {useContext, useRef} from 'react';
+import React, {useContext} from 'react';
 import {View, KeyboardAvoidingView} from 'react-native';
 import {Icon, Text, SearchBar as RNESearchBar} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
 import QueryStatusBar from './QueryStatusBar';
-import Card from '../../models/Card';
-import FilterQuerySet from '../../models/FilterQuerySet';
 
 import styles from '../../styles/CardSearchFooterStyles';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import {SearchMode, Theme, SearchCallback} from '../../types/interfaces';
 
 // Coach tip component to display when no search is active
 const ModeCoachTipComponent = ({theme, searchMode}) => (
@@ -38,7 +35,7 @@ const ModeCoachTipComponent = ({theme, searchMode}) => (
   </View>
 );
 
-const CardSearchFooter = (props) => {
+const CardSearchFooter = props => {
   // Get theme from context or provide default
   const themeContext = useContext(ThemeContext);
   const theme = themeContext || {
@@ -108,7 +105,10 @@ const CardSearchFooter = (props) => {
                   ...styles.filterQuerySetContainer,
                 }}>
                 {!props.query ? (
-                  <ModeCoachTipComponent theme={theme} searchMode={props.searchMode} />
+                  <ModeCoachTipComponent
+                    theme={theme}
+                    searchMode={props.searchMode}
+                  />
                 ) : (
                   <QueryStatusBar
                     query={props.query}

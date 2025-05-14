@@ -1,7 +1,7 @@
 import Tournament from './Tournament';
 import Archetype from './Archetype';
 import Player from './Player';
-import { DecklistCard } from '../types/interfaces';
+
 
 // TODO: searchData() should be an attribute to avoid:
 //  WARN  Non-serializable values were found in the navigation state. Check:

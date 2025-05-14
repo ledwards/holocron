@@ -1,6 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {
-  ScrollView,
   View,
   ActivityIndicator,
   Text,
