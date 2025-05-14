@@ -5,16 +5,35 @@ import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
+import {DecklistCard, Decklist} from '../../types/interfaces';
 
 // List of cards that have two sides
 const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
 
-const isTwoSided = card => {
-  return card.type == 'Objective' || TWO_SIDED_CARDS.includes(card.title);
+interface CardType {
+  title: string;
+  type?: string;
+  quantity: number;
+  imageUrl: string;
+  imageBackUrl?: string;
+  aspectRatio?: number;
+}
+
+const isTwoSided = (card: CardType): boolean => {
+  return (card.type === 'Objective') || (card.title && TWO_SIDED_CARDS.includes(card.title));
 };
 
-const DecklistsScreenGridView = props => {
-  const scrollViewRef = createRef();
+interface DecklistsScreenGridViewProps {
+  route: {
+    params: {
+      decklist: Decklist;
+    }
+  };
+  navigation: any;
+}
+
+const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
+  const scrollViewRef = createRef<ScrollView>();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
   
@@ -41,15 +60,17 @@ const DecklistsScreenGridView = props => {
   }, []);
 
   // Flatten card list to include duplicates based on quantity
-  let items = [];
-  props.route.params.decklist.cards.forEach(card => {
-    for (let i = 0; i < card.quantity; i++) {
-      items.push(card);
-    }
-  });
+  let items: CardType[] = [];
+  if (props.route.params.decklist && props.route.params.decklist.cards) {
+    props.route.params.decklist.cards.forEach((card: CardType) => {
+      for (let i = 0; i < card.quantity; i++) {
+        items.push(card);
+      }
+    });
+  }
 
   // Handle card tap at grid level
-  const handleCardTap = (index) => {
+  const handleCardTap = (index: number): void => {
     const card = items[index];
     const cardIsTwoSided = isTwoSided(card);
     
@@ -76,7 +97,7 @@ const DecklistsScreenGridView = props => {
   };
 
   // Called when a card finishes its collapse animation
-  const handleCollapseComplete = (index) => {
+  const handleCollapseComplete = (index: number): void => {
     if (visibleCardIndex === index) {
       // Only reset the visible index if it matches the card that just finished animating
       setVisibleCardIndex(-1);
@@ -90,7 +111,7 @@ const DecklistsScreenGridView = props => {
         ref={scrollViewRef}
         contentContainerStyle={{
           ...styles.scrollView,
-          paddingBottom: layout.footerHeight() + 150,
+          paddingBottom: layout.footerHeight(0, undefined) + 150,
         }}>
         <View style={{
           flexDirection: 'row',

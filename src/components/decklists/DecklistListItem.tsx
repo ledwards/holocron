@@ -1,11 +1,27 @@
 import {useState, useEffect} from 'react';
-import {View, Dimensions, Keyboard} from 'react-native';
+import {View, Dimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
 import styles from '../../styles/DecklistListItemStyles';
 
-const DecklistListItem = props => {
+interface DecklistItem {
+  sideways: boolean;
+  aspectRatio: number;
+  imageUrl: string;
+  side: string;
+  offsetY: number;
+  displayTitle: string;
+  displaySubtitle: string;
+}
+
+interface DecklistListItemProps {
+  item: DecklistItem;
+  index: number;
+  theme: any;
+}
+
+const DecklistListItem = (props: DecklistListItemProps) => {
   const windowWidth = Dimensions.get('window').width;
   const fillPercent = 0.55;
 
@@ -13,19 +29,30 @@ const DecklistListItem = props => {
     ? ((windowWidth / props.item.aspectRatio) * fillPercent) / 2.5
     : (windowWidth * props.item.aspectRatio * fillPercent) / 2.5;
 
-  const [state, setState] = useState({});
+  interface State {
+    expanded: boolean;
+    showingBack: boolean;
+    screenWidth: number;
+    containerHeight: number;
+    labelOpacity: number;
+    height: number;
+    width: number;
+    theme: any;
+  }
+
+  const [state, setState] = useState<State>({
+    expanded: false,
+    showingBack: false,
+    screenWidth: windowWidth,
+    containerHeight: height / 2,
+    labelOpacity: 1.0,
+    height: height,
+    width: windowWidth * fillPercent,
+    theme: props.theme,
+  });
 
   useEffect(() => {
-    setState({
-      expanded: false,
-      showingBack: false,
-      screenWidth: windowWidth,
-      containerHeight: height / 2,
-      labelOpacity: 1.0,
-      height: height,
-      width: windowWidth * fillPercent,
-      theme: props.theme,
-    });
+    // State is already initialized with default values
   }, []);
 
   return (
@@ -34,9 +61,9 @@ const DecklistListItem = props => {
         height: state.containerHeight,
       }}>
       <ListItem
-        id={props.index}
+        Component={View}
         style={{marginLeft: -15}}
-        button
+        onPress={() => {}}
         containerStyle={{
           ...styles.decklistListItemContainer,
           ...(props.item.side == 'Dark'
@@ -59,7 +86,7 @@ const DecklistListItem = props => {
             source={{
               uri: props.item.imageUrl,
             }}
-            alpha={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.cover}
             style={{
               ...styles.decklistListItemImage,
               ...(!state.expanded

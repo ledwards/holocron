@@ -15,13 +15,18 @@ import AllCardsContext from '../../contexts/AllCardsContext';
 import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
+import { Theme } from '../../types/interfaces';
 
-const DecklistsScreenListView = ({route}) => {
-  const theme = useContext(ThemeContext);
+const DecklistsScreenListView = ({route}: {route: any}) => {
+  const theme = useContext<Theme | null>(ThemeContext);
   const allCards = useContext(AllCardsContext);
 
-  const [data, setData] = useState([]);
-  const [state, setState] = useState({
+  const [data, setData] = useState<any[]>([]);
+  const [state, setState] = useState<{
+    loading: boolean;
+    error: null | string;
+    flatListRef: any;
+  }>({
     loading: false,
     error: null,
     flatListRef: null,
@@ -43,10 +48,13 @@ const DecklistsScreenListView = ({route}) => {
       flatListRef: null,
     });
 
-    const decklistCards = route.params.decklist.cards;
-    const cards = decklistCards.map(card =>
-      allCards.find(c => c.id === card.id),
-    );
+    const decklistCards = route.params.decklist?.cards || [];
+    const cards = decklistCards.map(card => {
+      if (allCards && card && card.id) {
+        return allCards.find(c => c && c.id === card.id);
+      }
+      return null;
+    });
     setData(cards);
   }, []);
 
@@ -55,16 +63,16 @@ const DecklistsScreenListView = ({route}) => {
       <View
         style={{
           height: '100%',
-          backgroundColor: theme.backgroundColor,
+          backgroundColor: theme?.backgroundColor,
         }}>
         <Text
           style={{
-            color: theme.foregroundColor,
+            color: theme?.foregroundColor,
             ...styles.defaultTextTitle,
           }}></Text>
         <Text
           style={{
-            color: theme.foregroundColor,
+            color: theme?.foregroundColor,
             ...styles.defaultTextDescription,
           }}></Text>
       </View>
@@ -75,7 +83,7 @@ const DecklistsScreenListView = ({route}) => {
     return (
       <View
         style={{
-          backgroundColor: theme.dividerColor,
+          backgroundColor: theme?.dividerColor,
           ...styles.separator,
         }}
       />
@@ -94,7 +102,10 @@ const DecklistsScreenListView = ({route}) => {
     <>
       <Animated.FlatList
         ref={ref => {
-          state.flatListRef = ref;
+          setState(prevState => ({
+            ...prevState,
+            flatListRef: ref
+          }));
         }}
         contentContainerStyle={styles.flatListContentContainer}
         data={data}
@@ -103,7 +114,7 @@ const DecklistsScreenListView = ({route}) => {
             <CardListItem
               item={new CardPresenter(item)}
               quantity={
-                route.params.decklist.cards.find(c => c.id === item.id).quantity
+                route.params.decklist?.cards?.find(c => c.id === item.id)?.quantity || 1
               }
               index={index}
               flatListRef={state.flatListRef}
@@ -121,17 +132,17 @@ const DecklistsScreenListView = ({route}) => {
         ListEmptyComponent={() => EmptyListComponent()}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
-          backgroundColor: theme.backgroundColor,
-          borderColor: theme.dividerColor,
+          backgroundColor: theme?.backgroundColor,
+          borderColor: theme?.dividerColor,
           borderBottomWidth: 0,
         }}
         ListFooterComponent={() => <></>}
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
-          backgroundColor: theme.backgroundColor,
-          height: layout.footerHeight(layout.tabBarHeight()),
+          backgroundColor: theme?.backgroundColor,
+          height: layout.footerHeight(layout.tabBarHeight(), undefined),
           borderTopWidth: 0,
-          borderColor: theme.dividerColor,
+          borderColor: theme?.dividerColor,
         }}
         keyExtractor={(item, index) => `${index}_${item ? item.id : 0}`}
         ItemSeparatorComponent={SeparatorComponent}

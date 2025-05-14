@@ -37,7 +37,7 @@ const NEQ_COMPARATOR = new Comparator(
 const GT_COMPARATOR = new Comparator(
   '>',
   (card: Card, attribute: string, value: string) =>
-    card.get(attribute) > parseFloat(value),
+    (card.get(attribute) as number) > parseFloat(value),
   [
     'gt',
     'greater than',
@@ -62,7 +62,7 @@ const GT_COMPARATOR = new Comparator(
 const LT_COMPARATOR = new Comparator(
   '<',
   (card: Card, attribute: string, value: string) =>
-    card.get(attribute) < parseFloat(value),
+    (card.get(attribute) as number) < parseFloat(value),
   [
     'lt',
     'less than',
@@ -81,7 +81,7 @@ const LT_COMPARATOR = new Comparator(
 const GTE_COMPARATOR = new Comparator(
   '≥',
   (card: Card, attribute: string, value: string) =>
-    card.get(attribute) >= parseFloat(value),
+    (card.get(attribute) as number) >= parseFloat(value),
   [
     '>=',
     'gte',
@@ -107,7 +107,7 @@ const GTE_COMPARATOR = new Comparator(
 const LTE_COMPARATOR = new Comparator(
   '≤',
   (card: Card, attribute: string, value: string) =>
-    card.get(attribute) <= parseFloat(value),
+    (card.get(attribute) as number) <= parseFloat(value),
   [
     '<=',
     'lte',
@@ -128,7 +128,7 @@ const LTE_COMPARATOR = new Comparator(
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
   (card: Card, attribute: string, value: string) =>
-    card.getSanitized(attribute)?.includes(
+    (card.getSanitized(attribute) as string)?.includes(
       value
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
@@ -151,7 +151,7 @@ const SUBSTR_COMPARATOR = new Comparator(
 const NOT_SUBSTR_COMPARATOR = new Comparator(
   'does not match',
   (card: Card, attribute: string, value: string) =>
-    !card.getSanitized(attribute)?.includes(
+    !(card.getSanitized(attribute) as string)?.includes(
       value
         .replaceAll(/[^a-zA-Z0-9 -]/g, '')
         .toLowerCase()
@@ -197,8 +197,8 @@ const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
 const INCLUDES_COMPARATOR = new Comparator(
   'includes',
   (card: Card, attribute: string, value: string) =>
-    card
-      .get(attribute)
+    (card
+      .get(attribute) as string[])
       ?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1)
       .length > 0,
   ['c', 'include', 'has', 'contains', 'matches'],
@@ -207,8 +207,8 @@ const INCLUDES_COMPARATOR = new Comparator(
 const NOT_INCLUDES_COMPARATOR = new Comparator(
   'not includes',
   (card: Card, attribute: string, value: string) =>
-    card
-      .get(attribute)
+    (card
+      .get(attribute) as string[])
       ?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1)
       .length == 0,
   [

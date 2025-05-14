@@ -8,11 +8,13 @@ import lightCards from '../../data/__fixtures__/Light.json';
 import expansionSets from '../../data/__fixtures__/sets.json';
 const allCards = [...darkCards.cards, ...lightCards.cards]
   .map(
-    c =>
-      new Card(
-        c,
+    c => {
+      // Cast to appropriate type for test environment
+      return new Card(
+        c as any,
         expansionSets.find(s => s.id === c.set),
-      ),
+      );
+    },
   )
   .filter(c => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
   .filter(c => c.type != 'Game Aid')

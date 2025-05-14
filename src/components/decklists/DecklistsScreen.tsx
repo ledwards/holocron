@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {LogBox} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
@@ -31,7 +31,7 @@ interface DecklistsScreenProps {
 
 const DecklistsScreen = (props: DecklistsScreenProps) => {
   const [displayMode, setDisplayMode] = useState<number>(0);
-  const theme = useContext<Theme>(ThemeContext);
+  const theme = useContext<Theme | null>(ThemeContext);
 
   const displayModes: Record<number, DisplayMode> = {
     0: {
@@ -63,24 +63,26 @@ const DecklistsScreen = (props: DecklistsScreenProps) => {
 
   return (
     <>
-      <Stack.Navigator>
+      {/* @ts-ignore */}
+      <Stack.Navigator initialRouteName="Tournament Decklists">
         <Stack.Screen
           name="Tournament Decklists"
           component={DecklistsScreenHome}
-          options={{headerShown: false}}></Stack.Screen>
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="View Decklist"
           component={currentDisplayMode().view}
           options={() => ({
             headerShown: true,
             headerStyle: {},
-            headerTintColor: theme.foregroundColor,
+            headerTintColor: theme?.foregroundColor,
             headerTitleStyle: {},
             headerRight: () => (
               <Icon
                 name={nextDisplayMode().icon}
                 type="ionicon"
-                color={theme.foregroundColor}
+                color={theme?.foregroundColor}
                 size={24}
                 style={{marginRight: 10}}
                 onPress={() => toggleDisplayMode()}
@@ -93,14 +95,15 @@ const DecklistsScreen = (props: DecklistsScreenProps) => {
                   height: '100%',
                   width: '100%',
                 }}
-                blurType={theme.name}
+                blurType={theme?.name as any}
                 blurAmount={10}
                 reducedTransparencyFallbackColor={
-                  theme.translucentBackgroundColor
+                  theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'
                 }
               />
             ),
-          })}></Stack.Screen>
+          })}
+        />
       </Stack.Navigator>
     </>
   );

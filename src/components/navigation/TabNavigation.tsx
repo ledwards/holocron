@@ -14,7 +14,7 @@ import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 interface TabNavigationProps {
   allCards: Card[];
@@ -25,7 +25,7 @@ interface TabNavigationProps {
 function TabNavigation(_props: TabNavigationProps) {
   const iconSize = 24;
   const themeContext = useContext(ThemeContext);
-  const theme: Theme = themeContext || {
+  const theme: Theme | null = themeContext || {
     name: 'dark',
     backgroundColor: '#000000',
     foregroundColor: '#FFFFFF',
@@ -39,7 +39,6 @@ function TabNavigation(_props: TabNavigationProps) {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        keyboardHidesTabBar: true,
         headerShown: false,
         tabBarStyle: {
           ...styles.tabBarStyle,
@@ -50,11 +49,11 @@ function TabNavigation(_props: TabNavigationProps) {
       }}>
       <Tab.Screen
         name="Cards"
-        children={() => (
+        component={() => (
           <View
             style={{
               flex: 1,
-              backgroundColor: theme.backgroundColor,
+              backgroundColor: theme?.backgroundColor,
             }}>
             <CardsScreen />
           </View>
@@ -65,7 +64,7 @@ function TabNavigation(_props: TabNavigationProps) {
             <Icon
               name={'search-outline'}
               type="ionicon"
-              color={theme.foregroundColor}
+              color={theme?.foregroundColor}
               size={iconSize}
             />
           ),
@@ -73,11 +72,11 @@ function TabNavigation(_props: TabNavigationProps) {
       />
       <Tab.Screen
         name="Decklists"
-        children={() => (
+        component={() => (
           <View
             style={{
               flex: 1,
-              backgroundColor: theme.backgroundColor,
+              backgroundColor: theme?.backgroundColor,
             }}>
             <DecklistsScreen />
           </View>
@@ -88,7 +87,7 @@ function TabNavigation(_props: TabNavigationProps) {
             <Icon
               name={'file-tray-full-outline'}
               type="ionicon"
-              color={theme.foregroundColor}
+              color={theme?.foregroundColor}
               size={iconSize}
             />
           ),

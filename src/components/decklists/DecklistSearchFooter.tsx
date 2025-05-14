@@ -10,6 +10,7 @@ import DecklistsQueryStatusBar from './DecklistsQueryStatusBar';
 import styles from '../../styles/CardSearchFooterStyles'; // TODO: Rename to DecklistSearchFooterStyles
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
+import {Theme} from '../../types/interfaces';
 
 type DecklistSearchFooterProps = {
   query: string;
@@ -20,9 +21,9 @@ type DecklistSearchFooterProps = {
 };
 
 const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme | null>(ThemeContext);
   const [query, setQuery] = useState('');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Decklist[]>([]);
 
   const inputRef = useRef(null);
 
@@ -50,45 +51,49 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
           <View
             style={{
               ...styles.footerContainer,
-              height: layout.footerHeight(tabBarHeight),
+              height: layout.footerHeight(tabBarHeight || 0, undefined),
             }}>
+
             <BlurView
               style={{
                 position: 'absolute',
                 bottom: 0,
-                height: layout.footerHeight(tabBarHeight),
+                height: layout.footerHeight(tabBarHeight || 0, undefined),
                 width: '100%',
               }}
-              blurType={theme.name}
+              blurType={theme?.name as any}
               blurAmount={10}
               reducedTransparencyFallbackColor={
-                theme.translucentBackgroundColor
+                theme?.translucentBackgroundColor
               }
             />
             <SearchBar
               ref={inputRef}
               placeholder="Search by tournament, player, or archetype"
               round
-              onChangeText={onChangeText}
+              // @ts-ignore
+              onChangeText={(text: string) => onChangeText(text)}
               autoCorrect={false}
               value={query}
               containerStyle={{
                 ...styles.searchBarContainer,
                 position: 'absolute',
-                bottom: layout.searchBottomPosition(tabBarHeight),
+                bottom: layout.searchBottomPosition(tabBarHeight || 0),
                 height: layout.searchBarHeight(),
               }}
               inputContainerStyle={{
-                backgroundColor: theme.secondaryBackgroundColor,
+                backgroundColor: theme?.secondaryBackgroundColor,
               }}
-              searchIcon={
-                <Icon name="search" type="ionicon" color={theme.iconColor} />
-              }
+              searchIcon={{
+                name: 'search',
+                type: 'ionicon',
+                color: theme?.iconColor
+              }}
             />
 
             <View
               style={{
-                bottom: layout.statusBarBottomPosition(tabBarHeight),
+                bottom: layout.statusBarBottomPosition(tabBarHeight || 0),
                 ...styles.filterQuerySetContainer,
               }}>
               {!props.query ? (
@@ -104,11 +109,11 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   );
 };
 
-const coachTipComponent = (theme: any, decklists) => (
+const coachTipComponent = (theme: Theme | null, decklists: Decklist[]) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{
-        color: theme.foregroundColor,
+        color: theme?.foregroundColor,
       }}>
       {`Searching ${decklists.length} decklists`}
     </Text>
