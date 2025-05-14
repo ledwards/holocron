@@ -6,6 +6,8 @@ import {BlurView} from '@react-native-community/blur';
 
 import styles from '../../styles/CardListItemStyles';
 import ThemeContext from '../../contexts/ThemeContext';
+import { CardSide } from '../../types/enums';
+import { Theme, ScrollToIndexFunction } from '../../types/interfaces';
 
 interface CardListItemProps {
   item: {
@@ -17,12 +19,12 @@ interface CardListItemProps {
     displayExpansionSet: string;
     type: string;
     rarity: string;
-    side: string;
+    side: CardSide;
     twoSided: boolean;
     offsetY: number;
   };
   index: number;
-  scrollToIndex: (index: number) => void;
+  scrollToIndex: ScrollToIndexFunction;
   quantity?: number;
 }
 
@@ -50,7 +52,7 @@ const CardListItem = (props: CardListItemProps) => {
   }
 
   const [state, setState] = useState<Partial<CardListItemState>>({});
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
 
   useEffect(() => {
     setState({
@@ -135,7 +137,7 @@ const CardListItem = (props: CardListItemProps) => {
         onPress={() => toggleExpanded()}
         containerStyle={{
           ...styles.cardListItemContainer,
-          ...(props.item.side == 'Dark'
+          ...(props.item.side === CardSide.Dark
             ? styles.cardListItemContainerDarkSide
             : styles.cardListItemContainerLightSide),
         }}>
@@ -177,7 +179,7 @@ const CardListItem = (props: CardListItemProps) => {
                 ...(props.item.displayTitle.includes('\n')
                   ? styles.cardListItemTitleLong
                   : styles.cardListItemTitleShort),
-                ...(props.item.side == 'Light'
+                ...(props.item.side === CardSide.Light
                   ? styles.cardListItemTitleLight
                   : styles.cardListItemTitleDark),
               }}>
@@ -186,7 +188,7 @@ const CardListItem = (props: CardListItemProps) => {
             <ListItem.Subtitle
               style={{
                 ...styles.cardListItemSubtitle,
-                ...(props.item.side == 'Light'
+                ...(props.item.side === CardSide.Light
                   ? styles.cardListItemSubtitleLight
                   : styles.cardListItemSubtitleDark),
               }}>

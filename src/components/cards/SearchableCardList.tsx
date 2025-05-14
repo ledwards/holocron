@@ -11,6 +11,7 @@ import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
+import { SearchMode, Theme } from '../../types/interfaces';
 
 interface SearchableCardListProps {
   cards: Card[];
@@ -41,7 +42,7 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
   const allCards = useContext<Card[]>(AllCardsContext);
 
   useEffect(() => {
@@ -59,13 +60,7 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     setFilterQuerySet(new FilterQuerySet(''));
   }, []);
 
-  interface SearchMode {
-    index: number;
-    label: string;
-    icon: string;
-    title: string;
-    description: string;
-  }
+  // Using SearchMode interface imported from ../../types/interfaces
 
   const searchModes: Record<number, SearchMode> = {
     0: {

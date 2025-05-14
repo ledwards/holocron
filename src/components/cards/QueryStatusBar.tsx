@@ -9,14 +9,7 @@ import Card from '../../models/Card';
 import styles from '../../styles/QueryStatusBarStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 import AllCardsContext from '../../contexts/AllCardsContext';
-
-interface SearchMode {
-  index: number;
-  label: string;
-  icon: string;
-  title: string;
-  description: string;
-}
+import { SearchMode, Theme } from '../../types/interfaces';
 
 type QueryStatusBarProps = {
   query: string;
@@ -26,7 +19,7 @@ type QueryStatusBarProps = {
 };
 
 const QueryStatusBar = (props: QueryStatusBarProps) => {
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
   const allCards = useContext<Card[]>(AllCardsContext);
 
   return (

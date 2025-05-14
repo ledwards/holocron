@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 
 import styles from '../../styles/DecklistsScreenGridViewStyles';
 import layout from '../../constants/layout';
+import { CardSide } from '../../types/enums';
 
 // List of cards that should be displayed sideways
 const SIDEWAYS_CARDS = [
@@ -22,13 +23,39 @@ const SIDEWAYS_CARDS = [
 // List of cards that have two sides
 const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
 
-const isSideways = card => {
+interface CardItem {
+  title: string;
+  subType?: string;
+  type?: string;
+  aspectRatio?: number;
+  imageUrl: string;
+  imageBackUrl?: string;
+}
+
+interface DecklistItem {
+  displaySubtitle: string;
+  side: CardSide | string;
+}
+
+const isSideways = (card: CardItem): boolean => {
   return card.subType === 'Site' || SIDEWAYS_CARDS.includes(card.title);
 };
 
-const isTwoSided = card => {
+const isTwoSided = (card: CardItem): boolean => {
   return card.type == 'Objective' || TWO_SIDED_CARDS.includes(card.title);
 };
+
+interface DecklistsScreenGridItemProps {
+  item: CardItem;
+  decklist: DecklistItem;
+  index: number;
+  scrollViewRef: React.RefObject<any>;
+  windowWidth: number;
+  cardsPerRow: number;
+  isExpanded: boolean;
+  showingBackSide: boolean;
+  onCollapseAnimationComplete?: (index: number) => void;
+}
 
 const DecklistsScreenGridItem = ({
   item, 
@@ -40,12 +67,17 @@ const DecklistsScreenGridItem = ({
   isExpanded, 
   showingBackSide,
   onCollapseAnimationComplete
-}) => {
+}: DecklistsScreenGridItemProps) => {
   const navigation = useNavigation();
   const cardSideways = isSideways(item);
   const cardIsTwoSided = isTwoSided(item);
   
-  const [state, setState] = useState({
+  interface ItemState {
+    expanded: boolean;
+    showingBack: boolean;
+  }
+  
+  const [state, setState] = useState<ItemState>({
     expanded: false,
     showingBack: false,
   });
@@ -110,7 +142,7 @@ const DecklistsScreenGridItem = ({
   }
 
   const relativeTop = useRef(new Animated.Value(0)).current;
-  const [scrollView, setScrollView] = useState(null);
+  const [scrollView, setScrollView] = useState<any>(null);
 
   useEffect(() => {
     navigation.setOptions({
@@ -124,7 +156,7 @@ const DecklistsScreenGridItem = ({
     ? item.imageBackUrl
     : item.imageUrl;
 
-  const handleExpand = () => {
+  const handleExpand = (): void => {
     setState({
       expanded: true,
       showingBack: false,
@@ -173,7 +205,7 @@ const DecklistsScreenGridItem = ({
     ]).start();
   };
 
-  const handleCollapse = () => {
+  const handleCollapse = (): void => {
     const t = 200;
     const easingIn = Easing.ease;
 

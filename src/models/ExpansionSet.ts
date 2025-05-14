@@ -1,16 +1,12 @@
+import { ExpansionSetJSON } from '../types/interfaces';
+
 class ExpansionSet {
   id: string;
   name: string;
   abbr: string;
   gempName: string;
 
-  constructor(obj: {
-    id: string;
-    name: string;
-    abbr: string;
-    gempName: string;
-    legacy?: boolean;
-  }) {
+  constructor(obj: ExpansionSetJSON) {
     this.id = obj.id;
     this.name = obj.name;
     this.abbr = obj.abbr;
