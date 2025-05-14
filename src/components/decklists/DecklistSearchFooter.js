@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {View, KeyboardAvoidingView} from 'react-native';
-import {SearchBar, Icon, Text} from 'react-native-elements';
+import {SearchBar, Text} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
@@ -10,20 +10,11 @@ import DecklistsQueryStatusBar from './DecklistsQueryStatusBar';
 import styles from '../../styles/CardSearchFooterStyles'; // TODO: Rename to DecklistSearchFooterStyles
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import {Theme} from '../../types/interfaces';
 
-type DecklistSearchFooterProps = {
-  query: string;
-  nativeFooterHeight: number;
-  searchBarHeight: number;
-  data: Decklist[];
-  searchCallback: (query: string) => void;
-};
-
-const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
-  const theme = useContext<Theme | null>(ThemeContext);
+const DecklistSearchFooter = (props) => {
+  const theme = useContext(ThemeContext);
   const [query, setQuery] = useState('');
-  const [data, setData] = useState<Decklist[]>([]);
+  const [data, setData] = useState([]);
 
   const inputRef = useRef(null);
 
@@ -37,7 +28,7 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
     setData(props.data);
   }, [props.query, props.data]);
 
-  const onChangeText = (text: string) => {
+  const onChangeText = (text) => {
     setQuery(text);
     props.searchCallback(text);
   };
@@ -53,7 +44,6 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
               ...styles.footerContainer,
               height: layout.footerHeight(tabBarHeight || 0, undefined),
             }}>
-
             <BlurView
               style={{
                 position: 'absolute',
@@ -61,7 +51,7 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
                 height: layout.footerHeight(tabBarHeight || 0, undefined),
                 width: '100%',
               }}
-              blurType={theme?.name as any}
+              blurType={theme?.name === 'dark' ? 'dark' : 'light'}
               blurAmount={10}
               reducedTransparencyFallbackColor={
                 theme?.translucentBackgroundColor
@@ -71,8 +61,7 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
               ref={inputRef}
               placeholder="Search by tournament, player, or archetype"
               round
-              // @ts-ignore
-              onChangeText={(text: string) => onChangeText(text)}
+              onChangeText={onChangeText}
               autoCorrect={false}
               value={query}
               containerStyle={{
@@ -109,7 +98,7 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   );
 };
 
-const coachTipComponent = (theme: Theme | null, decklists: Decklist[]) => (
+const coachTipComponent = (theme, decklists) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{

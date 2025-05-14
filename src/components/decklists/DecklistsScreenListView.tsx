@@ -7,6 +7,8 @@ import {
   Animated,
 } from 'react-native';
 
+import Card from '../../models/Card';
+
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 import CardListItem from '../cards/CardListItem';
 import CardPresenter from '../../presenters/CardPresenter';
@@ -49,9 +51,9 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
     });
 
     const decklistCards = route.params.decklist?.cards || [];
-    const cards = decklistCards.map(card => {
+    const cards = decklistCards.map((card: {id: string}) => {
       if (allCards && card && card.id) {
-        return allCards.find(c => c && c.id === card.id);
+        return allCards.find((c: Card) => c && c.id === card.id);
       }
       return null;
     });
@@ -114,7 +116,7 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
             <CardListItem
               item={new CardPresenter(item)}
               quantity={
-                route.params.decklist?.cards?.find(c => c.id === item.id)?.quantity || 1
+                route.params.decklist?.cards?.find((c: {id: string; quantity: number}) => c.id === item.id)?.quantity || 1
               }
               index={index}
               flatListRef={state.flatListRef}

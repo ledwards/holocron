@@ -10,9 +10,17 @@ const allCards = [...darkCards.cards, ...lightCards.cards]
   .map(
     c => {
       // Cast to appropriate type for test environment
+      // Provide a default expansion set if none is found
+      const expansionSet = expansionSets.find(s => s.id === c.set) || {
+        id: 'default',
+        name: 'Default Set',
+        abbr: 'DEF',
+        gempName: 'Default'
+      };
+      
       return new Card(
         c as any,
-        expansionSets.find(s => s.id === c.set),
+        expansionSet,
       );
     },
   )
