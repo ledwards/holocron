@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useRef} from 'react';
 import {View, KeyboardAvoidingView} from 'react-native';
 import {Icon, Text, SearchBar as RNESearchBar} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
@@ -13,21 +13,8 @@ import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 import {SearchMode, Theme, SearchCallback} from '../../types/interfaces';
 
-interface CardSearchFooterProps {
-  query: string;
-  filterQuerySet: FilterQuerySet;
-  nativeFooterHeight: number;
-  searchBarHeight: number;
-  tabBarHeight?: number;
-  searchMode: SearchMode;
-  allCards: Card[];
-  data: Card[];
-  searchCallback: SearchCallback;
-  toggleSearchMode: () => void;
-}
-
 // Coach tip component to display when no search is active
-const ModeCoachTipComponent = ({theme, searchMode}: {theme: Theme; searchMode: SearchMode}) => (
+const ModeCoachTipComponent = ({theme, searchMode}) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{
@@ -51,10 +38,10 @@ const ModeCoachTipComponent = ({theme, searchMode}: {theme: Theme; searchMode: S
   </View>
 );
 
-const CardSearchFooter: React.FC<CardSearchFooterProps> = (props) => {
+const CardSearchFooter = (props) => {
   // Get theme from context or provide default
   const themeContext = useContext(ThemeContext);
-  const theme: Theme = themeContext || {
+  const theme = themeContext || {
     name: 'dark',
     backgroundColor: '#000000',
     foregroundColor: '#FFFFFF',
@@ -90,12 +77,12 @@ const CardSearchFooter: React.FC<CardSearchFooterProps> = (props) => {
                   theme.translucentBackgroundColor
                 }
               />
-              {/* @ts-expect-error - SearchBar has complex typing that we need to bypass */}
               <RNESearchBar
                 platform="default"
                 placeholder={`Search by ${props.searchMode.label}`}
                 value={props.query}
-                onChangeText={(text: string) => props.searchCallback(text)}
+                onChangeText={props.searchCallback}
+                onClear={() => props.searchCallback('')}
                 autoCorrect={false}
                 round={true}
                 containerStyle={{

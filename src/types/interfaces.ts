@@ -98,6 +98,16 @@ export interface DecklistCard {
   id: string;
   quantity: number;
   card: unknown; // This will be a Card object but using unknown for type safety
+  title: string;
+  type?: string;
+  imageUrl: string;
+  imageBackUrl?: string;
+  aspectRatio?: number;
+  side?: string;
+  displayTitle?: string;
+  displaySubtitle?: string;
+  offsetY?: number;
+  sideways?: boolean;
 }
 
 /**
@@ -121,6 +131,18 @@ export interface CardsResponse {
 
 export interface ExpansionSetsResponse {
   sets: ExpansionSetJSON[];
+}
+
+/**
+ * Interface for a complete decklist
+ */
+export interface Decklist {
+  id: string;
+  name: string;
+  description?: string;
+  cards: DecklistCard[];
+  side: string;
+  displaySubtitle: string;
 }
 
 /**

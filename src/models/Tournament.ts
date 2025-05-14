@@ -3,10 +3,18 @@ class Tournament {
   shortName: string;
   eventName: string;
   date: Date;
-  url: string;
+  url: string; 
   slug: string;
+  aliases: string[] = [];
 
-  constructor(params) {
+  constructor(params: {
+    url: string;
+    slug: string;
+    name: string;
+    shortName: string;
+    eventName: string;
+    date: Date;
+  }) {
     this.url = params.url;
     this.slug = params.slug;
     this.name = params.name;
@@ -15,7 +23,7 @@ class Tournament {
     this.date = params.date;
   }
 
-  nameAndAliases() {
+  nameAndAliases(): string[] {
     return [this.name].concat(this.aliases).sort((a, b) => b.length - a.length);
   }
 }

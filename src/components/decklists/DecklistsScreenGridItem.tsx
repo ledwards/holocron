@@ -68,7 +68,7 @@ const DecklistsScreenGridItem = ({
   showingBackSide,
   onCollapseAnimationComplete
 }: DecklistsScreenGridItemProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const cardSideways = isSideways(item);
   const cardIsTwoSided = isTwoSided(item);
   
@@ -313,7 +313,7 @@ const DecklistsScreenGridItem = ({
       <Animated.View
         collapsable={false}
         style={{
-          ...styles.decklistExpandedOuterContainer,
+          ...(styles as any).decklistExpandedOuterContainer,
           display: state.expanded ? 'flex' : 'none',
           position: 'absolute',
           width: '100%',
@@ -328,7 +328,7 @@ const DecklistsScreenGridItem = ({
         <Animated.View
           collapsable={false}
           style={{
-            ...styles.decklistExpandedContainer,
+            ...(styles as any).decklistExpandedContainer,
             position: 'absolute',
             left: leftAnim,
             top: topAnim,

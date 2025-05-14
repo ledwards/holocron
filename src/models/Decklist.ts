@@ -69,10 +69,12 @@ class Decklist {
     this.imageUrl = decklistJSON.archetype.imageUrl;
 
     this.tournament = new Tournament({
+      url: decklistJSON.url || '',
+      slug: decklistJSON.slug || '',
       name: decklistJSON.tournament?.name || '',
       shortName: decklistJSON.tournament?.shortName || '',
       eventName: decklistJSON.tournament?.eventName || '',
-      date: decklistJSON.tournament?.date || '', // TODO: parse dates
+      date: decklistJSON.tournament?.date ? new Date(decklistJSON.tournament.date) : new Date(), // Parse date string to Date object
     });
 
     this.tournamentFormat = decklistJSON.tournament?.format || '';
