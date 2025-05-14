@@ -2,7 +2,7 @@ import {Platform, StatusBar} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import FilterQuerySet from '../models/FilterQuerySet';
 
-const nativeHeaderTopHeight = () => {
+const nativeHeaderTopHeight = (): number => {
   if (Platform.OS === 'android') {
     return 0;
   } else if (DeviceInfo.hasNotch()) {
@@ -12,10 +12,10 @@ const nativeHeaderTopHeight = () => {
   }
 };
 
-const statusBarHeight = () =>
-  Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+const statusBarHeight = (): number =>
+  Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 0);
 
-const nativeFooterHeight = () => {
+const nativeFooterHeight = (): number => {
   if (Platform.OS === 'android') {
     return 0;
   } else if (DeviceInfo.hasNotch()) {
@@ -25,30 +25,30 @@ const nativeFooterHeight = () => {
   }
 };
 
-const searchBarHeight = () => 30;
-const tabBarHeight = () => 44;
+const searchBarHeight = (): number => 30;
+const tabBarHeight = (): number => 44;
 
-const filterQuerySetHeight = (filterQuerySet: FilterQuerySet) =>
+const filterQuerySetHeight = (filterQuerySet: FilterQuerySet): number =>
   45 + 25 * filterQuerySet.length() + (filterQuerySet.length() > 1 ? 35 : 0);
 
-const nativeHeaderHeight = () => statusBarHeight() + nativeHeaderTopHeight();
+const nativeHeaderHeight = (): number => statusBarHeight() + nativeHeaderTopHeight();
 
-const keyboardVerticalOffset = () =>
+const keyboardVerticalOffset = (): number =>
   -1 * (nativeFooterHeight() + tabBarHeight());
 
 const footerHeight = (
   propTabBarHeight: number | undefined,
   filterQuerySet: FilterQuerySet | undefined,
-) =>
+): number =>
   nativeFooterHeight() +
   (propTabBarHeight || tabBarHeight()) +
   searchBarHeight() +
   (filterQuerySet ? filterQuerySetHeight(filterQuerySet) : 70);
 
-const searchBottomPosition = (tabBarHeight: number) =>
+const searchBottomPosition = (tabBarHeight: number): number =>
   nativeFooterHeight() + tabBarHeight + searchBarHeight();
 
-const statusBarBottomPosition = tabBarHeight =>
+const statusBarBottomPosition = (tabBarHeight: number): number =>
   nativeFooterHeight() +
   tabBarHeight +
   searchBarHeight() + // search bar needs this for some reason, half its height is in the position

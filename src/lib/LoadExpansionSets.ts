@@ -1,28 +1,26 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import ExpansionSet from '../models/ExpansionSet';
+import { ExpansionSetJSON } from '../types/interfaces';
 const localExpansionSetsFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
-interface ExpansionSetData {
-  id: string;
-  name: string;
-  abbr: string;
-  gempName: string;
-  legacy?: boolean;
+interface ExpansionSetsResponse {
+  sets: ExpansionSetJSON[];
 }
 
 const loadExpansionSets = (): Promise<ExpansionSet[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localExpansionSetsFilePath}/sets.json`, 'utf8')
     .then((data: string) => {
-      return JSON.parse(data) as ExpansionSetData[];
+      return data ? (JSON.parse(data) as ExpansionSetsResponse).sets : [];
     })
-    .then((results: ExpansionSetData[]) => {
+    .then((results: ExpansionSetJSON[]) => {
       return (results || [])
-        .filter((s: ExpansionSetData) => !s.legacy) // exclude legacy sets
-        .map((s: ExpansionSetData) => new ExpansionSet(s));
+        .filter((s: ExpansionSetJSON) => !s.legacy) // exclude legacy sets
+        .map((s: ExpansionSetJSON) => new ExpansionSet(s));
     })
     .catch(err => {
       console.log(err);
+      return [] as ExpansionSet[];
     });
 };
 

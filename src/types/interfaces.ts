@@ -97,7 +97,7 @@ export interface ExpansionSetJSON {
 export interface DecklistCard {
   id: string;
   quantity: number;
-  card: any; // This will reference the Card class
+  card: unknown; // This will be a Card object but using unknown for type safety
 }
 
 /**
@@ -137,8 +137,37 @@ export type RootStackParamList = {
 /**
  * Result type for filter operations
  */
+/**
+ * Filter parameter interface
+ */
+export interface FilterParams {
+  field: unknown | null; // Field object type
+  comparator: unknown | null; // Comparator object type
+  value: string | null;
+  rawField: string | null;
+  rawComparator: string | null;
+  rawValue: string | null;
+  filter?: unknown; // Filter object type
+  query?: string;
+}
+
+/**
+ * Filter match result interface
+ */
+export interface FilterMatch {
+  field?: unknown; // Field object type
+  comparator?: unknown; // Comparator object type
+  value?: string;
+  rawField?: string;
+  rawComparator?: string;
+  rawValue?: string;
+}
+
+/**
+ * Filter result interface
+ */
 export interface FilterResult {
-  cards: any[]; // This will reference the Card class
+  cards: unknown[]; // Card array
   count: number;
   executionTime?: number;
 }

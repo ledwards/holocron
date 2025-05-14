@@ -14,7 +14,7 @@ import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
 
-const Tab = createBottomTabNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
 interface TabNavigationProps {
   allCards: Card[];
@@ -22,9 +22,16 @@ interface TabNavigationProps {
   allDecklists: Decklist[];
 }
 
-function TabNavigation(props: TabNavigationProps) {
+function TabNavigation(_props: TabNavigationProps) {
   const iconSize = 24;
-  const theme = useContext<Theme>(ThemeContext);
+  const themeContext = useContext(ThemeContext);
+  const theme: Theme = themeContext || {
+    name: 'dark',
+    backgroundColor: '#000000',
+    foregroundColor: '#FFFFFF',
+    dividerColor: '#444444',
+    translucentBackgroundColor: 'rgba(0,0,0,0.5)'
+  };
 
   return (
     <Tab.Navigator

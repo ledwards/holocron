@@ -2,28 +2,55 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import Decklist from '../models/Decklist';
 const localExpansionSetsFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
-interface DecklistData {
-  name: string;
-  player: string;
-  archetype: string;
-  tournament: string;
-  placement: string;
+interface DecklistJSON {
+  slug: string;
+  region?: string;
+  title: string;
+  url: string;
   date: string;
+  side: string;
+  plaintext: string;
   cards: Record<string, number>;
-  id: string;
+  tournament?: {
+    name: string;
+    shortName: string;
+    eventName: string;
+    date: string;
+    format: string;
+    round: string;
+  };
+  archetype: {
+    name: string;
+    shortName: string;
+    aliases: string[];
+    modifiers: string[];
+    imageUrl: string;
+    objective?: string;
+    startingLocation?: string;
+    startingInterrupt?: string;
+  };
+  player: {
+    name: string;
+    aliases: string[];
+  };
+}
+
+interface DecklistsResponse {
+  decklists: DecklistJSON[];
 }
 
 const loadDecklists = (): Promise<Decklist[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localExpansionSetsFilePath}/decklists.json`, 'utf8')
     .then((data: string) => {
-      return data ? JSON.parse(data).decklists as DecklistData[] : [];
+      return data ? (JSON.parse(data) as DecklistsResponse).decklists : [];
     })
-    .then((results: DecklistData[]) => {
-      return (results || []).map((d: DecklistData) => new Decklist(d));
+    .then((results: DecklistJSON[]) => {
+      return (results || []).map((d: DecklistJSON) => new Decklist(d));
     })
     .catch(err => {
       console.log(err);
+      return [];
     });
 };
 

@@ -36,12 +36,12 @@ class Decklist {
     plaintext: string;
     cards: Record<string, number>;
     tournament?: {
-      name: string;
-      shortName: string;
-      eventName: string;
-      date: string;
-      format: string;
-      round: string;
+      name?: string;
+      shortName?: string;
+      eventName?: string;
+      date?: string;
+      format?: string;
+      round?: string;
     };
     archetype: {
       name: string;
@@ -59,7 +59,7 @@ class Decklist {
     };
   }) {
     this.id =
-      decklistJSON.slug + decklistJSON.region ? `-${decklistJSON.region}` : '';
+      decklistJSON.slug + (decklistJSON.region ? `-${decklistJSON.region}` : '');
     this.title = decklistJSON.title;
     this.slug = decklistJSON.slug;
     this.url = decklistJSON.url;
@@ -69,14 +69,14 @@ class Decklist {
     this.imageUrl = decklistJSON.archetype.imageUrl;
 
     this.tournament = new Tournament({
-      name: decklistJSON.tournament?.name,
-      shortName: decklistJSON.tournament?.shortName,
-      eventName: decklistJSON.tournament?.eventName,
-      date: decklistJSON.tournament?.date, // TODO: parse dates
+      name: decklistJSON.tournament?.name || '',
+      shortName: decklistJSON.tournament?.shortName || '',
+      eventName: decklistJSON.tournament?.eventName || '',
+      date: decklistJSON.tournament?.date || '', // TODO: parse dates
     });
 
-    this.tournamentFormat = decklistJSON.tournament?.format;
-    this.tournamentRound = decklistJSON.tournament?.round;
+    this.tournamentFormat = decklistJSON.tournament?.format || '';
+    this.tournamentRound = decklistJSON.tournament?.round || '';
 
     this.archetype = new Archetype({
       name: decklistJSON.archetype.name,
@@ -85,9 +85,9 @@ class Decklist {
       modifiers: decklistJSON.archetype.modifiers,
     });
 
-    this.objective = decklistJSON.archetype?.objective;
-    this.startingLocation = decklistJSON.archetype?.startingLocation;
-    this.startingInterrupt = decklistJSON.archetype?.startingInterrupt;
+    this.objective = decklistJSON.archetype?.objective || '';
+    this.startingLocation = decklistJSON.archetype?.startingLocation || null;
+    this.startingInterrupt = decklistJSON.archetype?.startingInterrupt || null;
 
     this.player = new Player({
       name: decklistJSON.player.name,

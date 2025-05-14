@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useContext} from 'react';
 import {Animated, Easing, Dimensions, Keyboard, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
@@ -9,7 +9,7 @@ import ThemeContext from '../../contexts/ThemeContext';
 import { CardSide } from '../../types/enums';
 import { Theme, ScrollToIndexFunction } from '../../types/interfaces';
 
-interface CardListItemProps {
+export interface CardListItemProps {
   item: {
     sideways: boolean;
     aspectRatio: number;
@@ -26,7 +26,7 @@ interface CardListItemProps {
   index: number;
   scrollToIndex: ScrollToIndexFunction;
   quantity?: number;
-  flatListRef?: any;
+  flatListRef?: Animated.FlatList<any> | undefined;
   theme?: Theme;
 }
 
@@ -53,25 +53,29 @@ const CardListItem = (props: CardListItemProps) => {
     posY: number;
   }
 
-  const [state, setState] = useState<Partial<CardListItemState>>({});
-  const theme = props.theme || useContext<Theme>(ThemeContext);
+  const [state, setState] = useState<CardListItemState>({
+    expanded: false,
+    showingBack: false,
+    screenWidth: windowWidth,
+    heightAnim: new Animated.Value(startingHeight),
+    widthAnim: new Animated.Value(windowWidth * fillPercent),
+    containerHeightAnim: new Animated.Value(startingHeight / 2),
+    labelOpacityAnim: new Animated.Value(1.0),
+    minHeight: startingHeight,
+    maxHeight: windowWidth * props.item.aspectRatio,
+    minWidth: windowWidth * fillPercent,
+    maxWidth: windowWidth,
+    posY: 0,
+  });
 
-  useEffect(() => {
-    setState({
-      expanded: false,
-      showingBack: false,
-      screenWidth: windowWidth,
-      heightAnim: new Animated.Value(startingHeight),
-      widthAnim: new Animated.Value(windowWidth * fillPercent),
-      containerHeightAnim: new Animated.Value(startingHeight / 2),
-      labelOpacityAnim: new Animated.Value(1.0),
-      minHeight: startingHeight,
-      maxHeight: windowWidth * props.item.aspectRatio,
-      minWidth: windowWidth * fillPercent,
-      maxWidth: windowWidth,
-      posY: 0,
-    });
-  }, []);
+  // Use context to get theme if not provided as prop
+  const theme = props.theme || useContext(ThemeContext) || {
+    name: 'dark',
+    backgroundColor: '#000000',
+    foregroundColor: '#FFFFFF',
+    dividerColor: '#444444',
+    translucentBackgroundColor: 'rgba(0,0,0,0.5)'
+  };
 
   const toggleExpanded = (): void => {
     Keyboard.dismiss();
@@ -133,9 +137,8 @@ const CardListItem = (props: CardListItemProps) => {
         height: state.containerHeightAnim,
       }}>
       <ListItem
-        id={props.index}
+        testID={`card-item-${props.index}`}
         style={{marginLeft: -15}}
-        button
         onPress={() => toggleExpanded()}
         containerStyle={{
           ...styles.cardListItemContainer,
@@ -161,7 +164,7 @@ const CardListItem = (props: CardListItemProps) => {
                 ? props.item.displayBackImageUrl
                 : props.item.displayImageUrl,
             }}
-            alpha={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.cover}
             style={{
               ...styles.cardListItemImage,
               ...(!state.expanded
@@ -207,7 +210,7 @@ const CardListItem = (props: CardListItemProps) => {
             }}>
             <BlurView
               style={styles.cardListItemQuantityBlur}
-              blurType={theme.name}
+              blurType={theme.name === 'dark' ? 'dark' : 'light'}
               blurAmount={5}
               reducedTransparencyFallbackColor={
                 theme.translucentBackgroundColor

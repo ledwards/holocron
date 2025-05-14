@@ -1,7 +1,7 @@
-import {useState, useEffect, useContext} from 'react';
-import {View, ActivityIndicator, Text, Animated} from 'react-native';
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import {View, ActivityIndicator, Text, Animated, FlatList} from 'react-native';
 
-import CardListItem from './CardListItem';
+import CardListItem, {CardListItemProps} from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../../presenters/CardPresenter';
 import FilterQuerySet from '../../models/FilterQuerySet';
@@ -11,57 +11,70 @@ import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
-import { SearchMode, Theme, SearchCallback, ScrollToIndexFunction } from '../../types/interfaces';
+import {SearchMode, Theme, SearchCallback, ScrollToIndexFunction} from '../../types/interfaces';
 
+/**
+ * Props for SearchableCardList component
+ */
 interface SearchableCardListProps {
   cards: Card[];
   nativeHeaderHeight?: number;
   nativeFooterHeight?: number;
 }
 
+/**
+ * State for SearchableCardList component
+ */
 interface SearchableCardListState {
   loading: boolean;
   error: null | Error;
   allCards: Card[];
   searchModeIndex: number;
-  flatListRef: any;
   nativeHeaderHeight?: number;
   nativeFooterHeight?: number;
 }
 
-const SearchableCardList = (props: SearchableCardListProps) => {
+/**
+ * Component for displaying a searchable list of cards
+ */
+const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
+  // State variables
   const [query, setQuery] = useState<string>('');
   const [data, setData] = useState<Card[]>([]);
-  const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet | undefined>();
+  const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet>(new FilterQuerySet(''));
   const [state, setState] = useState<SearchableCardListState>({
     loading: false,
     error: null,
     allCards: props.cards,
     searchModeIndex: 0,
-    flatListRef: null,
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
   
-  const scrollToIndex: ScrollToIndexFunction = (index: number) => {
-    if (state.flatListRef) {
-      state.flatListRef.scrollToIndex({
-        animated: true,
-        index: index,
-        viewOffset: layout.nativeHeaderHeight(),
-      });
-    }
+  // FlatList reference for scrolling
+  const flatListRef = useRef<FlatList<Card>>(null);
+  
+  // Get theme from context or provide default
+  const themeContext = useContext(ThemeContext);
+  const theme: Theme = themeContext || {
+    name: 'dark',
+    backgroundColor: '#000000',
+    foregroundColor: '#FFFFFF',
+    dividerColor: '#444444',
+    translucentBackgroundColor: 'rgba(0,0,0,0.5)'
   };
-  const theme = useContext<Theme>(ThemeContext);
-  const allCards = useContext<Card[]>(AllCardsContext);
+  
+  // Get cards from context or use empty array
+  const allCardsContext = useContext(AllCardsContext);
+  const allCards: Card[] = allCardsContext || [];
 
+  // Initialize state on component mount
   useEffect(() => {
     setState({
       ...state,
       loading: false,
       error: null,
       searchModeIndex: 0,
-      flatListRef: null,
       nativeHeaderHeight: props.nativeHeaderHeight,
       nativeFooterHeight: props.nativeFooterHeight,
     });
@@ -70,11 +83,10 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     setFilterQuerySet(new FilterQuerySet(''));
   }, []);
 
-  // Using SearchMode interface imported from ../../types/interfaces
-
+  // Define search modes
   const searchModes: Record<number, SearchMode> = {
     0: {
-      index: 0, // existence of this is proof that this should be a class
+      index: 0,
       label: 'title',
       icon: 'search-outline',
       title: 'Search cards by title',
@@ -90,31 +102,16 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     },
   };
 
+  /**
+   * Get the current search mode
+   */
   const currentSearchMode = (): SearchMode => {
     return searchModes[state.searchModeIndex] || searchModes[0];
   };
 
-  const debug = (filterQuerySet: FilterQuerySet): void => {
-    console.log('====');
-    console.log('text entry: ', text);
-    console.log('====');
-    filterQuerySet.filterQueries.forEach(filterQuery => {
-      console.log('field: ', filterQuery.field?.name);
-      console.log('rawField', filterQuery.rawField);
-      console.log('validField: ', filterQuery.validField());
-      console.log('comparator: ', filterQuery.comparator?.name);
-      console.log('rawComparator: ', filterQuery.rawComparator);
-      console.log('validComparator: ', filterQuery.validComparator());
-      console.log('value: ', filterQuery.value);
-      console.log('rawValue: ', filterQuery.rawValue);
-      console.log('validValue: ', filterQuery.validValue());
-      console.log('filter: ', typeof filterQuery.filter);
-      console.log('valid?: ', filterQuery.valid());
-      console.log('\n');
-    });
-    console.log('\n');
-  };
-
+  /**
+   * Route search to the appropriate function based on search mode
+   */
   const searchRouter: SearchCallback = (text: string): void => {
     text = text.toLowerCase();
 
@@ -130,24 +127,28 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     }
   };
 
+  /**
+   * Process a natural language query filter
+   */
   const queryFilterFunction = (text: string): boolean => {
-    const filterQuerySet = new FilterQuerySet(text);
+    const newFilterQuerySet = new FilterQuerySet(text);
 
     setQuery(text);
-    setFilterQuerySet(filterQuerySet);
+    setFilterQuerySet(newFilterQuerySet);
 
-    // debug(filterQuerySet); // Uncomment to help debug insane queries
-
-    if (filterQuerySet.valid()) {
-      const newData = filterQuerySet.execute(allCards);
+    if (newFilterQuerySet.valid()) {
+      const newData = newFilterQuerySet.execute(allCards);
       setData(newData);
     } else {
       setData([]);
     }
 
-    return filterQuerySet.valid();
+    return newFilterQuerySet.valid();
   };
 
+  /**
+   * Process a simple title search filter
+   */
   const searchFilterFunction = (text: string): void => {
     const newData = allCards.filter(card => {
       const textData = text;
@@ -155,7 +156,7 @@ const SearchableCardList = (props: SearchableCardListProps) => {
         .toLowerCase()
         .trim();
 
-      // Allow for unorderd word matches
+      // Allow for unordered word matches
       const textDataList = textData.split(' ');
       const matches = textDataList.filter(
         (w: string) => itemData.indexOf(w) > -1,
@@ -167,8 +168,11 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     setData(newData);
   };
 
+  /**
+   * Toggle between search modes
+   */
   const toggleSearchMode = (): void => {
-    setQuery(null);
+    setQuery('');
     searchRouter('');
     setState({
       ...state,
@@ -176,6 +180,9 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     });
   };
 
+  /**
+   * Component to display when the list is empty and no search is performed
+   */
   const EmptyListComponent = (): JSX.Element => {
     return (
       <View
@@ -201,18 +208,26 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     );
   };
 
+  /**
+   * Component to display when a search returns no results
+   */
   const NoResultsListComponent = (): JSX.Element => (
     <View style={styles.listEmptyContainer}>
       <Text
         style={{
           color: theme.foregroundColor,
-          ...styles.emptyListText,
+          fontSize: 16,
+          textAlign: 'center',
+          padding: 20
         }}>
         No results found
       </Text>
     </View>
   );
 
+  /**
+   * Separator component for list items
+   */
   const SeparatorComponent = (): JSX.Element => {
     return (
       <View
@@ -224,6 +239,36 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     );
   };
 
+  /**
+   * Scroll to a specific index in the list
+   */
+  const scrollToIndex: ScrollToIndexFunction = (index: number): void => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        animated: true,
+        index: index,
+        viewOffset: layout.nativeHeaderHeight(),
+      });
+    }
+  };
+
+  /**
+   * Render card item for the FlatList
+   */
+  const renderItem = ({item, index}: {item: Card; index: number}) => {
+    return (
+      <CardListItem
+        theme={theme}
+        item={new CardPresenter(item)}
+        index={index}
+        scrollToIndex={scrollToIndex}
+      />
+    );
+  };
+
+  /**
+   * Loading indicator
+   */
   if (state.loading) {
     return (
       <View style={styles.loading}>
@@ -235,23 +280,11 @@ const SearchableCardList = (props: SearchableCardListProps) => {
   return (
     <>
       <Animated.FlatList
-        ref={ref => {
-          state.flatListRef = ref;
-        }}
+        ref={flatListRef}
         contentContainerStyle={styles.flatListContentContainer}
         data={query ? data : []}
-        renderItem={({item, index}) => (
-          <CardListItem
-                theme={theme}
-                item={new CardPresenter(item)}
-                index={index}
-                flatListRef={state.flatListRef}
-                scrollToIndex={scrollToIndex}
-          />
-        )}
-        ListEmptyComponent={() =>
-          query ? NoResultsListComponent() : EmptyListComponent()
-        }
+        renderItem={renderItem}
+        ListEmptyComponent={query ? NoResultsListComponent : EmptyListComponent}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
           backgroundColor: theme.backgroundColor,

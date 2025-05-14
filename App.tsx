@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, useColorScheme, Appearance, StatusBar, ColorSchemeName} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
-import {NavigationContainer, DefaultTheme, Theme} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme, Theme as NavigationTheme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 import Card from './src/models/Card';
 import ExpansionSet from './src/models/ExpansionSet';
@@ -24,6 +24,7 @@ import ThemeContext from './src/contexts/ThemeContext';
 import AllCardsContext from './src/contexts/AllCardsContext';
 import AllDecklistsContext from './src/contexts/AllDecklistsContext';
 import AllExpansionsContext from './src/contexts/AllExpansionsContext';
+import { Theme } from './src/types/interfaces';
 
 const App = () => {
   const initialTheme = useColorScheme();
@@ -37,23 +38,23 @@ const App = () => {
   const [expansionSets, setExpansionSets] = useState<ExpansionSet[]>([]);
   const [allDecklists, setAllDecklists] = useState<Decklist[]>([]);
   const [internetConnection, setInternetConnection] = useState<boolean>(false);
-  const [theme, setTheme] = useState(
-    initialTheme === 'light' ? themeLight : themeDark,
+  const [theme, setTheme] = useState<Theme>(
+    initialTheme === 'light' ? themeLight as Theme : themeDark as Theme,
   );
 
   useEffect(() => {
-    setTheme(initialTheme === 'light' ? themeLight : themeDark);
+    setTheme(initialTheme === 'light' ? themeLight as Theme : themeDark as Theme);
 
     Appearance.addChangeListener(({colorScheme}: {colorScheme: ColorSchemeName}) => {
-      setTheme(colorScheme === 'light' ? themeLight : themeDark);
+      setTheme(colorScheme === 'light' ? themeLight as Theme : themeDark as Theme);
     });
 
     NetInfo.fetch().then(state => {
-      setInternetConnection(state.isConnected);
+      setInternetConnection(state.isConnected || false);
     });
 
     NetInfo.addEventListener(state => {
-      setInternetConnection(state.isConnected);
+      setInternetConnection(state.isConnected || false);
     });
   }, []);
 
@@ -108,7 +109,7 @@ const App = () => {
     isDecklistsDownloadReady,
   ]);
 
-  const NavigationContainerTheme: Theme = {
+  const NavigationContainerTheme: NavigationTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
@@ -126,7 +127,7 @@ const App = () => {
                 style={{
                   flex: 1,
                 }}>
-                <StatusBar barStyle={theme.statusBarStyle} />
+                <StatusBar barStyle={theme.statusBarStyle as 'light-content' | 'dark-content' | 'default'} />
                 <NavigationContainer theme={NavigationContainerTheme}>
                   <View
                     style={{
@@ -146,7 +147,7 @@ const App = () => {
                     width: '100%',
                     height: layout.nativeHeaderHeight(),
                   }}
-                  blurType={theme.name}
+                  blurType={theme.name === 'dark' ? 'dark' : 'light'}
                   blurAmount={10}
                   reducedTransparencyFallbackColor={
                     theme.translucentBackgroundColor

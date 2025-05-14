@@ -3,16 +3,13 @@ import SearchableCardList from './SearchableCardList';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import Card from '../../models/Card';
 
-interface CardsScreenProps {
-  // No specific props needed currently, but defining the interface for future use
-}
-
-const CardsScreen = (props: CardsScreenProps) => {
-  const allCards = useContext<Card[]>(AllCardsContext);
+const CardsScreen = () => {
+  const allCardsContext = useContext(AllCardsContext);
+  const allCards: Card[] = allCardsContext || [];
 
   return (
     <>
-      {allCards && allCards.length > 0 && (
+      {allCards.length > 0 && (
         <SearchableCardList cards={allCards} />
       )}
     </>

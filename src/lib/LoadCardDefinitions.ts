@@ -51,14 +51,19 @@ interface CardData {
   counterpart?: string;
 }
 
+interface CardResponse {
+  cards: CardData[];
+}
+
 const readCardFilePromise = (side: string): Promise<CardData[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localCardFilePath}/${side}.json`, 'utf8')
     .then(data => {
-      return data ? JSON.parse(data).cards : [];
+      return data ? (JSON.parse(data) as CardResponse).cards : [];
     })
     .catch(err => {
       console.log(err);
+      return [] as CardData[];
     });
 };
 
@@ -70,26 +75,34 @@ const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => 
     .then(results => {
       return (results || [])
         .map(r => {
-          return (r.value as CardData[])
-            .map((c: CardData) => {
-              const expansionSet = expansionSets.find((s: ExpansionSet) => s.id === c.set);
-              const card = new Card(c, expansionSet);
-              return card;
-            })
-            .filter((c: Card) => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
-            .filter((c: Card) => c.type != 'Game Aid')
-            .sort((a: Card, b: Card) =>
-              a.sortTitle > b.sortTitle
-                ? 1
-                : b.sortTitle > a.sortTitle
-                ? -1
-                : 0,
-            );
+          if (r.status === 'fulfilled' && r.value) {
+            return (r.value as CardData[])
+              .map((c: CardData) => {
+                const expansionSet = expansionSets.find((s: ExpansionSet) => s.id === c.set);
+                if (!expansionSet) {
+                  return null;
+                }
+                const card = new Card(c, expansionSet);
+                return card;
+              })
+              .filter((c): c is Card => c !== null)
+              .filter((c: Card) => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
+              .filter((c: Card) => c.type !== 'Game Aid')
+              .sort((a: Card, b: Card) =>
+                a.sortTitle > b.sortTitle
+                  ? 1
+                  : b.sortTitle > a.sortTitle
+                  ? -1
+                  : 0,
+              );
+          }
+          return [];
         })
         .flat();
     })
     .catch(err => {
       console.log(err);
+      return [] as Card[];
     });
 };
 
