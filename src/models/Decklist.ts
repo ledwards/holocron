@@ -1,6 +1,7 @@
 import Tournament from './Tournament';
 import Archetype from './Archetype';
 import Player from './Player';
+import { DecklistCard } from '../types/interfaces';
 
 // TODO: searchData() should be an attribute to avoid:
 //  WARN  Non-serializable values were found in the navigation state. Check:
@@ -14,7 +15,7 @@ class Decklist {
   date: string; // TODO: Date
   side: string;
   plaintext: string;
-  cards: Record<string, number>; // TODO: DecklistCard[] or pass in allCards and make these Card objects
+  cards: Record<string, number>; // Will be refactored to use DecklistCard[] in future
   tournament: Tournament;
   tournamentFormat: string;
   tournamentRound: string;

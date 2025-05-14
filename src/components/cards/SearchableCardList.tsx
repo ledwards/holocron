@@ -11,7 +11,7 @@ import styles from '../../styles/SearchableCardListStyles';
 import layout from '../../constants/layout';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
-import { SearchMode, Theme } from '../../types/interfaces';
+import { SearchMode, Theme, SearchCallback, ScrollToIndexFunction } from '../../types/interfaces';
 
 interface SearchableCardListProps {
   cards: Card[];
@@ -42,6 +42,16 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     nativeHeaderHeight: props.nativeHeaderHeight,
     nativeFooterHeight: props.nativeFooterHeight,
   });
+  
+  const scrollToIndex: ScrollToIndexFunction = (index: number) => {
+    if (state.flatListRef) {
+      state.flatListRef.scrollToIndex({
+        animated: true,
+        index: index,
+        viewOffset: layout.nativeHeaderHeight(),
+      });
+    }
+  };
   const theme = useContext<Theme>(ThemeContext);
   const allCards = useContext<Card[]>(AllCardsContext);
 
@@ -105,7 +115,7 @@ const SearchableCardList = (props: SearchableCardListProps) => {
     console.log('\n');
   };
 
-  const searchRouter = (text: string): void => {
+  const searchRouter: SearchCallback = (text: string): void => {
     text = text.toLowerCase();
 
     setQuery(text);
@@ -236,14 +246,7 @@ const SearchableCardList = (props: SearchableCardListProps) => {
                 item={new CardPresenter(item)}
                 index={index}
                 flatListRef={state.flatListRef}
-                scrollToIndex={(i: number) =>
-              state.flatListRef.scrollToIndex({
-                animated: true,
-                index: i,
-                // viewPosition: 0.5,
-                viewOffset: layout.nativeHeaderHeight(),
-              })
-            }
+                scrollToIndex={scrollToIndex}
           />
         )}
         ListEmptyComponent={() =>

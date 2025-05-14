@@ -5,6 +5,7 @@ import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 import {ALL_COMPARATORS} from '../constants/comparators';
 import AliasResolver from './AliasResolver';
+import { FilterParams, FilterMatch, FilterResult } from '../types/interfaces';
 
 class FilterQuery {
   query: string;
@@ -29,22 +30,14 @@ class FilterQuery {
       this.rawField = obj?.rawField;
       this.rawComparator = obj?.rawComparator;
 
-      if (this.value) {
+      if (this.field && this.comparator && this.value) {
         this.filter = new Filter(this.field, this.comparator, this.value);
       }
     }
   }
 
-  parseQuery(): {
-    field: Field | null;
-    comparator: Comparator | null;
-    value: string | null;
-    rawField: string | null;
-    rawComparator: string | null;
-    rawValue: string | null;
-    filter?: Filter;
-  } {
-    let params = {
+  parseQuery(): FilterParams {
+    let params: FilterParams = {
       field: null,
       comparator: null,
       value: null,
@@ -77,21 +70,14 @@ class FilterQuery {
       // console.log('<whole query>: ', params);
     }
 
-    if (params.value) {
-      params.filter = new Filter(this.field, this.comparator, this.value);
+    if (params.field && params.comparator && params.value) {
+      params.filter = new Filter(params.field, params.comparator, params.value);
     }
 
     return params;
   }
 
-  parseThreePartQuery(): {
-    field?: Field;
-    comparator?: Comparator;
-    value?: string;
-    rawField?: string;
-    rawComparator?: string;
-    rawValue?: string;
-  } | undefined {
+  parseThreePartQuery(): FilterMatch | undefined {
     let allMatches = [];
     // should this include =, <, >, <=, >=, etc.?
     const validSeparators = ['\\s+', '$'].concat(
@@ -158,14 +144,7 @@ class FilterQuery {
     return bestMatch;
   }
 
-  parseValidComparatorInvalidField(): {
-    field: null;
-    comparator: Comparator;
-    value: string;
-    rawValue: string;
-    rawField: string;
-    rawComparator: string;
-  } | undefined {
+  parseValidComparatorInvalidField(): FilterMatch | undefined {
     let allMatches = [];
 
     // invalid field, valid comparator
@@ -201,14 +180,7 @@ class FilterQuery {
     return allMatches[0]; // sketchy! What's the actual best way to know?
   }
 
-  parseDefaultComparator(): {
-    field: Field;
-    comparator: Comparator;
-    value: string;
-    rawValue: string;
-    rawField: string;
-    rawComparator: string;
-  } | undefined {
+  parseDefaultComparator(): FilterMatch | undefined {
     let allMatches = [];
 
     // default comparator check, e.g. power 6, matches luke, pulls cantina
@@ -288,7 +260,7 @@ class FilterQuery {
     const aliasResolver = new AliasResolver(cards);
     const aliasResolvedValue = aliasResolver.resolve(this.value);
 
-    if (aliasResolvedValue) {
+    if (aliasResolvedValue && this.filter) {
       this.value = aliasResolvedValue;
       this.filter.value = aliasResolvedValue;
     }
@@ -297,7 +269,8 @@ class FilterQuery {
       return [];
     }
 
-    return this.filter.execute(cards);
+    const result = this.filter.execute(cards);
+    return result.cards;
   }
 
   length(cards: Card[]): number {

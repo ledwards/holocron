@@ -50,7 +50,7 @@ export interface CardJSON {
 }
 
 /**
- * Interface for theme styling properties used throughout the application
+ * Interface for theme styling properties
  */
 export interface Theme {
   name: string;
@@ -92,94 +92,22 @@ export interface ExpansionSetJSON {
 }
 
 /**
- * Interface representing a card in a decklist with quantity
+ * Interface for a card in a decklist with quantity information
  */
 export interface DecklistCard {
   id: string;
   quantity: number;
+  card: any; // This will reference the Card class
 }
 
 /**
- * Interface for Decklist JSON data
+ * Type definitions for callback functions
  */
-export interface DecklistJSON {
-  slug: string;
-  region?: string;
-  title: string;
-  url: string;
-  date: string;
-  side: string;
-  plaintext: string;
-  cards: Record<string, number>;
-  tournament?: {
-    name: string;
-    shortName: string;
-    eventName: string;
-    date: string;
-    format?: string;
-    round?: string;
-  };
-  archetype: {
-    name: string;
-    shortName: string;
-    aliases: string[];
-    modifiers: string[];
-    imageUrl: string;
-    objective?: string;
-    startingLocation?: string;
-    startingInterrupt?: string;
-  };
-  player: {
-    name: string;
-    aliases: string[];
-  };
-}
+export type SearchCallback = (query: string) => void;
+export type ScrollToIndexFunction = (index: number) => void;
 
 /**
- * Interface for filter query parameters
- */
-export interface FilterParams {
-  field: any | null;
-  comparator: any | null;
-  value: string | null;
-  rawField: string | null;
-  rawComparator: string | null;
-  rawValue: string | null;
-  filter?: any;
-}
-
-/**
- * Interface for filter query matches
- */
-export interface FilterMatch {
-  field?: any;
-  comparator?: any;
-  value?: string;
-  rawField?: string;
-  rawComparator?: string;
-  rawValue?: string;
-}
-
-/**
- * Interface for filter results including metadata
- */
-export interface FilterResult {
-  cards: any[]; // Using any[] instead of Card[] to avoid circular references
-  count: number;
-  executionTime?: number;
-}
-
-/**
- * Navigation type for type-safe navigation between screens
- */
-export type RootStackParamList = {
-  Cards: undefined;
-  Decklists: undefined;
-  DecklistDetail: { decklistId: string };
-};
-
-/**
- * Generic interface for API responses
+ * Generic API response interfaces
  */
 export interface ApiResponse<T> {
   success: boolean;
@@ -187,33 +115,30 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-/**
- * Interface for card data responses from the API
- */
 export interface CardsResponse {
   cards: CardJSON[];
 }
 
-/**
- * Interface for expansion sets responses from the API
- */
 export interface ExpansionSetsResponse {
   sets: ExpansionSetJSON[];
 }
 
 /**
- * Interface for decklists responses from the API
+ * Navigation parameter types for React Navigation
  */
-export interface DecklistsResponse {
-  decklists: DecklistJSON[];
+export type RootStackParamList = {
+  Cards: undefined;
+  Decklists: undefined;
+  DecklistDetail: { decklistId: string };
+  Settings: undefined;
+  CardDetail: { cardId: string };
+};
+
+/**
+ * Result type for filter operations
+ */
+export interface FilterResult {
+  cards: any[]; // This will reference the Card class
+  count: number;
+  executionTime?: number;
 }
-
-/**
- * Type definition for search callback functions
- */
-export type SearchCallback = (query: string) => void;
-
-/**
- * Type definition for scroll to index functions
- */
-export type ScrollToIndexFunction = (index: number) => void;

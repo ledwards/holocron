@@ -11,7 +11,7 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 import styles from '../../styles/CardSearchFooterStyles';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import { SearchMode, Theme } from '../../types/interfaces';
+import { SearchMode, Theme, SearchCallback } from '../../types/interfaces';
 
 // Using SearchMode from ../../types/interfaces
 
@@ -23,7 +23,7 @@ type CardSearchFooterProps = {
   searchMode: SearchMode;
   allCards: Card[];
   data: Card[];
-  searchCallback: (query: string) => void;
+  searchCallback: SearchCallback;
   toggleSearchMode: () => void;
 };
 
