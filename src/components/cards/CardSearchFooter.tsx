@@ -11,14 +11,9 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 import styles from '../../styles/CardSearchFooterStyles';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
+import { SearchMode, Theme } from '../../types/interfaces';
 
-interface SearchMode {
-  index: number;
-  label: string;
-  icon: string;
-  title: string;
-  description: string;
-}
+// Using SearchMode from ../../types/interfaces
 
 type CardSearchFooterProps = {
   query: string;
@@ -34,7 +29,7 @@ type CardSearchFooterProps = {
 
 // TODO: Try putting ThemeContext.Consumer here too
 
-const modeCoachTipComponent = (theme: any, searchMode: SearchMode) => (
+const modeCoachTipComponent = (theme: Theme, searchMode: SearchMode) => (
   <View style={styles.modeCoachTip}>
     <Text
       style={{
@@ -59,7 +54,7 @@ const modeCoachTipComponent = (theme: any, searchMode: SearchMode) => (
 );
 
 const CardSearchFooter = (props: CardSearchFooterProps) => {
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
 
   return (
     <BottomTabBarHeightContext.Consumer>

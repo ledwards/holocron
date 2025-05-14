@@ -10,6 +10,7 @@ import DecklistsScreenTextView from './DecklistsScreenTextView';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import ThemeContext from '../../contexts/ThemeContext';
+import {Theme} from '../../types/interfaces';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -17,11 +18,22 @@ LogBox.ignoreLogs([
 
 const Stack = createStackNavigator();
 
-const DecklistsScreen = props => {
-  const [displayMode, setDisplayMode] = useState(0);
-  const theme = useContext(ThemeContext);
+interface DisplayMode {
+  index: number;
+  label: string;
+  icon: string;
+  view: React.ComponentType<any>;
+}
 
-  const displayModes = {
+interface DecklistsScreenProps {
+  // No specific props needed currently, but defining the interface for future use
+}
+
+const DecklistsScreen = (props: DecklistsScreenProps) => {
+  const [displayMode, setDisplayMode] = useState<number>(0);
+  const theme = useContext<Theme>(ThemeContext);
+
+  const displayModes: Record<number, DisplayMode> = {
     0: {
       index: 0,
       label: 'grid',
@@ -42,12 +54,12 @@ const DecklistsScreen = props => {
     },
   };
 
-  const toggleDisplayMode = () => {
+  const toggleDisplayMode = (): void => {
     setDisplayMode((displayMode + 1) % 3);
   };
 
-  const currentDisplayMode = () => displayModes[displayMode];
-  const nextDisplayMode = () => displayModes[(displayMode + 1) % 3];
+  const currentDisplayMode = (): DisplayMode => displayModes[displayMode];
+  const nextDisplayMode = (): DisplayMode => displayModes[(displayMode + 1) % 3];
 
   return (
     <>

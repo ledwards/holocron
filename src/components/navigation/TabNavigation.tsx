@@ -9,6 +9,7 @@ import DecklistsScreen from '../decklists/DecklistsScreen';
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
+import { Theme } from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
@@ -23,7 +24,7 @@ interface TabNavigationProps {
 
 function TabNavigation(props: TabNavigationProps) {
   const iconSize = 24;
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
 
   return (
     <Tab.Navigator

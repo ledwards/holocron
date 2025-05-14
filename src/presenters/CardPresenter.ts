@@ -1,4 +1,5 @@
 import Card from '../models/Card';
+import { CardSide } from '../types/enums';
 
 const DOUBLE_SIDED_CARD_IDS = ['200_16', '204_35', '10_42', '205_14'];
 const OTHER_SIDEWAYS_CARD_IDS = ['4_167', '9_157', '13_75', '204_54'];
@@ -9,7 +10,7 @@ class CardPresenter {
   title: string;
   type: string;
   subtype: string;
-  side: string;
+  side: CardSide;
   imageUrl: string;
   backImageUrl: string;
   rarity: string;
@@ -41,7 +42,6 @@ class CardPresenter {
     this.imageUrl = card.imageUrl;
     this.backImageUrl = card.backImageUrl;
     this.rarity = card.rarity;
-    this.side = card.side;
     this.uniqueness = card.uniqueness;
 
     this.displayExpansionSet = card.expansionSet.name

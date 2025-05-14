@@ -1,5 +1,6 @@
 import ExpansionSet from './ExpansionSet';
-import { CardSide } from '../types/enums';
+import { CardSide, CardUniqueness } from '../types/enums';
+import { CardJSON } from '../types/interfaces';
 
 class Card {
   id: string;
@@ -34,7 +35,7 @@ class Card {
   characteristics: string[];
   icons: string[];
   rarity: string;
-  uniqueness: string;
+  uniqueness: CardUniqueness;
   set: string;
 
   identities: string[];
@@ -51,53 +52,7 @@ class Card {
   sortTitle: string;
   sortAbbr: string[];
 
-  constructor(cardJSON: {
-    gempId: string;
-    front: {
-      title: string;
-      type: string;
-      subType: string;
-      ability?: number;
-      armor?: number;
-      darkSideIcons?: number;
-      deploy?: number;
-      destiny?: number;
-      ferocity?: string;
-      forfeit?: number;
-      hyperspeed?: number;
-      landspeed?: number;
-      lightSideIcons?: number;
-      maneuver?: number;
-      parsec?: number;
-      politics?: number;
-      power?: number;
-      characteristics: string[];
-      icons: string[];
-      gametext?: string;
-      lore?: string;
-      imageUrl: string;
-      extraText?: string[];
-      uniqueness?: string;
-    };
-    side: string;
-    set: string;
-    rarity: string;
-    abbr?: string[];
-    back?: {
-      imageUrl?: string;
-      gametext?: string;
-      extratext?: string;
-      extraText?: string[];
-    };
-    cancels?: string[];
-    canceledBy?: string[];
-    matching?: string[];
-    matchingWeapon?: string[];
-    pulledBy?: string[];
-    pulls?: string[];
-    underlyingCardFor?: string;
-    counterpart?: string;
-  }, expansionSetJSON: {
+  constructor(cardJSON: CardJSON, expansionSetJSON: {
     id: string;
     name: string;
     abbr: string;
@@ -140,7 +95,7 @@ class Card {
     this.rarity = parseInt(cardJSON.set) < 200 ? cardJSON.rarity : 'V'; // use "V" as the rarity for all virtual cards
     this.side = cardJSON.side as CardSide;
     this.subtype = cardJSON.front.subType;
-    this.uniqueness = cardJSON.front.uniqueness || 'none'; // TODO: This should be some kind of enum?
+    this.uniqueness = (cardJSON.front.uniqueness || 'none') as CardUniqueness;
     this.abbr = cardJSON.abbr;
     this.identities = [
       cardJSON.front.characteristics,

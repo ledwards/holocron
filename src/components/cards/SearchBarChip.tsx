@@ -2,6 +2,7 @@ import {useContext} from 'react';
 import {Chip} from 'react-native-elements';
 import styles from '../../styles/SearchBarChipStyles';
 import ThemeContext from '../../contexts/ThemeContext';
+import { Theme } from '../../types/interfaces';
 
 type SearchBarChipProps = {
   title: string;
@@ -9,7 +10,7 @@ type SearchBarChipProps = {
 };
 
 const SearchBarChip = (props: SearchBarChipProps) => {
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme>(ThemeContext);
 
   return (
     <Chip

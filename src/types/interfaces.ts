@@ -1,63 +1,44 @@
-import { CardSide, CardRarity, CardUniqueness, CardType } from './enums';
-import Card from '../models/Card';
-import Field from '../models/Field';
-import Comparator from '../models/Comparator';
-import Filter from '../models/Filter';
-
-// Theme interfaces
-export interface Theme {
-  name: string;
-  backgroundColor: string;
-  foregroundColor: string;
-  dividerColor: string;
-  translucentBackgroundColor: string;
-  secondaryBackgroundColor: string;
-  iconColor: string;
-  statusBarStyle: 'default' | 'light-content' | 'dark-content';
-  chipYesBackgroundColor: string;
-  chipNoBackgroundColor: string;
-  chipYesBorderColor: string;
-  chipNoBorderColor: string;
-  chipYesTextColor: string;
-  chipNoTextColor: string;
-}
-
-// Card JSON interfaces
-export interface CardFrontJSON {
-  title: string;
-  type: string;
-  subType: string;
-  ability?: number;
-  armor?: number;
-  darkSideIcons?: number;
-  deploy?: number;
-  destiny?: number;
-  ferocity?: string;
-  forfeit?: number;
-  hyperspeed?: number;
-  landspeed?: number;
-  lightSideIcons?: number;
-  maneuver?: number;
-  parsec?: number;
-  politics?: number;
-  power?: number;
-  characteristics: string[];
-  icons: string[];
-  gametext?: string;
-  lore?: string;
-  imageUrl: string;
-  extraText?: string[];
-  uniqueness?: string;
-}
-
+/**
+ * Interface for JSON data representing a card
+ */
 export interface CardJSON {
   gempId: string;
-  front: CardFrontJSON;
-  back?: CardFrontJSON;
-  side: CardSide;
+  front: {
+    title: string;
+    type: string;
+    subType: string;
+    ability?: number;
+    armor?: number;
+    darkSideIcons?: number;
+    deploy?: number;
+    destiny?: number;
+    ferocity?: string;
+    forfeit?: number;
+    hyperspeed?: number;
+    landspeed?: number;
+    lightSideIcons?: number;
+    maneuver?: number;
+    parsec?: number;
+    politics?: number;
+    power?: number;
+    characteristics: string[];
+    icons: string[];
+    gametext?: string;
+    lore?: string;
+    imageUrl: string;
+    extraText?: string[];
+    uniqueness?: string;
+  };
+  side: string;
   set: string;
   rarity: string;
   abbr?: string[];
+  back?: {
+    imageUrl?: string;
+    gametext?: string;
+    extratext?: string;
+    extraText?: string[];
+  };
   cancels?: string[];
   canceledBy?: string[];
   matching?: string[];
@@ -68,7 +49,40 @@ export interface CardJSON {
   counterpart?: string;
 }
 
-// Expansion Set JSON interfaces
+/**
+ * Interface for theme styling properties used throughout the application
+ */
+export interface Theme {
+  name: string;
+  backgroundColor: string;
+  foregroundColor: string;
+  dividerColor: string;
+  translucentBackgroundColor: string;
+  secondaryBackgroundColor?: string;
+  iconColor?: string;
+  statusBarStyle?: 'default' | 'light-content' | 'dark-content';
+  chipYesBackgroundColor?: string;
+  chipNoBackgroundColor?: string;
+  chipYesBorderColor?: string;
+  chipNoBorderColor?: string;
+  chipYesTextColor?: string;
+  chipNoTextColor?: string;
+}
+
+/**
+ * Interface for Search Mode configuration
+ */
+export interface SearchMode {
+  index: number;
+  label: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+/**
+ * Interface for expansion set data
+ */
 export interface ExpansionSetJSON {
   id: string;
   name: string;
@@ -77,37 +91,17 @@ export interface ExpansionSetJSON {
   legacy?: boolean;
 }
 
-// Decklist interfaces
+/**
+ * Interface representing a card in a decklist with quantity
+ */
 export interface DecklistCard {
   id: string;
   quantity: number;
 }
 
-export interface TournamentJSON {
-  name: string;
-  shortName: string;
-  eventName: string;
-  date: string;
-  format?: string;
-  round?: string;
-}
-
-export interface ArchetypeJSON {
-  name: string;
-  shortName: string;
-  aliases: string[];
-  modifiers: string[];
-  imageUrl: string;
-  objective?: string;
-  startingLocation?: string;
-  startingInterrupt?: string;
-}
-
-export interface PlayerJSON {
-  name: string;
-  aliases: string[];
-}
-
+/**
+ * Interface for Decklist JSON data
+ */
 export interface DecklistJSON {
   slug: string;
   region?: string;
@@ -117,72 +111,109 @@ export interface DecklistJSON {
   side: string;
   plaintext: string;
   cards: Record<string, number>;
-  tournament?: TournamentJSON;
-  archetype: ArchetypeJSON;
-  player: PlayerJSON;
+  tournament?: {
+    name: string;
+    shortName: string;
+    eventName: string;
+    date: string;
+    format?: string;
+    round?: string;
+  };
+  archetype: {
+    name: string;
+    shortName: string;
+    aliases: string[];
+    modifiers: string[];
+    imageUrl: string;
+    objective?: string;
+    startingLocation?: string;
+    startingInterrupt?: string;
+  };
+  player: {
+    name: string;
+    aliases: string[];
+  };
 }
 
-// Search interfaces
-export interface SearchMode {
-  index: number;
-  label: string;
-  icon: string;
-  title: string;
-  description: string;
-}
-
-// Filter interfaces
+/**
+ * Interface for filter query parameters
+ */
 export interface FilterParams {
-  field: Field | null;
-  comparator: Comparator | null;
+  field: any | null;
+  comparator: any | null;
   value: string | null;
   rawField: string | null;
   rawComparator: string | null;
   rawValue: string | null;
-  filter?: Filter;
+  filter?: any;
 }
 
+/**
+ * Interface for filter query matches
+ */
 export interface FilterMatch {
-  field?: Field;
-  comparator?: Comparator;
+  field?: any;
+  comparator?: any;
   value?: string;
   rawField?: string;
   rawComparator?: string;
   rawValue?: string;
 }
 
+/**
+ * Interface for filter results including metadata
+ */
 export interface FilterResult {
-  cards: Card[];
+  cards: any[]; // Using any[] instead of Card[] to avoid circular references
   count: number;
   executionTime?: number;
 }
 
-// Navigation interfaces
+/**
+ * Navigation type for type-safe navigation between screens
+ */
 export type RootStackParamList = {
   Cards: undefined;
   Decklists: undefined;
   DecklistDetail: { decklistId: string };
 };
 
-// API response interfaces
+/**
+ * Generic interface for API responses
+ */
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
+/**
+ * Interface for card data responses from the API
+ */
 export interface CardsResponse {
   cards: CardJSON[];
 }
 
+/**
+ * Interface for expansion sets responses from the API
+ */
 export interface ExpansionSetsResponse {
   sets: ExpansionSetJSON[];
 }
 
+/**
+ * Interface for decklists responses from the API
+ */
 export interface DecklistsResponse {
   decklists: DecklistJSON[];
 }
 
-// Callback types
+/**
+ * Type definition for search callback functions
+ */
 export type SearchCallback = (query: string) => void;
+
+/**
+ * Type definition for scroll to index functions
+ */
 export type ScrollToIndexFunction = (index: number) => void;
