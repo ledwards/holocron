@@ -39,15 +39,15 @@ class Card {
   set: string;
 
   identities: string[];
-  cancels: string[];
-  canceledby: string[];
-  matching: string[];
-  matchingweapon: string[];
-  pulledby: string[];
-  pulls: string[];
-  counterpart: string;
-  underlyingcardfor: string;
-  abbr: string[];
+  cancels: string[] = [];
+  canceledby: string[] = [];
+  matching: string[] = [];
+  matchingweapon: string[] = [];
+  pulledby: string[] = [];
+  pulls: string[] = [];
+  counterpart = '';
+  underlyingcardfor = '';
+  abbr: string[] = [];
 
   sortTitle: string;
   sortAbbr: string[];
@@ -65,30 +65,30 @@ class Card {
     this.side = cardJSON.side as CardSide;
     this.expansionSetId = cardJSON.set;
     this.imageUrl = cardJSON.front.imageUrl;
-    this.backImageUrl = cardJSON.back && cardJSON.back.imageUrl;
+    this.backImageUrl = cardJSON.back?.imageUrl || '';
 
-    this.ability = cardJSON.front.ability;
-    this.armor = cardJSON.front.armor;
-    this.dsicons = cardJSON.front.darkSideIcons;
-    this.deploy = cardJSON.front.deploy;
-    this.destiny = cardJSON.front.destiny;
-    this.ferocity = parseInt(cardJSON.front.ferocity);
-    this.forfeit = cardJSON.front.forfeit;
-    this.hyperspeed = cardJSON.front.hyperspeed;
-    this.landspeed = cardJSON.front.landspeed;
-    this.lsicons = cardJSON.front.lightSideIcons;
-    this.maneuver = cardJSON.front.maneuver;
-    this.parsec = cardJSON.front.parsec;
-    this.politics = cardJSON.front.politics;
-    this.power = cardJSON.front.power;
+    this.ability = cardJSON.front.ability || 0;
+    this.armor = cardJSON.front.armor || 0;
+    this.dsicons = cardJSON.front.darkSideIcons || 0;
+    this.deploy = cardJSON.front.deploy || 0;
+    this.destiny = cardJSON.front.destiny || 0;
+    this.ferocity = parseInt(cardJSON.front.ferocity || '0');
+    this.forfeit = cardJSON.front.forfeit || 0;
+    this.hyperspeed = cardJSON.front.hyperspeed || 0;
+    this.landspeed = cardJSON.front.landspeed || 0;
+    this.lsicons = cardJSON.front.lightSideIcons || 0;
+    this.maneuver = cardJSON.front.maneuver || 0;
+    this.parsec = cardJSON.front.parsec || 0;
+    this.politics = cardJSON.front.politics || 0;
+    this.power = cardJSON.front.power || 0;
 
-    this.extratext = `${cardJSON.front.extraText?.join(' ')}${
-      cardJSON?.back?.extratext ? ' / ' + cardJSON.back.extraText.join(' ') : ''
+    this.extratext = `${cardJSON.front.extraText?.join(' ') || ''}${
+      cardJSON?.back?.extraText ? ' / ' + cardJSON.back.extraText.join(' ') : ''
     }`;
-    this.gametext = [cardJSON.front.gametext, cardJSON.back?.gametext].join(
+    this.gametext = [cardJSON.front.gametext || '', cardJSON.back?.gametext || ''].join(
       ' / ',
     );
-    this.lore = cardJSON.front.lore;
+    this.lore = cardJSON.front.lore || '';
 
     this.characteristics = cardJSON.front.characteristics;
     this.icons = cardJSON.front.icons;
@@ -96,25 +96,25 @@ class Card {
     this.side = cardJSON.side as CardSide;
     this.subtype = cardJSON.front.subType;
     this.uniqueness = (cardJSON.front.uniqueness || 'none') as CardUniqueness;
-    this.abbr = cardJSON.abbr;
+    this.abbr = cardJSON.abbr || [];
     this.identities = [
-      cardJSON.front.characteristics,
-      cardJSON.front.type,
-      cardJSON.front.subType,
-      cardJSON.front.icons,
-      cardJSON.front.extraText,
-    ].flat();
-    this.cancels = cardJSON.cancels;
-    this.canceledby = cardJSON.canceledBy;
-    this.matching = cardJSON.matching; // TODO: rename to matchingstarship?
-    this.matchingweapon = cardJSON.matchingWeapon;
-    this.pulledby = cardJSON.pulledBy;
-    this.pulls = cardJSON.pulls;
-    this.underlyingcardfor = cardJSON.underlyingCardFor;
-    this.counterpart = cardJSON.counterpart;
+      cardJSON.front.characteristics || [],
+      cardJSON.front.type || '',
+      cardJSON.front.subType || '',
+      cardJSON.front.icons || [],
+      cardJSON.front.extraText || [],
+    ].flat().filter(Boolean);
+    this.cancels = cardJSON.cancels || [];
+    this.canceledby = cardJSON.canceledBy || [];
+    this.matching = cardJSON.matching || []; // TODO: rename to matchingstarship?
+    this.matchingweapon = cardJSON.matchingWeapon || [];
+    this.pulledby = cardJSON.pulledBy || [];
+    this.pulls = cardJSON.pulls || [];
+    this.underlyingcardfor = cardJSON.underlyingCardFor || '';
+    this.counterpart = cardJSON.counterpart || '';
 
     this.sortTitle = this.title.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase();
-    this.sortAbbr = (this.abbr || []).map(a =>
+    this.sortAbbr = this.abbr.map(a =>
       a.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase(),
     );
 
@@ -126,13 +126,13 @@ class Card {
     return [this.sortTitle, ...this.sortAbbr];
   }
 
-  get(attributeName: string): any {
-    return (this as any)[attributeName];
+  get(attributeName: string): unknown {
+    return (this as Record<string, unknown>)[attributeName];
   }
 
-  getSanitized(attributeName: string): string | any {
+  getSanitized(attributeName: string): string | unknown {
     const val = this.get(attributeName);
-    return typeof val == 'string'
+    return typeof val === 'string'
       ? val
           .replaceAll(/[^a-zA-Z0-9 -]/g, '')
           .toLowerCase()

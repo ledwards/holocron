@@ -4,13 +4,26 @@ import styles from '../../styles/SearchBarChipStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 import { Theme } from '../../types/interfaces';
 
-type SearchBarChipProps = {
+interface SearchBarChipProps {
   title: string;
   colorConditional: boolean;
-};
+}
 
 const SearchBarChip = (props: SearchBarChipProps) => {
-  const theme = useContext<Theme>(ThemeContext);
+  const themeContext = useContext(ThemeContext);
+  const theme: Theme = themeContext || {
+    name: 'dark',
+    backgroundColor: '#000000',
+    foregroundColor: '#FFFFFF',
+    dividerColor: '#444444',
+    translucentBackgroundColor: 'rgba(0,0,0,0.5)',
+    chipYesBackgroundColor: '#006633',
+    chipNoBackgroundColor: '#990000',
+    chipYesBorderColor: '#00FF99',
+    chipNoBorderColor: '#FF0000',
+    chipYesTextColor: '#FFFFFF',
+    chipNoTextColor: '#FFFFFF'
+  };
 
   return (
     <Chip

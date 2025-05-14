@@ -60,7 +60,7 @@ class DecklistPresenter {
     this.hasObjective = decklist.objective ? true : false;
 
     this.hasStartingSite =
-      decklist.startingLocation && decklist.startingLocation.title.includes(':')
+      decklist.startingLocation && decklist.startingLocation.includes(':')
         ? true
         : false;
 
