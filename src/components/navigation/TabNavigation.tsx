@@ -9,7 +9,7 @@ import DecklistsScreen from '../decklists/DecklistsScreen';
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import { Theme } from '../../types/interfaces';
+import {Theme} from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
@@ -30,7 +30,7 @@ function TabNavigation(_props: TabNavigationProps) {
     backgroundColor: '#000000',
     foregroundColor: '#FFFFFF',
     dividerColor: '#444444',
-    translucentBackgroundColor: 'rgba(0,0,0,0.5)'
+    translucentBackgroundColor: 'rgba(0,0,0,0.5)',
   };
 
   return (

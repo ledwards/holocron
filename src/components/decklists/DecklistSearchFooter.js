@@ -4,7 +4,6 @@ import {SearchBar, Text} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 import {BottomTabBarHeightContext} from '@react-navigation/bottom-tabs';
 
-import Decklist from '../../models/Decklist';
 import DecklistsQueryStatusBar from './DecklistsQueryStatusBar';
 
 import styles from '../../styles/CardSearchFooterStyles'; // TODO: Rename to DecklistSearchFooterStyles

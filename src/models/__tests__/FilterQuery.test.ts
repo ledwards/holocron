@@ -1,6 +1,6 @@
 import FilterQuery from '../FilterQuery';
 import Card from '../Card';
-import ExpansionSet from '../ExpansionSet';
+
 
 // import fixtures
 import darkCards from '../../data/__fixtures__/Dark.json';
@@ -17,7 +17,7 @@ const allCards = [...darkCards.cards, ...lightCards.cards]
         abbr: 'DEF',
         gempName: 'Default'
       };
-      
+
       return new Card(
         c as any,
         expansionSet,
