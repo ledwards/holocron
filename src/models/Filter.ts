@@ -1,6 +1,7 @@
 import Card from './Card';
 import Comparator from './Comparator';
 import Field from './Field';
+import { FilterResult } from '../types/interfaces';
 
 class Filter {
   field: Field;
@@ -13,10 +14,18 @@ class Filter {
     this.value = value;
   }
 
-  execute(cards: Card[]) {
-    return cards.filter(c =>
+  execute(cards: Card[]): FilterResult {
+    const startTime = performance.now();
+    const filteredCards = cards.filter(c =>
       this.comparator.execute(c, this.field, this.value),
     );
+    const executionTime = performance.now() - startTime;
+    
+    return {
+      cards: filteredCards,
+      count: filteredCards.length,
+      executionTime
+    };
   }
 }
 

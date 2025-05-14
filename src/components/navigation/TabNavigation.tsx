@@ -9,12 +9,12 @@ import DecklistsScreen from '../decklists/DecklistsScreen';
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import { Theme } from '../../types/interfaces';
+import { Theme, RootStackParamList } from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 interface TabNavigationProps {
   allCards: Card[];

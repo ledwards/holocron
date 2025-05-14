@@ -26,6 +26,8 @@ interface CardListItemProps {
   index: number;
   scrollToIndex: ScrollToIndexFunction;
   quantity?: number;
+  flatListRef?: any;
+  theme?: Theme;
 }
 
 const CardListItem = (props: CardListItemProps) => {
@@ -52,7 +54,7 @@ const CardListItem = (props: CardListItemProps) => {
   }
 
   const [state, setState] = useState<Partial<CardListItemState>>({});
-  const theme = useContext<Theme>(ThemeContext);
+  const theme = props.theme || useContext<Theme>(ThemeContext);
 
   useEffect(() => {
     setState({
