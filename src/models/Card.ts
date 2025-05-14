@@ -1,11 +1,12 @@
 import ExpansionSet from './ExpansionSet';
+import { CardSide } from '../types/enums';
 
 class Card {
   id: string;
   title: string;
   type: string;
   subtype: string;
-  side: string;
+  side: CardSide;
   expansionSetId: string;
   expansionSet: ExpansionSet;
   imageUrl: string;
@@ -106,7 +107,7 @@ class Card {
     this.title = cardJSON.front.title;
     this.type = cardJSON.front.type;
     this.subtype = cardJSON.front.subType;
-    this.side = cardJSON.side;
+    this.side = cardJSON.side as CardSide;
     this.expansionSetId = cardJSON.set;
     this.imageUrl = cardJSON.front.imageUrl;
     this.backImageUrl = cardJSON.back && cardJSON.back.imageUrl;
@@ -137,7 +138,7 @@ class Card {
     this.characteristics = cardJSON.front.characteristics;
     this.icons = cardJSON.front.icons;
     this.rarity = parseInt(cardJSON.set) < 200 ? cardJSON.rarity : 'V'; // use "V" as the rarity for all virtual cards
-    this.side = cardJSON.side;
+    this.side = cardJSON.side as CardSide;
     this.subtype = cardJSON.front.subType;
     this.uniqueness = cardJSON.front.uniqueness || 'none'; // TODO: This should be some kind of enum?
     this.abbr = cardJSON.abbr;
