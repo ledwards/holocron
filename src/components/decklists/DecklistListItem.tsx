@@ -1,9 +1,10 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {View, Dimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
 import styles from '../../styles/DecklistListItemStyles';
+import {Theme} from '../../types/interfaces';
 
 interface DecklistItem {
   sideways: boolean;
@@ -18,7 +19,7 @@ interface DecklistItem {
 interface DecklistListItemProps {
   item: DecklistItem;
   index: number;
-  theme: any;
+  theme: Theme | null;
 }
 
 const DecklistListItem = (props: DecklistListItemProps) => {
@@ -37,10 +38,10 @@ const DecklistListItem = (props: DecklistListItemProps) => {
     labelOpacity: number;
     height: number;
     width: number;
-    theme: any;
+    theme: Theme | null;
   }
 
-  const [state, setState] = useState<State>({
+  const [state] = useState<State>({
     expanded: false,
     showingBack: false,
     screenWidth: windowWidth,
@@ -51,9 +52,7 @@ const DecklistListItem = (props: DecklistListItemProps) => {
     theme: props.theme,
   });
 
-  useEffect(() => {
-    // State is already initialized with default values
-  }, []);
+  // State is already initialized with default values
 
   return (
     <View
@@ -63,7 +62,7 @@ const DecklistListItem = (props: DecklistListItemProps) => {
       <ListItem
         Component={View}
         style={{marginLeft: -15}}
-        onPress={() => {}}
+        onPress={() => { /* No action needed */ }}
         containerStyle={{
           ...styles.decklistListItemContainer,
           ...(props.item.side == 'Dark'

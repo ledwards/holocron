@@ -9,12 +9,12 @@ import DecklistsScreen from '../decklists/DecklistsScreen';
 import styles from '../../styles/TabNavigation';
 import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
-import { Theme, RootStackParamList } from '../../types/interfaces';
+import { Theme } from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
 import Decklist from '../../models/Decklist';
 
-const Tab = createBottomTabNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
 interface TabNavigationProps {
   allCards: Card[];
@@ -49,7 +49,7 @@ function TabNavigation(_props: TabNavigationProps) {
       }}>
       <Tab.Screen
         name="Cards"
-        component={() => (
+        children={() => (
           <View
             style={{
               flex: 1,
@@ -72,7 +72,7 @@ function TabNavigation(_props: TabNavigationProps) {
       />
       <Tab.Screen
         name="Decklists"
-        component={() => (
+        children={() => (
           <View
             style={{
               flex: 1,

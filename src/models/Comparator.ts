@@ -3,10 +3,10 @@ import Field from './Field';
 
 class Comparator {
   name: string;
-  fn: Function; // (card: Card, fieldName: string, value: string) => boolean;
+  fn: (card: Card, fieldName: string, value: string) => boolean;
   aliases: string[]; // comparator aliases e.g. "eq" is the same as "="
 
-  constructor(name: string, fn: Function, aliases: string[] = []) {
+  constructor(name: string, fn: (card: Card, fieldName: string, value: string) => boolean, aliases: string[] = []) {
     this.name = name;
     this.fn = fn;
     this.aliases = aliases;

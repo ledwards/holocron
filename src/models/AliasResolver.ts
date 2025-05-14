@@ -1,13 +1,19 @@
 import Card from '../models/Card';
 
+interface ExpansionSet {
+  id: string;
+  name: string;
+  nameAndAliases: () => string[];
+}
+
 class AliasResolver {
   cards: Card[];
-  sets: any[] = [];
+  sets: ExpansionSet[] = [];
 
   constructor(cards: Card[]) {
     this.cards = cards;
 
-    let expansionSets: any[] = [];
+    const expansionSets: ExpansionSet[] = [];
     cards.forEach(card => {
       if (card.expansionSet && expansionSets.map(s => s.id).includes(card.expansionSet.id)) {
         expansionSets.push(card.expansionSet);

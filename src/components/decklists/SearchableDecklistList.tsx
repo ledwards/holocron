@@ -42,7 +42,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
     loading: true,
   });
   const theme = useContext<Theme | null>(ThemeContext);
-  const allDecklists = useContext(AllDecklistsContext);
+  const allDecklists = useContext(AllDecklistsContext) || [];
 
   useEffect(() => {
     setState(prevState => ({
@@ -162,7 +162,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
           backgroundColor: theme?.backgroundColor,
-          height: layout.footerHeight(layout.tabBarHeight(), null),
+          height: layout.footerHeight(layout.tabBarHeight(), undefined),
           // height: 800,
           borderTopWidth: query && data.length > 0 ? 2 : 0,
           borderColor: theme?.dividerColor,

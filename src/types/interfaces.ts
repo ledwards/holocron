@@ -151,7 +151,7 @@ export interface Decklist {
 export type RootStackParamList = {
   Cards: undefined;
   Decklists: undefined;
-  DecklistDetail: { decklistId: string };
+  'View Decklist': { decklist: any };
   Settings: undefined;
   CardDetail: { cardId: string };
 };

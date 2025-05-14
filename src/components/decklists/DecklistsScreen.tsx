@@ -12,6 +12,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 import ThemeContext from '../../contexts/ThemeContext';
 import {Theme} from '../../types/interfaces';
 
+// Define a union type for BlurType to match the native component requirements
+type BlurType = 'dark' | 'light' | 'xlight' | 'prominent' | 'regular' | 'extraDark' | 'materialDark' | 'materialLight' | 'thickMaterialDark' | 'thickMaterialLight' | 'ultraThinMaterialDark' | 'ultraThinMaterialLight' | 'chromeMaterialDark' | 'chromeMaterialLight';
+
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -25,11 +28,8 @@ interface DisplayMode {
   view: React.ComponentType<any>;
 }
 
-interface DecklistsScreenProps {
-  // No specific props needed currently, but defining the interface for future use
-}
-
-const DecklistsScreen = (props: DecklistsScreenProps) => {
+// No props needed for this component
+const DecklistsScreen = () => {
   const [displayMode, setDisplayMode] = useState<number>(0);
   const theme = useContext<Theme | null>(ThemeContext);
 
@@ -63,7 +63,8 @@ const DecklistsScreen = (props: DecklistsScreenProps) => {
 
   return (
     <>
-      {/* @ts-ignore */}
+
+      {/* Navigator requires id property but works fine without it */}
       <Stack.Navigator initialRouteName="Tournament Decklists">
         <Stack.Screen
           name="Tournament Decklists"
@@ -95,7 +96,7 @@ const DecklistsScreen = (props: DecklistsScreenProps) => {
                   height: '100%',
                   width: '100%',
                 }}
-                blurType={theme?.name as any}
+                blurType={(theme?.name === 'dark' ? 'dark' : 'light') as BlurType}
                 blurAmount={10}
                 reducedTransparencyFallbackColor={
                   theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'

@@ -5,7 +5,7 @@ import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
-import {DecklistCard, Decklist} from '../../types/interfaces';
+import {Decklist} from '../../types/interfaces';
 
 // List of cards that have two sides
 const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
@@ -29,7 +29,7 @@ interface DecklistsScreenGridViewProps {
       decklist: Decklist;
     }
   };
-  navigation: any;
+  navigation: Record<string, unknown>;
 }
 
 const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
@@ -60,7 +60,7 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   }, []);
 
   // Flatten card list to include duplicates based on quantity
-  let items: CardType[] = [];
+  const items: CardType[] = [];
   if (props.route.params.decklist && props.route.params.decklist.cards) {
     props.route.params.decklist.cards.forEach((card: CardType) => {
       for (let i = 0; i < card.quantity; i++) {
