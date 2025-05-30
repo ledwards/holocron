@@ -1,5 +1,8 @@
 # Release Notes
 
+## 1.1.0
+- Tournament decklists
+
 ## 1.0.1
 - Navigation bar!
 

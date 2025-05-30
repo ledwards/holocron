@@ -34,28 +34,31 @@ class DecklistPresenter {
   cards: Record<string, number>; // TODO: DecklistCard[] or pass in allCards and make these Card objects
 
   constructor(decklist: Decklist) {
-    this.slug = decklist.slug;
-    this.url = decklist.url;
-    this.date = decklist.date;
-    this.title = decklist.title;
-    this.side = decklist.side;
-    this.side = decklist.side;
-    this.tournamentRound = decklist.tournamentRound;
-    this.imageUrl = decklist.imageUrl;
-    this.plaintext = decklist.plaintext;
+    this.slug = decklist.slug || '';
+    this.url = decklist.url || '';
+    this.date = decklist.date || '';
+    this.title = decklist.title || '';
+    this.side = decklist.side || '';
+    this.tournamentRound = decklist.tournamentRound || '';
+    this.imageUrl = decklist.imageUrl || '';
+    this.plaintext = decklist.plaintext || '';
 
-    this.displayTitle = decklist.archetype.name;
+    this.displayTitle = decklist.archetype?.name || 'Unknown Archetype';
     this.displaySubtitle =
-      `${decklist.tournament.name} ${decklist.tournamentRound || ''}`.trim() +
+      `${decklist.tournament?.name || ''} ${decklist.tournamentRound || ''}`.trim() +
       '\r\n' +
-      [decklist.player.name, decklist.date].filter(x => x).join(' • ');
+      [(decklist.player?.name || 'Unknown Player'), decklist.date].filter(x => x).join(' • ');
 
     this.sideways = !!decklist.objective;
 
-    this.searchTitle = decklist.title;
-    this.searchPlayerName = decklist.player.nameAndAliases().join(' ');
-    this.searchArchetypeName = decklist.archetype.nameAndAliases().join(' ');
-    this.searchTournamentName = `${decklist.tournament} ${decklist.tournamentRound} ${decklist.tournamentFormat}`;
+    this.searchTitle = decklist.title || '';
+    this.searchPlayerName = decklist.player && typeof decklist.player.nameAndAliases === 'function' 
+      ? decklist.player.nameAndAliases().join(' ') 
+      : decklist.player?.name || '';
+    this.searchArchetypeName = decklist.archetype && typeof decklist.archetype.nameAndAliases === 'function' 
+      ? decklist.archetype.nameAndAliases().join(' ') 
+      : decklist.archetype?.name || '';
+    this.searchTournamentName = `${decklist.tournament?.name || ''} ${decklist.tournamentRound || ''} ${decklist.tournamentFormat || ''}`;
 
     this.hasObjective = decklist.objective ? true : false;
 
@@ -79,7 +82,7 @@ class DecklistPresenter {
       this.offsetHeight = 0;
     }
 
-    this.cards = decklist.cards;
+    this.cards = decklist.cards || {};
   }
 }
 
