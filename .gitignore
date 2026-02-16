@@ -70,6 +70,7 @@ yarn-error.log
 
 # testing
 /coverage
+/.jest-cache
 
 # temporarily
 shared/
