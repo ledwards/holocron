@@ -92,7 +92,7 @@ class CardPresenter {
       this.title.includes(' & ') &&
       (this.type == 'Interrupt' || this.type == 'Effect') &&
       this.id != NOT_A_COMBO_CARD_ID;
-    this.twoSided = this.backImageUrl != null;
+    this.twoSided = this.backImageUrl.trim().length > 0;
     this.height = this.sideways ? 339 : 475;
     this.width = this.sideways ? 475 : 339;
     this.aspectRatio = this.height / this.width;

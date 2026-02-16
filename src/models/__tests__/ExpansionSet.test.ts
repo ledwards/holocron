@@ -1,4 +1,4 @@
-import ExpansionSet from '../../src/models/ExpansionSet';
+import ExpansionSet from '../ExpansionSet';
 
 describe('ExpansionSet', () => {
   describe('constructor', () => {

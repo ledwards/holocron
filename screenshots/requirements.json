@@ -1,0 +1,58 @@
+{
+  "ios": {
+    "profiles": [
+      {
+        "id": "iphone_65",
+        "store": "appstore",
+        "label": "iPhone 6.5-inch display",
+        "required": true,
+        "target": {"width": 1284, "height": 2778},
+        "cropAnchor": "center"
+      },
+      {
+        "id": "iphone_69",
+        "store": "appstore",
+        "label": "iPhone 6.9-inch display",
+        "required": true,
+        "target": {"width": 1320, "height": 2868},
+        "cropAnchor": "center"
+      },
+      {
+        "id": "ipad_13",
+        "store": "appstore",
+        "label": "iPad Pro 13-inch",
+        "required": true,
+        "target": {"width": 2048, "height": 2732},
+        "cropAnchor": "center"
+      }
+    ]
+  },
+  "android": {
+    "profiles": [
+      {
+        "id": "phone",
+        "store": "playstore",
+        "label": "Google Play phone",
+        "required": true,
+        "target": {"width": 1080, "height": 1920},
+        "cropAnchor": "center"
+      },
+      {
+        "id": "tablet_7",
+        "store": "playstore",
+        "label": "Google Play 7-inch tablet",
+        "required": true,
+        "target": {"width": 1200, "height": 1920},
+        "cropAnchor": "center"
+      },
+      {
+        "id": "tablet_10",
+        "store": "playstore",
+        "label": "Google Play 10-inch tablet",
+        "required": true,
+        "target": {"width": 1920, "height": 1200},
+        "cropAnchor": "center"
+      }
+    ]
+  }
+}

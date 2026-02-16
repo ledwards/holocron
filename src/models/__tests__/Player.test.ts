@@ -1,4 +1,4 @@
-import Player from '../../src/models/Player';
+import Player from '../Player';
 
 describe('Player', () => {
   describe('constructor', () => {

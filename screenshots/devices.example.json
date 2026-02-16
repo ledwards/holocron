@@ -1,0 +1,30 @@
+{
+  "ios": {
+    "appId": "com.holocron",
+    "profiles": {
+      "iphone_65": {
+        "deviceId": "booted"
+      },
+      "iphone_69": {
+        "deviceId": "booted"
+      },
+      "ipad_13": {
+        "deviceId": "booted"
+      }
+    }
+  },
+  "android": {
+    "appId": "com.holocron",
+    "profiles": {
+      "phone": {
+        "deviceId": "emulator-5554"
+      },
+      "tablet_7": {
+        "deviceId": "emulator-5556"
+      },
+      "tablet_10": {
+        "deviceId": "emulator-5558"
+      }
+    }
+  }
+}

@@ -2,11 +2,24 @@
 import 'react-native-gesture-handler/jestSetup';
 
 // Mock dependencies that might cause issues in tests
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
-});
+jest.mock(
+  'react-native-reanimated',
+  () => {
+    try {
+      const Reanimated = require('react-native-reanimated/mock');
+      Reanimated.default.call = () => {};
+      return Reanimated;
+    } catch {
+      return {
+        default: {
+          call: () => {},
+        },
+        createAnimatedComponent: (Component) => Component,
+      };
+    }
+  },
+  {virtual: true},
+);
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -26,6 +39,10 @@ jest.mock('react-native-fast-image', () => ({
   },
 }));
 
+jest.mock('react-native-device-info', () => ({
+  hasNotch: () => false,
+}));
+
 // Setup to silence specific expected warnings
 const originalConsoleError = console.error;
 console.error = (...args) => {
@@ -43,12 +60,31 @@ console.error = (...args) => {
 
 // Set up basic mocks for dimensions
 jest.mock('react-native/Libraries/Utilities/Dimensions', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(() => ({
+      width: 375,
+      height: 812,
+    })),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+  },
   get: jest.fn(() => ({
     width: 375,
     height: 812,
   })),
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
+}));
+
+jest.mock('react-native/Libraries/Utilities/PixelRatio', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(() => 2),
+    roundToNearestPixel: jest.fn((value) => value),
+  },
+  get: jest.fn(() => 2),
+  roundToNearestPixel: jest.fn((value) => value),
 }));
 
 // Make sure that any unhandled promise rejections fail tests

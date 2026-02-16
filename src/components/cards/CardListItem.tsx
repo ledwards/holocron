@@ -1,4 +1,4 @@
-import {useState, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {Animated, Easing, Dimensions, Keyboard, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
@@ -138,6 +138,7 @@ const CardListItem = (props: CardListItemProps) => {
       }}>
       <ListItem
         testID={`card-item-${props.index}`}
+        accessibilityLabel={props.item.displayTitle || `card-item-${props.index}`}
         style={{marginLeft: -15}}
         onPress={() => toggleExpanded()}
         containerStyle={{
@@ -230,4 +231,4 @@ const CardListItem = (props: CardListItemProps) => {
   );
 };
 
-export default CardListItem;
+export default React.memo(CardListItem);

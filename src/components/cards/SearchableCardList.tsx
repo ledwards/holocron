@@ -1,5 +1,7 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef, useMemo, useCallback} from 'react';
 import {View, ActivityIndicator, Text, Animated, FlatList} from 'react-native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 import CardListItem  from './CardListItem';
 import CardSearchFooter from './CardSearchFooter';
@@ -8,7 +10,6 @@ import FilterQuerySet from '../../models/FilterQuerySet';
 import Card from '../../models/Card';
 
 import styles from '../../styles/SearchableCardListStyles';
-import layout from '../../constants/layout';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
 import {SearchMode, Theme, SearchCallback, ScrollToIndexFunction} from '../../types/interfaces';
@@ -30,9 +31,15 @@ interface SearchableCardListState {
   error: null | Error;
   allCards: Card[];
   searchModeIndex: number;
-  nativeHeaderHeight?: number;
-  nativeFooterHeight?: number;
 }
+
+const fallbackTheme: Theme = {
+  name: 'dark',
+  backgroundColor: '#000000',
+  foregroundColor: '#FFFFFF',
+  dividerColor: '#444444',
+  translucentBackgroundColor: 'rgba(0,0,0,0.5)',
+};
 
 /**
  * Component for displaying a searchable list of cards
@@ -47,8 +54,6 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     error: null,
     allCards: props.cards,
     searchModeIndex: 0,
-    nativeHeaderHeight: props.nativeHeaderHeight,
-    nativeFooterHeight: props.nativeFooterHeight,
   });
 
   // FlatList reference for scrolling
@@ -56,17 +61,13 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
 
   // Get theme from context or provide default
   const themeContext = useContext(ThemeContext);
-  const theme: Theme = themeContext || {
-    name: 'dark',
-    backgroundColor: '#000000',
-    foregroundColor: '#FFFFFF',
-    dividerColor: '#444444',
-    translucentBackgroundColor: 'rgba(0,0,0,0.5)'
-  };
+  const theme: Theme = themeContext || fallbackTheme;
 
   // Get cards from context or use empty array
   const allCardsContext = useContext(AllCardsContext);
   const allCards: Card[] = allCardsContext || [];
+  const tabBarHeight = useBottomTabBarHeight();
+  const headerHeight = useHeaderHeight();
 
   // Initialize state on component mount
   useEffect(() => {
@@ -75,8 +76,6 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
       loading: false,
       error: null,
       searchModeIndex: 0,
-      nativeHeaderHeight: props.nativeHeaderHeight,
-      nativeFooterHeight: props.nativeFooterHeight,
     });
     setData([]);
     setQuery('');
@@ -242,29 +241,34 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   /**
    * Scroll to a specific index in the list
    */
-  const scrollToIndex: ScrollToIndexFunction = (index: number): void => {
+  const scrollToIndex: ScrollToIndexFunction = useCallback((index: number): void => {
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({
         animated: true,
         index: index,
-        viewOffset: layout.nativeHeaderHeight(),
+        viewOffset: headerHeight + 8,
       });
     }
-  };
+  }, [headerHeight]);
 
   /**
    * Render card item for the FlatList
    */
-  const renderItem = ({item, index}: {item: Card; index: number}) => {
+  const presentedData = useMemo(
+    () => (query ? data : []).map(card => new CardPresenter(card)),
+    [data, query],
+  );
+
+  const renderItem = useCallback(({item, index}: {item: CardPresenter; index: number}) => {
     return (
       <CardListItem
         theme={theme}
-        item={new CardPresenter(item)}
+        item={item}
         index={index}
         scrollToIndex={scrollToIndex}
       />
     );
-  };
+  }, [scrollToIndex, theme]);
 
   /**
    * Loading indicator
@@ -277,12 +281,27 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     );
   }
 
+  const queryCount = filterQuerySet.length();
+  const dockDynamicHeight =
+    16 +
+    (query ? 18 + 30 * queryCount + (queryCount > 1 ? 28 : 0) : 34) +
+    56 +
+    Math.max(tabBarHeight, 58) +
+    2;
+  const contentTopInset = Math.max(headerHeight - 2, 0);
+  const contentBottomInset = dockDynamicHeight + 8;
+
   return (
     <>
       <Animated.FlatList
         ref={flatListRef}
-        contentContainerStyle={styles.flatListContentContainer}
-        data={query ? data : []}
+        contentContainerStyle={{
+          ...styles.flatListContentContainer,
+          paddingTop: contentTopInset,
+          paddingBottom: contentBottomInset,
+        }}
+        contentInsetAdjustmentBehavior="never"
+        data={presentedData}
         renderItem={renderItem}
         ListEmptyComponent={query ? NoResultsListComponent : EmptyListComponent}
         ListHeaderComponent={() => <></>}
@@ -290,17 +309,17 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
           backgroundColor: theme.backgroundColor,
           borderColor: theme.dividerColor,
           borderBottomWidth: query && data.length > 0 ? 2 : 0,
-          height: layout.nativeHeaderHeight(),
+          height: 0,
         }}
         ListFooterComponent={() => <></>}
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
           backgroundColor: theme.backgroundColor,
-          height: layout.footerHeight(layout.tabBarHeight(), filterQuerySet),
+          height: 0,
           borderTopWidth: query && data.length > 0 ? 2 : 0,
           borderColor: theme.dividerColor,
         }}
-        keyExtractor={(item, index) => `${index}_${item.id}`}
+        keyExtractor={item => item.id}
         ItemSeparatorComponent={SeparatorComponent}
         keyboardShouldPersistTaps="handled"
         //
@@ -314,9 +333,6 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
       <CardSearchFooter
         query={query}
         filterQuerySet={filterQuerySet}
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        searchBarHeight={layout.searchBarHeight()}
-        tabBarHeight={layout.tabBarHeight()}
         searchMode={currentSearchMode()}
         allCards={allCards}
         data={data}

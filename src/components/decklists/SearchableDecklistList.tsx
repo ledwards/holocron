@@ -1,4 +1,4 @@
-import {useEffect, useState, useContext} from 'react';
+import {useEffect, useState, useContext, useRef, useMemo, useCallback} from 'react';
 import {
   View,
   ActivityIndicator,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
 
 import DecklistListItem from './DecklistListItem';
 import DecklistSearchFooter from './DecklistSearchFooter';
@@ -14,7 +16,6 @@ import DecklistPresenter from '../../presenters/DecklistPresenter';
 import AllDecklistsContext from '../../contexts/AllDecklistsContext';
 
 import styles from '../../styles/SearchableDecklistListStyles';
-import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 import { Theme } from '../../types/interfaces';
 
@@ -29,7 +30,6 @@ interface SearchableDecklistListProps {
 
 interface SearchableDecklistListState {
   loading: boolean;
-  flatListRef?: any;
   nativeHeaderHeight?: number;
   nativeFooterHeight?: number;
   error?: string | null;
@@ -38,17 +38,19 @@ interface SearchableDecklistListState {
 const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   const [query, setQuery] = useState('');
   const [data, setData] = useState<any[]>([]);
+  const flatListRef = useRef<any>(null);
   const [state, setState] = useState<SearchableDecklistListState>({
     loading: true,
   });
   const theme = useContext<Theme | null>(ThemeContext);
   const allDecklists = useContext(AllDecklistsContext) || [];
+  const tabBarHeight = useBottomTabBarHeight();
+  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     setState(prevState => ({
       ...prevState,
       loading: false,
-      flatListRef: null,
       nativeHeaderHeight: props.nativeHeaderHeight,
       nativeFooterHeight: props.nativeFooterHeight,
       error: null,
@@ -102,7 +104,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
     </View>
   );
 
-  const SeparatorComponent = () => {
+  const SeparatorComponent = useCallback(() => {
     return (
       <View
         style={{
@@ -111,7 +113,33 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
         }}
       />
     );
-  };
+  }, [theme?.dividerColor]);
+
+  const dockDynamicHeight = 16 + 34 + 56 + Math.max(tabBarHeight, 58) + 2;
+  const presentedData = useMemo(
+    () => data.map(decklist => new DecklistPresenter(decklist)),
+    [data],
+  );
+  const renderDecklistItem = useCallback(
+    ({item, index}: {item: DecklistPresenter; index: number}) => (
+      <TouchableOpacity
+        testID={`decklist-row-${index}`}
+        accessibilityLabel={item.displayTitle || `decklist-row-${index}`}
+        onPress={() => {
+          props.navigation.navigate('View Decklist', {
+            decklist: item,
+          });
+        }}
+        activeOpacity={1}>
+        <DecklistListItem
+          theme={theme}
+          item={item}
+          index={index}
+        />
+      </TouchableOpacity>
+    ),
+    [props.navigation, theme],
+  );
 
   if (state.loading) {
     return (
@@ -124,50 +152,34 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   return (
     <>
       <Animated.FlatList
-        ref={ref => {
-          setState(prevState => ({
-            ...prevState,
-            flatListRef: ref
-          }));
-        }}
+        ref={flatListRef}
         contentContainerStyle={{
           ...styles.flatListContentContainer,
           minHeight: Dimensions.get('window').height,
+          paddingTop: Math.max(headerHeight - 2, 0),
+          paddingBottom: dockDynamicHeight + 8,
         }}
-        data={data}
-        renderItem={({item, index}) => (
-          <TouchableOpacity
-            onPress={() => {
-              props.navigation.navigate('View Decklist', {
-                decklist: new DecklistPresenter(item),
-              });
-            }}
-            activeOpacity={1}>
-            <DecklistListItem
-              theme={theme}
-              item={new DecklistPresenter(item)}
-              index={index}
-            />
-          </TouchableOpacity>
-        )}
+        contentInsetAdjustmentBehavior="never"
+        data={presentedData}
+        renderItem={renderDecklistItem}
         ListEmptyComponent={() => NoResultsListComponent()}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
           backgroundColor: theme?.backgroundColor,
           borderColor: theme?.dividerColor,
           borderBottomWidth: query && data.length > 0 ? 2 : 0,
-          height: layout.nativeHeaderHeight(),
+          height: 0,
         }}
         ListFooterComponent={() => <></>}
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
           backgroundColor: theme?.backgroundColor,
-          height: layout.footerHeight(layout.tabBarHeight(), undefined),
+          height: 0,
           // height: 800,
           borderTopWidth: query && data.length > 0 ? 2 : 0,
           borderColor: theme?.dividerColor,
         }}
-        keyExtractor={(item, index) => `${index}_${item.id}`}
+        keyExtractor={(item, index) => `${index}_${item.slug || index}`}
         ItemSeparatorComponent={SeparatorComponent}
         keyboardShouldPersistTaps="handled"
         //
@@ -180,8 +192,6 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
       />
       <DecklistSearchFooter
         query={query}
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        searchBarHeight={layout.searchBarHeight()}
         data={data}
         searchCallback={searchHandler}
       />

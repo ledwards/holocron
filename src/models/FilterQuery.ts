@@ -399,7 +399,11 @@ class FilterQuery {
     }
 
     const aliasResolver = new AliasResolver(cards);
-    if (this.value) {
+    const shouldResolveAliasValue =
+      this.field &&
+      !['gametext', 'lore', 'extratext'].includes(this.field.name);
+
+    if (this.value && shouldResolveAliasValue) {
       const aliasResolvedValue = aliasResolver.resolve(this.value);
       if (aliasResolvedValue && this.filter) {
         this.value = aliasResolvedValue;

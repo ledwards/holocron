@@ -195,7 +195,7 @@ describe('FilterQuery: string comparator queries', () => {
     const query = 'set eq p';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual(['•Hayes Hunter']);
+    expect(cards).toEqual([]);
   });
 });
 

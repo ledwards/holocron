@@ -1,6 +1,7 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Card from '../models/Card';
 import ExpansionSet from '../models/ExpansionSet';
+import isExpectedMissingFileError from './isExpectedMissingFileError';
 const localCardFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
 interface CardData {
@@ -55,6 +56,11 @@ interface CardResponse {
   cards: CardData[];
 }
 
+const fixtureCardsBySide: Record<'Dark' | 'Light', CardResponse> = {
+  Dark: require('../data/__fixtures__/Dark.json') as CardResponse,
+  Light: require('../data/__fixtures__/Light.json') as CardResponse,
+};
+
 const readCardFilePromise = (side: string): Promise<CardData[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localCardFilePath}/${side}.json`, 'utf8')
@@ -62,8 +68,13 @@ const readCardFilePromise = (side: string): Promise<CardData[]> => {
       return data ? (JSON.parse(data) as CardResponse).cards : [];
     })
     .catch(err => {
-      console.log(err);
-      return [] as CardData[];
+      if (!isExpectedMissingFileError(err)) {
+        console.log(err);
+      }
+      if (side === 'Dark' || side === 'Light') {
+        return fixtureCardsBySide[side].cards || [];
+      }
+      return [];
     });
 };
 

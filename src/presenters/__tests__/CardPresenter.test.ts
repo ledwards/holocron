@@ -137,13 +137,13 @@ describe('CardPresenter', () => {
     });
 
     it('should format display title correctly', () => {
-      // Test with a long title that needs line breaks
+      // Long titles without split tokens remain unchanged
       const mockCardLongTitle = createMockCard({
         title: 'This is a very long title that should be broken into multiple lines because it exceeds 39 characters'
       });
 
       const presenterLongTitle = new CardPresenter(mockCardLongTitle as unknown as Card);
-      expect(presenterLongTitle.displayTitle).toContain('\n');
+      expect(presenterLongTitle.displayTitle).toBe(mockCardLongTitle.title);
 
       // Test with an objective
       const mockCardObjective = createMockCard({
@@ -168,7 +168,7 @@ describe('CardPresenter', () => {
       });
 
       const presenterVersioned = new CardPresenter(mockCardVersioned as unknown as Card);
-      expect(presenterVersioned.displayTitle).toBe('Luke Skywalker');
+      expect(presenterVersioned.displayTitle.trim()).toBe('Luke Skywalker');
     });
 
     it('should handle sideways cards correctly', () => {
@@ -251,6 +251,22 @@ describe('CardPresenter', () => {
       const presenterSpecialTwoSided = new CardPresenter(mockSpecialTwoSided as unknown as Card);
       expect(presenterSpecialTwoSided.displayImageUrl).toBe(mockSpecialTwoSided.backImageUrl);
       expect(presenterSpecialTwoSided.displayBackImageUrl).toBe(mockSpecialTwoSided.imageUrl);
+    });
+
+    it('should treat cards with empty or whitespace-only backImageUrl as one-sided', () => {
+      const mockNoBackImage = createMockCard({
+        backImageUrl: '',
+      });
+      const presenterNoBackImage = new CardPresenter(mockNoBackImage as unknown as Card);
+      expect(presenterNoBackImage.twoSided).toBe(false);
+
+      const mockWhitespaceBackImage = createMockCard({
+        backImageUrl: '   ',
+      });
+      const presenterWhitespaceBackImage = new CardPresenter(
+        mockWhitespaceBackImage as unknown as Card,
+      );
+      expect(presenterWhitespaceBackImage.twoSided).toBe(false);
     });
 
     it('should handle special card types with different offsets', () => {

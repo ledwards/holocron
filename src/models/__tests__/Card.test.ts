@@ -140,6 +140,16 @@ describe('Card', () => {
       expect(card.ferocity).toBe(0);
       expect(card.forfeit).toBe(0);
     });
+
+    it('should normalize numeric gempId values to strings', () => {
+      const numericIdCardJSON = {
+        ...mockCardJSON,
+        gempId: 96 as unknown as string,
+      };
+
+      const card = new Card(numericIdCardJSON, mockExpansionSetJSON);
+      expect(card.id).toBe('96');
+    });
   });
 
   describe('nameAndAliases', () => {

@@ -9,13 +9,20 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* holocronTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* holocronTests.m */; };
 		0C80B921A6F3F58F76C31292 /* libPods-holocron.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-holocron.a */; };
+		0FAECC67B23C4D759BF03320 /* LiberationSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD4329C79EFF49D785804046 /* LiberationSans-Regular.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		16E51A9E3D1464A607E6DB45 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23C6491EB6D32CA77688A24 /* ExpoModulesProvider.swift */; };
+		2EF035CE2C15475AB006E0B1 /* LiberationSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4B996F097147427D857D583B /* LiberationSans-BoldItalic.ttf */; };
+		37B97511AAF04A769020EC03 /* LICENSE_LIBERATION in Resources */ = {isa = PBXBuildFile; fileRef = 89E9ED68355246DA9F415BE2 /* LICENSE_LIBERATION */; };
+		658C2AF4F71D49CD86020549 /* LiberationSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9E748F16F2BF46A890322684 /* LiberationSans-Bold.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-holocron-holocronTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-holocron-holocronTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9B2A0C2C2AFB76890029C741 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 9B2A0C2B2AFB76890029C741 /* main.jsbundle */; };
 		9B93A1FA2A43ED8F00250EEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B93A1F92A43ED8F00250EEF /* Assets.xcassets */; };
 		9B93A1FB2A43ED8F00250EEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B93A1F92A43ED8F00250EEF /* Assets.xcassets */; };
+		A130343130A79F859A122694 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAB14239A75E4FC4F318D8A /* ExpoModulesProvider.swift */; };
+		A18BE8F5C5DA4A26953696E3 /* LiberationSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64B3E706198F47A39357FC57 /* LiberationSans-Italic.ttf */; };
 		F9FCCD895300D30590548443 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 48E17EE3AD5C36DD745D2858 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -41,11 +48,14 @@
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-holocron-holocronTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-holocron-holocronTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-holocron.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-holocron.debug.xcconfig"; path = "Target Support Files/Pods-holocron/Pods-holocron.debug.xcconfig"; sourceTree = "<group>"; };
 		48E17EE3AD5C36DD745D2858 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = holocron/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		4B996F097147427D857D583B /* LiberationSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "LiberationSans-BoldItalic.ttf"; path = "../assets/fonts/LiberationSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-holocron.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-holocron.release.xcconfig"; path = "Target Support Files/Pods-holocron/Pods-holocron.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-holocron-holocronTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-holocron-holocronTests.debug.xcconfig"; path = "Target Support Files/Pods-holocron-holocronTests/Pods-holocron-holocronTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-holocron.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-holocron.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		64B3E706198F47A39357FC57 /* LiberationSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "LiberationSans-Italic.ttf"; path = "../assets/fonts/LiberationSans-Italic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = holocron/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-holocron-holocronTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-holocron-holocronTests.release.xcconfig"; path = "Target Support Files/Pods-holocron-holocronTests/Pods-holocron-holocronTests.release.xcconfig"; sourceTree = "<group>"; };
+		89E9ED68355246DA9F415BE2 /* LICENSE_LIBERATION */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = LICENSE_LIBERATION; path = ../assets/fonts/LICENSE_LIBERATION; sourceTree = "<group>"; };
 		9B2A0C2B2AFB76890029C741 /* main.jsbundle */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = main.jsbundle; sourceTree = "<group>"; };
 		9B5E16942A442B0E00E79ABF /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
 		9B5E16952A442B0E00E79ABF /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
@@ -64,6 +74,10 @@
 		9B5E16A22A442B0E00E79ABF /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		9B5E16A32A442B0E00E79ABF /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		9B93A1F92A43ED8F00250EEF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = holocron/Assets.xcassets; sourceTree = "<group>"; };
+		9E748F16F2BF46A890322684 /* LiberationSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "LiberationSans-Bold.ttf"; path = "../assets/fonts/LiberationSans-Bold.ttf"; sourceTree = "<group>"; };
+		BD4329C79EFF49D785804046 /* LiberationSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "LiberationSans-Regular.ttf"; path = "../assets/fonts/LiberationSans-Regular.ttf"; sourceTree = "<group>"; };
+		D23C6491EB6D32CA77688A24 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-holocron-holocronTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		DBAB14239A75E4FC4F318D8A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-holocron/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -104,6 +118,19 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		10E39CC1AE734379AB33AE74 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9E748F16F2BF46A890322684 /* LiberationSans-Bold.ttf */,
+				4B996F097147427D857D583B /* LiberationSans-BoldItalic.ttf */,
+				64B3E706198F47A39357FC57 /* LiberationSans-Italic.ttf */,
+				BD4329C79EFF49D785804046 /* LiberationSans-Regular.ttf */,
+				89E9ED68355246DA9F415BE2 /* LICENSE_LIBERATION */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* holocron */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +146,15 @@
 			name = holocron;
 			sourceTree = "<group>";
 		};
+		1E7E272B9CEE0BF543876735 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				455CC34D10FA690072C1A026 /* holocron */,
+				47A80803B0768C3495573383 /* holocronTests */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +163,22 @@
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-holocron-holocronTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		455CC34D10FA690072C1A026 /* holocron */ = {
+			isa = PBXGroup;
+			children = (
+				DBAB14239A75E4FC4F318D8A /* ExpoModulesProvider.swift */,
+			);
+			name = holocron;
+			sourceTree = "<group>";
+		};
+		47A80803B0768C3495573383 /* holocronTests */ = {
+			isa = PBXGroup;
+			children = (
+				D23C6491EB6D32CA77688A24 /* ExpoModulesProvider.swift */,
+			);
+			name = holocronTests;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -146,6 +198,8 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				10E39CC1AE734379AB33AE74 /* Resources */,
+				1E7E272B9CEE0BF543876735 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -204,6 +258,7 @@
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "holocronTests" */;
 			buildPhases = (
 				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
+				9A773CDDE50D362FD47E6CB5 /* [Expo] Configure project */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
@@ -226,6 +281,7 @@
 			buildPhases = (
 				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
+				FB81C1DBB1B06FB3790210CA /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -296,6 +352,11 @@
 				9B93A1FA2A43ED8F00250EEF /* Assets.xcassets in Resources */,
 				9B2A0C2C2AFB76890029C741 /* main.jsbundle in Resources */,
 				F9FCCD895300D30590548443 /* PrivacyInfo.xcprivacy in Resources */,
+				658C2AF4F71D49CD86020549 /* LiberationSans-Bold.ttf in Resources */,
+				2EF035CE2C15475AB006E0B1 /* LiberationSans-BoldItalic.ttf in Resources */,
+				A18BE8F5C5DA4A26953696E3 /* LiberationSans-Italic.ttf in Resources */,
+				0FAECC67B23C4D759BF03320 /* LiberationSans-Regular.ttf in Resources */,
+				37B97511AAF04A769020EC03 /* LICENSE_LIBERATION in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,7 +377,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n";
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -334,6 +395,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-holocron/Pods-holocron-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9A773CDDE50D362FD47E6CB5 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-holocron-holocronTests/expo-configure-project.sh\"\n";
 		};
 		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -430,6 +510,25 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-holocron-holocronTests/Pods-holocron-holocronTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		FB81C1DBB1B06FB3790210CA /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-holocron/expo-configure-project.sh\"\n";
+		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -446,7 +545,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -457,6 +556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* holocronTests.m in Sources */,
+				16E51A9E3D1464A607E6DB45 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +566,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				A130343130A79F859A122694 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,7 +592,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = holocronTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -502,8 +603,10 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/holocron.app/holocron";
 			};
 			name = Debug;
@@ -516,7 +619,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = holocronTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -527,9 +630,11 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/holocron.app/holocron";
 			};
 			name = Release;
@@ -539,6 +644,9 @@
 			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-holocron.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_FILTER_FOR_DEVICE_MODEL = "";
+				ASSETCATALOG_FILTER_FOR_DEVICE_OS_VERSION = "";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -559,6 +667,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ledwards.holocron;
 				PRODUCT_NAME = holocron;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -592,6 +701,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ledwards.holocron;
 				PRODUCT_NAME = holocron;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -651,7 +761,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -670,14 +780,11 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-Wl",
-					"-ld_classic",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_VERSION = 5.0;
 				USE_HERMES = true;
 			};
 			name = Debug;
@@ -728,7 +835,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -746,13 +853,10 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-Wl",
-					"-ld_classic",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};

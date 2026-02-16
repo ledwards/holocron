@@ -1,0 +1,16 @@
+[
+  {
+    "text": "1. Sample Rules Heading",
+    "x": 24,
+    "y": 24,
+    "page": 1,
+    "fontSize": 18
+  },
+  {
+    "text": "This is placeholder extracted text for pipeline wiring.",
+    "x": 24,
+    "y": 48,
+    "page": 1,
+    "fontSize": 11
+  }
+]

@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {View, useColorScheme, Appearance, StatusBar, ColorSchemeName} from 'react-native';
-import {BlurView} from '@react-native-community/blur';
 import {NavigationContainer, DefaultTheme, Theme as NavigationTheme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 import Card from './src/models/Card';
@@ -18,7 +17,6 @@ import loadDecklists from './src/lib/LoadDecklists';
 
 import themeDark from './src/styles/themeDark';
 import themeLight from './src/styles/themeLight';
-import layout from './src/constants/layout';
 
 import ThemeContext from './src/contexts/ThemeContext';
 import AllCardsContext from './src/contexts/AllCardsContext';
@@ -140,19 +138,6 @@ const App = () => {
                     />
                   </View>
                 </NavigationContainer>
-                <BlurView
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    width: '100%',
-                    height: layout.nativeHeaderHeight(),
-                  }}
-                  blurType={theme.name === 'dark' ? 'dark' : 'light'}
-                  blurAmount={10}
-                  reducedTransparencyFallbackColor={
-                    theme.translucentBackgroundColor
-                  }
-                />
               </View>
             </View>
           </ThemeContext.Provider>

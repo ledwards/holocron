@@ -69,15 +69,41 @@ const DecklistsScreen = () => {
         <Stack.Screen
           name="Tournament Decklists"
           component={DecklistsScreenHome}
-          options={{headerShown: false}}
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: 'Decklists',
+            headerTitleStyle: {
+              color: theme?.foregroundColor,
+              fontWeight: '600',
+              fontSize: 17,
+            },
+            headerBackground: () => (
+              <BlurView
+                style={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                }}
+                blurType={(theme?.name === 'dark' ? 'dark' : 'light') as BlurType}
+                blurAmount={16}
+                reducedTransparencyFallbackColor={
+                  theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'
+                }
+              />
+            ),
+          }}
         />
         <Stack.Screen
           name="View Decklist"
           component={currentDisplayMode().view}
           options={() => ({
             headerShown: true,
+            headerTransparent: true,
             headerStyle: {},
             headerTintColor: theme?.foregroundColor,
+            headerBackTitleVisible: false,
+            headerBackTitle: '',
             headerTitleStyle: {},
             headerRight: () => (
               <Icon
@@ -97,7 +123,7 @@ const DecklistsScreen = () => {
                   width: '100%',
                 }}
                 blurType={(theme?.name === 'dark' ? 'dark' : 'light') as BlurType}
-                blurAmount={10}
+                blurAmount={16}
                 reducedTransparencyFallbackColor={
                   theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'
                 }

@@ -1,0 +1,64 @@
+# Plaintext screenshot scenarios. One scenario per block, separated by ---.
+# Steps syntax: "- <action> key=\"value\" key2=value2"
+# Supported actions:
+# launchApp, stopApp, tapOn, inputText, clearText, hideKeyboard, waitForVisible,
+# assertVisible, swipe, scrollUntilVisible, back, sleep
+
+scenario: home_agents_expanded
+name: Home search + expand Agents of the Black Sun
+platforms: ios,android
+screenshot: home_agents_expanded
+steps:
+  - launchApp clearState=true
+  - tapOn id="tab-cards"
+  - tapOn text="Search by title"
+  - clearText
+  - inputText text="agents"
+  - hideKeyboard
+  - waitForVisible text="Agents of the Black Sun" timeoutMs=12000
+  - tapOn text="Agents of the Black Sun"
+  - sleep durationMs=600
+---
+scenario: decklists_search_lee_edwards
+name: Decklist list view search for lee edwards
+platforms: ios,android
+screenshot: decklists_search_lee_edwards
+steps:
+  - launchApp clearState=true
+  - tapOn id="tab-decklists"
+  - tapOn text="Search by tournament, player, or archetype"
+  - clearText
+  - inputText text="lee edwards"
+  - hideKeyboard
+  - waitForVisible text="lee" timeoutMs=12000
+  - sleep durationMs=600
+---
+scenario: decklist_grid_lee_edwards
+name: Decklist grid view for a Lee Edwards decklist
+platforms: ios,android
+screenshot: decklist_grid_lee_edwards
+steps:
+  - launchApp clearState=true
+  - tapOn id="tab-decklists"
+  - tapOn text="Search by tournament, player, or archetype"
+  - clearText
+  - inputText text="lee edwards"
+  - hideKeyboard
+  - waitForVisible text="lee" timeoutMs=12000
+  - tapOn text="lee"
+  - sleep durationMs=1000
+---
+scenario: advanced_search_power_eq_1
+name: Advanced search power equals 1
+platforms: ios,android
+screenshot: advanced_search_power_eq_1
+steps:
+  - launchApp clearState=true
+  - tapOn id="tab-cards"
+  - tapOn id="cards-search-mode-toggle"
+  - tapOn text="Search by natural language query"
+  - clearText
+  - inputText text="power = 1"
+  - hideKeyboard
+  - waitForVisible text="power = 1" timeoutMs=12000
+  - sleep durationMs=600

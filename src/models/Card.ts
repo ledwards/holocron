@@ -58,7 +58,8 @@ class Card {
     abbr: string;
     gempName: string;
   }) {
-    this.id = cardJSON.gempId;
+    // Some payloads serialize gempId as number; normalize to string for RN props.
+    this.id = String(cardJSON.gempId);
     this.title = cardJSON.front.title;
     this.type = cardJSON.front.type;
     this.subtype = cardJSON.front.subType;

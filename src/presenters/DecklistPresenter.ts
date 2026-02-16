@@ -63,9 +63,8 @@ class DecklistPresenter {
     this.hasObjective = decklist.objective ? true : false;
 
     this.hasStartingSite =
-      decklist.startingLocation && decklist.startingLocation.includes(':')
-        ? true
-        : false;
+      typeof decklist.startingLocation === 'string' &&
+      decklist.startingLocation.includes(':');
 
     this.height = this.sideways ? 339 : 475;
     this.width = this.sideways ? 475 : 339;

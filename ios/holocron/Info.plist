@@ -47,13 +47,18 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Location is used for optional nearby event features.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>
 		<string>Foundation.ttf</string>
 		<string>Ionicons.ttf</string>
 		<string>MaterialIcons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>LiberationSans-Bold.ttf</string>
+		<string>LiberationSans-BoldItalic.ttf</string>
+		<string>LiberationSans-Italic.ttf</string>
+		<string>LiberationSans-Regular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

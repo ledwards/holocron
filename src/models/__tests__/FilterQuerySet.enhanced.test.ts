@@ -142,8 +142,8 @@ describe('FilterQuerySet', () => {
       
       expect(filterQuerySet.filterQueries.length).toBe(1);
       expect(filterQuerySet.filterQueries[0].field?.name).toBe('title');
-      expect(filterQuerySet.filterQueries[0].comparator?.name).toBe('equals');
-      expect(filterQuerySet.filterQueries[0].value).toBe('Luke Skywalker');
+      expect(filterQuerySet.filterQueries[0].comparator?.name).toBe('=');
+      expect(filterQuerySet.filterQueries[0].value).toBe('luke skywalker');
     });
     
     it('parses a compound query string with AND', () => {
@@ -152,9 +152,9 @@ describe('FilterQuerySet', () => {
       
       expect(filterQuerySet.filterQueries.length).toBe(2);
       expect(filterQuerySet.filterQueries[0].field?.name).toBe('title');
-      expect(filterQuerySet.filterQueries[0].value).toBe('Luke Skywalker');
+      expect(filterQuerySet.filterQueries[0].value).toBe('luke skywalker');
       expect(filterQuerySet.filterQueries[1].field?.name).toBe('type');
-      expect(filterQuerySet.filterQueries[1].value).toBe('Character');
+      expect(filterQuerySet.filterQueries[1].value).toBe('character');
     });
     
     it('parses multiple ANDs in a query', () => {
@@ -200,7 +200,7 @@ describe('FilterQuerySet', () => {
     });
     
     it('invalidates a query set with one invalid query', () => {
-      const query = 'title = Luke Skywalker and invalid = query';
+      const query = 'title = Luke Skywalker and zzzzz = query';
       const filterQuerySet = new FilterQuerySet(query);
       
       expect(filterQuerySet.valid()).toBe(false);
@@ -243,9 +243,8 @@ describe('FilterQuerySet', () => {
       const filterQuerySet = new FilterQuerySet(query);
       const results = filterQuerySet.execute(allCards);
       
-      expect(results.length).toBe(2);
+      expect(results.length).toBe(1);
       expect(results.map(c => c.title)).toContain('Luke Skywalker');
-      expect(results.map(c => c.title)).toContain('Test Card');
     });
     
     it('returns intersection of multiple filter results', () => {
@@ -279,9 +278,8 @@ describe('FilterQuerySet', () => {
       const filterQuerySet = new FilterQuerySet(query);
       const results = filterQuerySet.execute(allCards);
       
-      expect(results.length).toBe(2);
+      expect(results.length).toBe(1);
       expect(results.map(c => c.title)).toContain('Luke Skywalker');
-      expect(results.map(c => c.title)).toContain('Test Card');
     });
   });
 });

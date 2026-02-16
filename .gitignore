@@ -2,6 +2,10 @@
 #
 .DS_Store
 
+.env
+.env.*
+!.env.example
+
 # Xcode
 #
 build/
@@ -70,3 +74,17 @@ yarn-error.log
 # temporarily
 shared/
 design/
+
+# rules pipeline inputs/artifacts (generated locally)
+scripts/rules/input/*
+!scripts/rules/input/
+!scripts/rules/input/extracted-runs.sample.json
+
+# screenshot automation artifacts/local config
+artifacts/screenshots/
+screenshots/devices.json
+
+# Expo
+.expo
+dist/
+web-build/

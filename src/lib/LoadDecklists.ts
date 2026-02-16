@@ -1,5 +1,6 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Decklist from '../models/Decklist';
+import isExpectedMissingFileError from './isExpectedMissingFileError';
 const localExpansionSetsFilePath = ReactNativeBlobUtil.fs.dirs.DocumentDir;
 
 interface DecklistJSON {
@@ -39,17 +40,34 @@ interface DecklistsResponse {
   decklists: DecklistJSON[];
 }
 
+const normalizeDecklistsPayload = (
+  payload: DecklistsResponse | DecklistJSON[],
+): DecklistJSON[] => {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  return payload?.decklists || [];
+};
+
 const loadDecklists = (): Promise<Decklist[]> => {
   return ReactNativeBlobUtil.fs
     .readFile(`${localExpansionSetsFilePath}/decklists.json`, 'utf8')
     .then((data: string) => {
-      return data ? (JSON.parse(data) as DecklistsResponse).decklists : [];
+      if (!data) {
+        return [];
+      }
+
+      const parsed = JSON.parse(data) as DecklistsResponse | DecklistJSON[];
+      return normalizeDecklistsPayload(parsed);
     })
     .then((results: DecklistJSON[]) => {
       return (results || []).map((d: DecklistJSON) => new Decklist(d));
     })
     .catch(err => {
-      console.log(err);
+      if (!isExpectedMissingFileError(err)) {
+        console.log(err);
+      }
       return [];
     });
 };

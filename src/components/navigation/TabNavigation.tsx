@@ -2,12 +2,13 @@ import React, {useContext} from 'react';
 import {View} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {BlurView} from '@react-native-community/blur';
 
 import CardsScreen from '../cards/CardsScreen';
 import DecklistsScreen from '../decklists/DecklistsScreen';
+import RulesScreen from '../rules/RulesScreen';
 
 import styles from '../../styles/TabNavigation';
-import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 import {Theme} from '../../types/interfaces';
 import Card from '../../models/Card';
@@ -42,8 +43,6 @@ function TabNavigation(_props: TabNavigationProps) {
         headerShown: false,
         tabBarStyle: {
           ...styles.tabBarStyle,
-          bottom: layout.nativeFooterHeight(),
-          height: layout.tabBarHeight(),
         },
         tabBarItemStyle: styles.tabBarItemStyle,
       }}>
@@ -60,9 +59,27 @@ function TabNavigation(_props: TabNavigationProps) {
         )}
         options={{
           tabBarLabel: 'Search',
+          tabBarButtonTestID: 'tab-cards',
+          headerShown: true,
+          headerTransparent: true,
+          headerTitle: 'Card Search',
+          headerTitleStyle: {
+            color: theme?.foregroundColor,
+            fontWeight: '600',
+            fontSize: 17,
+          },
+          headerBackground: () => (
+            <BlurView
+              style={styles.headerBackground}
+              blurType={theme?.name === 'dark' ? 'dark' : 'light'}
+              blurAmount={16}
+              reducedTransparencyFallbackColor={theme?.translucentBackgroundColor}
+            />
+          ),
+          tabBarBackground: () => null,
           tabBarIcon: () => (
             <Icon
-              name={'search-outline'}
+              name={'list-outline'}
               type="ionicon"
               color={theme?.foregroundColor}
               size={iconSize}
@@ -83,9 +100,36 @@ function TabNavigation(_props: TabNavigationProps) {
         )}
         options={{
           tabBarLabel: 'Decklists',
+          tabBarButtonTestID: 'tab-decklists',
+          tabBarBackground: () => null,
           tabBarIcon: () => (
             <Icon
               name={'file-tray-full-outline'}
+              type="ionicon"
+              color={theme?.foregroundColor}
+              size={iconSize}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Rules"
+        children={() => (
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: theme?.backgroundColor,
+            }}>
+            <RulesScreen />
+          </View>
+        )}
+        options={{
+          tabBarLabel: 'Rules',
+          tabBarButtonTestID: 'tab-rules',
+          tabBarBackground: () => null,
+          tabBarIcon: () => (
+            <Icon
+              name={'book-outline'}
               type="ionicon"
               color={theme?.foregroundColor}
               size={iconSize}

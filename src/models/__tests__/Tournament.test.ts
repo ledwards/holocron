@@ -1,4 +1,4 @@
-import Tournament from '../../src/models/Tournament';
+import Tournament from '../Tournament';
 
 describe('Tournament', () => {
   describe('constructor', () => {

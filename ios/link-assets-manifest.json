@@ -1,0 +1,25 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/LICENSE_LIBERATION",
+      "sha1": "0898cb73de9283d38e6f4cef45ce79efbfafb0b2"
+    },
+    {
+      "path": "assets/fonts/LiberationSans-Bold.ttf",
+      "sha1": "39a96b7556af673263b834fe2e10f3dea0653695"
+    },
+    {
+      "path": "assets/fonts/LiberationSans-BoldItalic.ttf",
+      "sha1": "47bc338b0f4391730b53309ca2b678759b1f2230"
+    },
+    {
+      "path": "assets/fonts/LiberationSans-Italic.ttf",
+      "sha1": "b48affb96d48e277aae21aa80e18fa41b12abccf"
+    },
+    {
+      "path": "assets/fonts/LiberationSans-Regular.ttf",
+      "sha1": "e8b7fa66057ae41dc3e03598211fcbca7744b495"
+    }
+  ]
+}

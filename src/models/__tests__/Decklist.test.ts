@@ -1,7 +1,7 @@
-import Decklist from '../../src/models/Decklist';
-import Tournament from '../../src/models/Tournament';
-import Archetype from '../../src/models/Archetype';
-import Player from '../../src/models/Player';
+import Decklist from '../Decklist';
+import Tournament from '../Tournament';
+import Archetype from '../Archetype';
+import Player from '../Player';
 
 describe('Decklist', () => {
   const mockDecklistJSON = {

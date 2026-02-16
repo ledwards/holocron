@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useRef} from 'react';
 import {
   View,
   ActivityIndicator,
@@ -21,16 +21,15 @@ import { Theme } from '../../types/interfaces';
 const DecklistsScreenListView = ({route}: {route: any}) => {
   const theme = useContext<Theme | null>(ThemeContext);
   const allCards = useContext(AllCardsContext);
+  const flatListRef = useRef<any>(null);
 
   const [data, setData] = useState<any[]>([]);
   const [state, setState] = useState<{
     loading: boolean;
     error: null | string;
-    flatListRef: any;
   }>({
     loading: false,
     error: null,
-    flatListRef: null,
   });
 
   useEffect(() => {
@@ -46,7 +45,6 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
       ...state,
       loading: false,
       error: null,
-      flatListRef: null,
     });
 
     const decklistCards = route.params.decklist?.cards || [];
@@ -102,12 +100,7 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
   return (
     <>
       <Animated.FlatList
-        ref={ref => {
-          setState(prevState => ({
-            ...prevState,
-            flatListRef: ref
-          }));
-        }}
+        ref={flatListRef}
         contentContainerStyle={styles.flatListContentContainer}
         data={data}
         renderItem={({item, index}) =>
@@ -118,9 +111,9 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
                 route.params.decklist?.cards?.find((c: {id: string; quantity: number}) => c.id === item.id)?.quantity || 1
               }
               index={index}
-              flatListRef={state.flatListRef}
+              flatListRef={flatListRef.current}
               scrollToIndex={(i: number) =>
-                state.flatListRef.scrollToIndex({
+                flatListRef.current?.scrollToIndex({
                   animated: true,
                   index: i,
                   // viewPosition: 0.5,

@@ -1,0 +1,53 @@
+3ce221c0a5484953d2d923d9b04fa686
+{
+  "cards": [
+    {
+      "abbr": ["Farmboy Scott"],
+      "front": {
+        "ability": "4",
+        "characteristics": ["Rebel"],
+        "deploy": "3",
+        "destiny": "1",
+        "errataSymbol": "E1",
+        "extraText": ["Force-Sensitive"],
+        "forfeit": "7",
+        "gametext": "While Scott is not on Mars your total Force generation is +1. Adds 3 to power of anything he pilots. When piloting Purple 5, also adds 2 to maneuver. Immune to attrition < 3.",
+        "icons": ["Pilot", "Warrior"],
+        "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/ScottLingrell.gif",
+        "lore": "Son of Annie Lingrell. Student of Decipher. Honed piloting skills while bullseyeing swamp rats in Beggar's Cave aboard T-69 skyhopper.",
+        "power": "3",
+        "subType": "Rebel",
+        "title": "•Scott Lingrell",
+        "type": "Character",
+        "uniqueness": "*"
+      },
+      "gempId": "1_19",
+      "id": 1593,
+      "legacy": false,
+      "matching": [
+        "Arsix-Denine In Purple 5",
+        "Purple 5",
+        "Scott's T-69 Skyhopper",
+        "Silverfox 1"
+      ],
+      "matchingWeapon": [
+        "Annie's Laser Sword",
+        "Scott's Laser Pistol",
+        "Scott's Laser Pistol (V)",
+        "Scott's Hunting Rifle",
+        "Scott's Hunting Rifle (V)",
+        "Scott's Laser Sword"
+      ],
+      "printings": [
+        {
+          "set": "7"
+        }
+      ],
+      "pulledBy": ["Kim Caton", "Scott's Back"],
+      "rarity": "R1",
+      "set": "7",
+      "side": "Light",
+      "underlyingCardFor": ["Scott Lingrell (V)"]
+    }
+  ]
+}

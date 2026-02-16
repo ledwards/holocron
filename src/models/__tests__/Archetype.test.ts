@@ -1,4 +1,4 @@
-import Archetype from '../../src/models/Archetype';
+import Archetype from '../Archetype';
 
 describe('Archetype', () => {
   describe('constructor', () => {
@@ -51,7 +51,10 @@ describe('Archetype', () => {
       
       const result = archetype.nameAndAliases();
       
-      expect(result).toEqual(['Force User', 'Jedi Knight', 'Jedi']);
+      expect(result).toContain('Force User');
+      expect(result).toContain('Jedi Knight');
+      expect(result).toContain('Jedi');
+      expect(result.length).toBe(3);
     });
     
     it('should handle an archetype with only a name and no aliases', () => {
