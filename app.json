@@ -1,4 +1,6 @@
 {
-  "name": "holocron",
-  "displayName": "Holocron"
+  "expo": {
+    "name": "Holocron",
+    "slug": "holocron"
+  }
 }
