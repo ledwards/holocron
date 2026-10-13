@@ -20,6 +20,7 @@ import themeLight from './src/styles/themeLight';
 
 import ThemeContext from './src/contexts/ThemeContext';
 import AllCardsContext from './src/contexts/AllCardsContext';
+import CardDataStatusContext, {CardDataStatus} from './src/contexts/CardDataStatusContext';
 import AllDecklistsContext from './src/contexts/AllDecklistsContext';
 import AllExpansionsContext from './src/contexts/AllExpansionsContext';
 import { Theme } from './src/types/interfaces';
@@ -27,15 +28,13 @@ import { Theme } from './src/types/interfaces';
 const App = () => {
   const initialTheme = useColorScheme();
 
-  const [isCardsDownloadReady, setIsCardsDownloadReady] = useState<boolean>(false);
-  const [isExpansionSetsDownloadReady, setisExpansionSetsDownloadReady] =
-    useState<boolean>(false);
+  const [cardDataStatus, setCardDataStatus] = useState<CardDataStatus>('loading');
   const [isDecklistsDownloadReady, setIsDecklistsDownloadReady] =
     useState<boolean>(false);
   const [allCards, setAllCards] = useState<Card[]>([]);
   const [expansionSets, setExpansionSets] = useState<ExpansionSet[]>([]);
   const [allDecklists, setAllDecklists] = useState<Decklist[]>([]);
-  const [internetConnection, setInternetConnection] = useState<boolean>(false);
+  const [internetConnection, setInternetConnection] = useState<boolean | null>(null);
   const [theme, setTheme] = useState<Theme>(
     initialTheme === 'light' ? themeLight as Theme : themeDark as Theme,
   );
@@ -43,69 +42,73 @@ const App = () => {
   useEffect(() => {
     setTheme(initialTheme === 'light' ? themeLight as Theme : themeDark as Theme);
 
-    Appearance.addChangeListener(({colorScheme}: {colorScheme: ColorSchemeName}) => {
+    const appearanceSubscription = Appearance.addChangeListener(({colorScheme}: {colorScheme: ColorSchemeName}) => {
       setTheme(colorScheme === 'light' ? themeLight as Theme : themeDark as Theme);
     });
 
     NetInfo.fetch().then(state => {
       setInternetConnection(state.isConnected || false);
-    });
+    }).catch(() => setInternetConnection(false));
 
-    NetInfo.addEventListener(state => {
+    const unsubscribeNetwork = NetInfo.addEventListener(state => {
       setInternetConnection(state.isConnected || false);
     });
+    return () => {
+      appearanceSubscription?.remove();
+      unsubscribeNetwork();
+    };
   }, []);
 
   useEffect(() => {
-    if (!isCardsDownloadReady && internetConnection) {
-      downloadCardDefinitions().then(() => {
-        setIsCardsDownloadReady(true);
-      });
-    }
+    let active = true;
+    let availableCards = allCards;
+    if (!availableCards.length) setCardDataStatus('loading');
 
-    if (!isExpansionSetsDownloadReady && internetConnection) {
-      downloadExpansionSets().then(() => {
-        setisExpansionSetsDownloadReady(true);
-      });
-    }
+    const readCards = async () => {
+      const sets = await loadExpansionSets();
+      const cards = await loadCardDefinitions(sets);
+      if (active && cards.length) {
+        availableCards = cards;
+        setExpansionSets(sets);
+        setAllCards(cards);
+        setCardDataStatus('ready');
+      }
+    };
+    const initializeCards = async () => {
+      // Cached/bundled cards are usable immediately, even during a refresh.
+      await readCards().catch(error => console.log(error));
+      if (!active) return;
+      if (internetConnection === true) {
+        await Promise.allSettled([downloadCardDefinitions(), downloadExpansionSets()]);
+        if (!active) return;
+        await readCards().catch(error => console.log(error));
+      }
+      if (active && internetConnection !== null) {
+        setCardDataStatus(availableCards.length ? 'ready' : 'unavailable');
+      }
+    };
+    initializeCards();
+    return () => { active = false; };
+    // Connectivity changes start a new load; publishing cards must not restart it.
+  }, [internetConnection]);
 
+  useEffect(() => {
     if (!isDecklistsDownloadReady && internetConnection) {
-      downloadDecklists().then(() => {
-        setIsDecklistsDownloadReady(true);
-      });
+      downloadDecklists()
+        .catch(error => console.log(error))
+        .then(() => setIsDecklistsDownloadReady(true));
     }
   }, [internetConnection]);
 
   useEffect(() => {
-    if (
-      !internetConnection ||
-      (isCardsDownloadReady && isExpansionSetsDownloadReady)
-    ) {
-      loadExpansionSets()
-        .then(sets => {
-          setExpansionSets(sets);
-          return sets;
-        })
-        .then(expansionSets => {
-          loadCardDefinitions(expansionSets).then(cards => {
-            setAllCards(cards);
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-
+    let active = true;
     if (!internetConnection || isDecklistsDownloadReady) {
       loadDecklists().then(decklists => {
-        setAllDecklists(decklists);
-      });
+        if (active) setAllDecklists(decklists);
+      }).catch(error => console.log(error));
     }
-  }, [
-    isCardsDownloadReady,
-    isExpansionSetsDownloadReady,
-    isDecklistsDownloadReady,
-  ]);
+    return () => { active = false; };
+  }, [internetConnection, isDecklistsDownloadReady]);
 
   const NavigationContainerTheme: NavigationTheme = {
     ...DefaultTheme,
@@ -117,6 +120,7 @@ const App = () => {
 
   return (
     <AllDecklistsContext.Provider value={allDecklists}>
+      <CardDataStatusContext.Provider value={cardDataStatus}>
       <AllCardsContext.Provider value={allCards}>
         <AllExpansionsContext.Provider value={expansionSets}>
           <ThemeContext.Provider value={theme}>
@@ -143,6 +147,7 @@ const App = () => {
           </ThemeContext.Provider>
         </AllExpansionsContext.Provider>
       </AllCardsContext.Provider>
+      </CardDataStatusContext.Provider>
     </AllDecklistsContext.Provider>
   );
 };

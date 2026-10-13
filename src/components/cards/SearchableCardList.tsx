@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext, useRef, useMemo, useCallback} from 'react';
-import {View, ActivityIndicator, Text, Animated, FlatList, Keyboard} from 'react-native';
+import {View, ActivityIndicator, Text, Animated, FlatList, Keyboard, Pressable} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {useHeaderHeight} from '@react-navigation/elements';
 
@@ -199,13 +199,23 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
           }}>
           {currentSearchMode().title}
         </Text>
-        <Text
-          style={{
-            color: theme.foregroundColor,
-            ...styles.defaultTextDescription,
-          }}>
-          {currentSearchMode().description}
-        </Text>
+        {state.searchModeIndex === 0 ? (
+          <View style={{padding: 18, marginBottom: 40}}>
+            {currentSearchMode().description.split(/\s*\n\s*\n\s*/).map(example => {
+              const title = example.trim();
+              return <Pressable key={title} accessibilityRole="button"
+                accessibilityLabel={`Search for ${title}`} testID={`cards-suggestion-${title}`}
+                hitSlop={2} style={{minHeight: 40, justifyContent: 'center'}}
+                onPress={() => searchRouter(title)}>
+                <Text style={{color: theme.foregroundColor, fontSize: 16, textAlign: 'center'}}>{title}</Text>
+              </Pressable>;
+            })}
+          </View>
+        ) : (
+          <Text style={{color: theme.foregroundColor, ...styles.defaultTextDescription}}>
+            {currentSearchMode().description}
+          </Text>
+        )}
       </View>
     );
   };

@@ -69,3 +69,7 @@ Run `npm run rules:test:extraction` for font traits, heading classification, wra
 Run `screenshots/rules-formatting.yaml` with Maestro and a device-specific `SCREENSHOT_PREFIX` to compare native page 9 and its Life Force diagram against the source PDF. `screenshots/rules-reader.yaml` still checks search, selecting page 10, moving to page 19, and returning to contents.
 
 The Rules long-jump regression is covered by `screenshots/rules-symbols.yaml`: it searches text retained inside the page-99 source legend, jumps from the start of the book, and captures the symbol layout. The component regression verifies that estimated jumps are corrected until the requested page becomes visible.
+
+Card startup regressions in `AppStartup.e2e.test.tsx` cover pending downloads, offline empty data, and failed refreshes with usable cache. `CardSearchSuggestions.test.tsx` uses the real search footer to verify suggestion-to-input synchronization, filtering, editing, and clearing. `screenshots/card-search-suggestions.yaml` exercises example taps on the native app.
+
+Validation note (2026-10-13): card suggestion/startup tests and iOS Release builds pass. A TypeScript check including `App.tsx` still reports the existing missing navigator `id` type requirement in `src/components/navigation/TabNavigation.tsx`; this is separate from the card startup/search changes.

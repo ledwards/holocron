@@ -1,4 +1,4 @@
-import React, {useContext, useMemo, useState, useEffect} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import {Icon, Text} from 'react-native-elements';
 import SearchField from '../adaptive/SearchField';
@@ -53,15 +53,6 @@ const CardSearchFooter = (props: CardSearchFooterProps) => {
 
   const bottomGlassPadding = useSearchDockBottomPadding();
   const headerHeight = useHeaderHeight();
-  const [localQuery, setLocalQuery] = useState(props.query);
-
-  useEffect(() => {
-    // Keep controlled resets (clear/toggle mode) in sync without fighting rapid typing.
-    if (props.query === '' && localQuery !== '') {
-      setLocalQuery('');
-    }
-  }, [props.query, localQuery]);
-
   const queryHeight = useMemo(() => {
     const count = props.filterQuerySet.length();
     return props.query ? 18 + 30 * count + (count > 1 ? 28 : 0) : 34;
@@ -106,11 +97,8 @@ const CardSearchFooter = (props: CardSearchFooterProps) => {
           <SearchField
             testID="cards-search-input"
             placeholder={`Search by ${props.searchMode.label}`}
-            value={localQuery}
-            onChangeText={text => {
-              setLocalQuery(text);
-              props.searchCallback(text);
-            }}
+            value={props.query}
+            onChangeText={props.searchCallback}
             icon={props.searchMode.icon}
             onModePress={props.toggleSearchMode}
           />

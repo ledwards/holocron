@@ -10,6 +10,7 @@ const mockLoadCardDefinitions = jest.fn();
 const mockLoadDecklists = jest.fn();
 
 let capturedTabNavigationProps: any;
+let capturedCardStatus: string;
 const NetInfoMock = require('@react-native-community/netinfo');
 
 jest.mock('@react-navigation/native', () => ({
@@ -56,6 +57,7 @@ jest.mock('../../src/components/navigation/TabNavigation', () => {
 
   return (props: unknown) => {
     capturedTabNavigationProps = props;
+    capturedCardStatus = ReactLocal.useContext(require('../../src/contexts/CardDataStatusContext').default);
     return <View testID="tab-navigation" />;
   };
 });
@@ -85,6 +87,9 @@ describe('App startup e2e', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    [mockLoadExpansionSets, mockLoadCardDefinitions, mockLoadDecklists,
+      mockDownloadCardDefinitions, mockDownloadExpansionSets, mockDownloadDecklists]
+      .forEach(mock => mock.mockReset());
     capturedTabNavigationProps = undefined;
     NetInfoMock.__reset();
   });
@@ -161,4 +166,55 @@ describe('App startup e2e', () => {
 
     app!.unmount();
   });
+  it('stays loading through an empty cache and a pending online download', async () => {
+    NetInfoMock.__setConnected(true);
+    let finishDownload!: () => void;
+    let downloaded = false;
+    const cards = [{title: 'Luke Skywalker'}];
+    mockLoadExpansionSets.mockResolvedValue([]);
+    mockLoadCardDefinitions.mockImplementation(async () => downloaded ? cards : []);
+    mockLoadDecklists.mockResolvedValue([]);
+    mockDownloadDecklists.mockResolvedValue(undefined);
+    mockDownloadExpansionSets.mockResolvedValue(undefined);
+    mockDownloadCardDefinitions.mockReturnValue(new Promise<void>(resolve => {finishDownload = resolve;}));
+    let app!: ReactTestRenderer;
+    await act(async () => { app = create(<App />); });
+    await waitForExpectation(() => expect(mockDownloadCardDefinitions).toHaveBeenCalled());
+    expect(capturedCardStatus).toBe('loading');
+    expect(capturedTabNavigationProps.allCards).toEqual([]);
+    await act(async () => { downloaded = true; finishDownload(); });
+    await waitForExpectation(() => expect(capturedCardStatus).toBe('ready'));
+    expect(capturedTabNavigationProps.allCards).toEqual(cards);
+    act(() => app.unmount());
+  });
+
+  it('keeps cached cards available when an online refresh fails', async () => {
+    NetInfoMock.__setConnected(true);
+    const cards = [{title: 'Darth Vader'}];
+    mockLoadExpansionSets.mockResolvedValue([]);
+    mockLoadCardDefinitions.mockResolvedValue(cards);
+    mockLoadDecklists.mockResolvedValue([]);
+    mockDownloadDecklists.mockResolvedValue(undefined);
+    mockDownloadExpansionSets.mockRejectedValue(new Error('Download failed'));
+    mockDownloadCardDefinitions.mockRejectedValue(new Error('Download failed'));
+    let app!: ReactTestRenderer;
+    await act(async () => { app = create(<App />); });
+    await waitForExpectation(() => expect(mockDownloadCardDefinitions).toHaveBeenCalled());
+    expect(capturedCardStatus).toBe('ready');
+    expect(capturedTabNavigationProps.allCards).toEqual(cards);
+    act(() => app.unmount());
+  });
+
+  it('finishes an empty offline load instead of leaving an endless spinner', async () => {
+    NetInfoMock.__setConnected(false);
+    mockLoadExpansionSets.mockResolvedValue([]);
+    mockLoadCardDefinitions.mockResolvedValue([]);
+    mockLoadDecklists.mockResolvedValue([]);
+    let app!: ReactTestRenderer;
+    await act(async () => { app = create(<App />); });
+    await waitForExpectation(() => expect(capturedCardStatus).toBe('unavailable'));
+    expect(mockDownloadCardDefinitions).not.toHaveBeenCalled();
+    act(() => app.unmount());
+  });
+
 });

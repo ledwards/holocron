@@ -1,0 +1,31 @@
+appId: com.ledwards.holocron
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: cards-suggestion-farm
+    timeout: 20000
+- assertNotVisible: "No card data is available yet. Connect to the internet and relaunch to download data."
+- takeScreenshot: ${SCREENSHOT_PREFIX}-suggestions
+- tapOn:
+    id: cards-suggestion-farm
+- assertVisible:
+    id: cards-search-input
+    text: farm
+- extendedWaitUntil:
+    visible:
+      id: card-item-0
+    timeout: 10000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-farm
+- tapOn:
+    id: cards-search-input-clear
+- assertVisible:
+    id: cards-suggestion-chimaera
+- tapOn:
+    id: cards-suggestion-chimaera
+- assertVisible:
+    id: cards-search-input
+    text: chimaera
+- assertVisible:
+    id: card-item-0
+- takeScreenshot: ${SCREENSHOT_PREFIX}-chimaera

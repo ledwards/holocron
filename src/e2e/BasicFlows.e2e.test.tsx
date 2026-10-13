@@ -3,6 +3,7 @@ import {render} from '@testing-library/react-native';
 import CardsScreen from '../components/cards/CardsScreen';
 import DecklistsScreenHome from '../components/decklists/DecklistsScreenHome';
 import AllCardsContext from '../contexts/AllCardsContext';
+import CardDataStatusContext from '../contexts/CardDataStatusContext';
 import AllDecklistsContext from '../contexts/AllDecklistsContext';
 
 const mockUseNavigation = jest.fn();
@@ -45,7 +46,7 @@ describe('Basic flow e2e', () => {
   });
 
   it('hides card search list when there are no cards', () => {
-    const {queryByTestId} = render(
+    const {queryByTestId, getByText, queryByText} = render(
       <AllCardsContext.Provider value={[]}>
         <CardsScreen />
       </AllCardsContext.Provider>,
@@ -53,6 +54,18 @@ describe('Basic flow e2e', () => {
 
     expect(queryByTestId('searchable-card-list')).toBeNull();
     expect(mockSearchableCardList).not.toHaveBeenCalled();
+    expect(queryByTestId('cards-loading')).toBeTruthy();
+    expect(getByText('Loading cards…')).toBeTruthy();
+    expect(queryByText(/Connect to the internet/)).toBeNull();
+  });
+
+  it('shows an honest failure only after card loading has finished', () => {
+    const screen = render(<CardDataStatusContext.Provider value="unavailable">
+      <AllCardsContext.Provider value={[]}><CardsScreen /></AllCardsContext.Provider>
+    </CardDataStatusContext.Provider>);
+    expect(screen.queryByTestId('cards-loading')).toBeNull();
+    expect(screen.getByText('Unable to load card data. Please reopen the app to try again.')).toBeTruthy();
+    expect(screen.queryByText(/Connect to the internet/)).toBeNull();
   });
 
   it('shows decklist search list when decklists are available', () => {

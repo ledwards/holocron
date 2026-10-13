@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, ActivityIndicator} from 'react-native';
 import SearchableCardList from './SearchableCardList';
 import AllCardsContext from '../../contexts/AllCardsContext';
+import CardDataStatusContext from '../../contexts/CardDataStatusContext';
 import ThemeContext from '../../contexts/ThemeContext';
 import Card from '../../models/Card';
 import {Theme} from '../../types/interfaces';
@@ -10,6 +11,7 @@ const CardsScreen = () => {
   const allCardsContext = useContext(AllCardsContext);
   const allCards: Card[] = allCardsContext || [];
   const theme = useContext<Theme | null>(ThemeContext);
+  const status = useContext(CardDataStatusContext);
 
   return (
     <>
@@ -25,8 +27,9 @@ const CardsScreen = () => {
             backgroundColor: theme?.backgroundColor,
             paddingHorizontal: 24,
           }}>
-          <Text style={{color: theme?.foregroundColor, textAlign: 'center'}}>
-            No card data is available yet. Connect to the internet and relaunch to download data.
+          {status === 'loading' && <ActivityIndicator testID="cards-loading" size="large" color={theme?.foregroundColor} />}
+          <Text accessibilityLiveRegion="polite" style={{color: theme?.foregroundColor, textAlign: 'center', marginTop: 12}}>
+            {status === 'loading' ? 'Loading cards…' : 'Unable to load card data. Please reopen the app to try again.'}
           </Text>
         </View>
       )}
