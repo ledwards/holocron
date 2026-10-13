@@ -23,6 +23,7 @@ This repository allows AI-assisted development. Follow these rules for all LLMs 
 - Reuse existing patterns in `src/models`, `src/presenters`, and `src/components`.
 - Prefer pure logic in models/presenters; keep UI components focused on rendering and interaction.
 - Do not mix unrelated refactors with feature/fix work.
+- Preserve Holocron’s existing visual design during compatibility work: original cropped-art list rows, four-column deck gallery, icon-only navigation, and the single cycling deck-mode icon. Do not add labeled tabs, extra headings/toolbars, or replacement card interactions without an explicit design request.
 
 ## Testing Standards
 

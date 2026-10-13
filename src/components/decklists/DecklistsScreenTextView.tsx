@@ -1,5 +1,7 @@
 import React, {useContext} from 'react';
 import {ScrollView, Text} from 'react-native';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
@@ -7,16 +9,21 @@ import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenTextViewStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 
-const DecklistsScreenTextView = ({route}) => {
+const DecklistsScreenTextView = ({route, embedded = false}) => {
   const theme = useContext(ThemeContext);
+  const headerHeight = useHeaderHeight();
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <>
       <ScrollView
+        testID="deck-text"
+        contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
           ...styles.decklistView,
           backgroundColor: theme.backgroundColor,
-          paddingEnd: layout.nativeHeaderHeight(),
+          paddingTop: (embedded ? 0 : headerHeight) + 24,
+          paddingBottom: tabBarHeight + 24,
         }}>
         <Text
           style={{
@@ -41,10 +48,6 @@ const DecklistsScreenTextView = ({route}) => {
           {route.params.decklist.plaintext}
         </Text>
       </ScrollView>
-      <DecklistEmptyFooter
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        tabBarHeight={layout.tabBarHeight()}
-      />
       <DecklistEmptyFooter
         nativeFooterHeight={layout.nativeFooterHeight()}
         tabBarHeight={layout.tabBarHeight()}

@@ -1,0 +1,4 @@
+appId: com.ledwards.holocron
+---
+# Retained entry point for the expanded compact-phone regression flow.
+- runFlow: adaptive-panes.yaml

@@ -66,18 +66,21 @@ npm run test:all
 ```
 
 ## Rules Pipeline
+The current extractor follows Wayfinder iOS's PyMuPDF span approach, adapted to the SWCCG rulebook's two-column layout. It preserves source headings, bold/italic spans, bullets, diagrams, and maintenance symbols; it does not use LLM text rewriting.
+
 ```bash
+python3 -m pip install -r scripts/rules/requirements.txt
 npm run rules:download
 npm run rules:extract
 npm run rules:generate
-npm run rules:phase3:text
+npm run rules:test:extraction
+npm run rules:test
 npm run rules:quality-gate
 ```
 
-Generated files:
-- `src/data/rules/rules.document.json`
-- `src/data/rules/rules.index.json`
-- `src/data/rules/rules.meta.json`
+Extraction writes `scripts/rules/input/structured.document.json` and a per-page coverage report. Generation writes `src/data/rules/rules.document.json`, `rules.index.json`, and `rules.meta.json`. Only generated app artifacts are committed; the downloaded PDF and intermediate extraction files stay local.
+
+The old PDF.js extraction and heuristic regeneration remain available as `rules:extract:legacy` and `rules:generate:legacy` for investigation. `rules:phase3:text` also belongs to the legacy pipeline; do not run it on the structured artifact. See [rules extraction](docs/RULES_EXTRACTION.md) for the source checks and update workflow.
 
 ## Release (iOS)
 ```bash
@@ -102,3 +105,12 @@ kill -9 $(lsof -ti :8082) 2>/dev/null || true
 ```bash
 cd ios && pod cache clean --all && pod install && cd ..
 ```
+
+## Adaptive Layout and Duo
+This repository ships **SW:CCG Holocron** (`com.ledwards.holocron`, App Store ID `6473052017`).
+
+The interactive Duo design preview covers Cards, Decklists, and Rules in light/dark and compact/wide layouts:
+```bash
+python3 -m http.server 8769 --bind 127.0.0.1 --directory docs/layout-comps
+```
+Open `http://127.0.0.1:8769` for the original design comps. The native app now uses adaptive browsing/detail panes for Cards, Decklists, and Rules, with compact navigation on narrower screens. See [layout ownership and compatibility guidance](docs/ADAPTIVE_LAYOUT.md).

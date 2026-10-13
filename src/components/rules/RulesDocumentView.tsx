@@ -24,9 +24,11 @@ import Card from '../../models/Card';
 import {Theme} from '../../types/interfaces';
 import {RulesSection, RulesTextRun} from '../../lib/rules/types';
 import styles from '../../styles/RulesScreenStyles';
-import {rulesFontFamilies, rulesFontFamilyForTraits} from '../../styles/rulesTypography';
+import {rulesFontFamilyForTraits} from '../../styles/rulesTypography';
 
 interface RulesDocumentViewProps {
+  bottomInset?: number;
+  preserveSourceFormatting?: boolean;
   sections: RulesSection[];
   query: string;
   theme: Theme;
@@ -36,6 +38,8 @@ interface RulesDocumentViewProps {
 
 export interface RulesDocumentViewHandle {
   scrollToAnchor: (anchor: string) => void;
+  scrollToPage: (page: number) => void;
+  selectQueryPage: (page: number) => {current: number; total: number};
   jumpToQueryHit: (direction: 'next' | 'prev') => {current: number; total: number};
   resetQueryHitCursor: () => {current: number; total: number};
 }
@@ -57,6 +61,7 @@ interface TextSegment {
 }
 
 interface HeadingChunk {
+  level?: number;
   type: 'heading';
   anchor: string;
   text: string;
@@ -67,10 +72,12 @@ interface ParagraphChunk {
   anchor: string;
   blockIndex: number;
   runs: RulesTextRun[];
+  text?: string;
 }
 
 interface ImageChunk {
   type: 'image';
+  text?: string;
   anchor: string;
   imageUri: string;
   imageCaption?: string;
@@ -107,7 +114,7 @@ function startsWithCardTitle(text: string, index: number, title: string): boolea
 }
 
 function stripLeadingUniquenessMarkers(title: string): string {
-  return title.replace(/^[•◆◇◊\*]+/, '').trimStart();
+  return title.replace(/^[•◆◇◊*]+/, '').trimStart();
 }
 
 function cardTitleAliases(title: string): string[] {
@@ -425,7 +432,7 @@ function normalizeParagraphRunsForDisplay(runs: RulesTextRun[]): RulesTextRun[] 
 
     // Convert malformed glossary run "Hand All cards..." into term + definition.
     if (current.bold && !cleanText.includes('\n')) {
-      const glossaryMatch = cleanText.trim().match(/^([A-Z][A-Za-z'’\-]+)\s+(.+)$/);
+      const glossaryMatch = cleanText.trim().match(/^([A-Z][A-Za-z'’-]+)\s+(.+)$/);
       const definitionStarter = /^(All|Act|A|An|The|Any|One|Two|Three|When|If|You|Each)\b/;
       if (
         glossaryMatch &&
@@ -462,25 +469,52 @@ function pageTextForSearch(row: PageRow): string {
         return chunk.text;
       }
       if (chunk.type === 'image') {
-        return chunk.imageCaption || '';
+        return chunk.text || chunk.imageCaption || '';
       }
-      return chunk.runs.map(run => run.text).join(' ');
+      return chunk.text ?? chunk.runs.map(run => run.text).join(' ');
     })
     .join(' ');
 }
 
 const RulesDocumentView = forwardRef(
   (
-    {sections, query, theme, onAnchorNavigation, onVisiblePagesChange}: RulesDocumentViewProps,
+    {sections, query, theme, onAnchorNavigation, onVisiblePagesChange, bottomInset, preserveSourceFormatting = false}: RulesDocumentViewProps,
     ref: ForwardedRef<RulesDocumentViewHandle>,
   ) => {
     const allCards = useContext(AllCardsContext);
     const [selectedCard, setSelectedCard] = useState<CardLinkMatch | null>(null);
+    const [listStartIndex, setListStartIndex] = useState(0);
+    const pageLengthsRef = useRef<Record<string, number>>({});
+    const listWidthRef = useRef(0);
+    const [layoutVersion, setLayoutVersion] = useState(0);
     const listRef = useRef<FlatList<PageRow>>(null);
+    useEffect(() => {
+      listRef.current?.scrollToOffset({offset: 0, animated: false});
+      setListStartIndex(0);
+      pendingScrollIndexRef.current = null;
+    }, [query]);
     const anchorIndexRef = useRef<Record<string, number>>({});
     const queryHitCursorRef = useRef<number>(-1);
     const visiblePagesKeyRef = useRef<string>('');
     const pendingScrollIndexRef = useRef<number | null>(null);
+    const scrollRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const scrollRetryCountRef = useRef(0);
+    const queueScrollRetry = useCallback(function retry() {
+      if (scrollRetryTimerRef.current) clearTimeout(scrollRetryTimerRef.current);
+      if (pendingScrollIndexRef.current === null || scrollRetryCountRef.current >= 40) return;
+      scrollRetryTimerRef.current = setTimeout(() => {
+        const index = pendingScrollIndexRef.current;
+        if (index === null) return;
+        scrollRetryCountRef.current += 1;
+        // Variable-height pages can be measured after FlatList considers the
+        // index reachable. Keep correcting its estimate until that page is visible.
+        listRef.current?.scrollToIndex({index, animated: false, viewPosition: 0});
+        retry();
+      }, 150);
+    }, []);
+    useEffect(() => () => {
+      if (scrollRetryTimerRef.current) clearTimeout(scrollRetryTimerRef.current);
+    }, []);
 
     const cardTitlesByLeadingCharacter = useMemo(() => {
       const map = new Map<string, CardLinkMatch[]>();
@@ -555,6 +589,7 @@ const RulesDocumentView = forwardRef(
           type: 'heading',
           anchor: section.anchor,
           text: section.title,
+          level: preserveSourceFormatting ? section.level : 1,
         });
 
         section.blocks
@@ -566,6 +601,7 @@ const RulesDocumentView = forwardRef(
                 type: 'image',
                 anchor: section.anchor,
                 imageUri: block.image.uri,
+                text: block.text,
                 imageCaption: block.image.caption,
                 imageWidth: block.image.width,
                 imageHeight: block.image.height,
@@ -579,6 +615,7 @@ const RulesDocumentView = forwardRef(
               anchor: section.anchor,
               blockIndex,
               runs: block.textRuns,
+              text: block.text,
             });
           });
       });
@@ -605,7 +642,7 @@ const RulesDocumentView = forwardRef(
 
       anchorIndexRef.current = anchorRowMap;
       return output;
-    }, [sections]);
+    }, [sections, preserveSourceFormatting]);
 
     const queryHitRowIndexes = useMemo(() => {
       const normalized = normalizedQuery.toLowerCase();
@@ -633,7 +670,11 @@ const RulesDocumentView = forwardRef(
     }, [rows, onVisiblePagesChange]);
 
     const onViewableItemsChanged = useRef(
-      ({viewableItems}: {viewableItems: Array<ViewToken<PageRow>>}) => {
+      ({viewableItems}: {viewableItems: Array<ViewToken & {item: PageRow}>}) => {
+        if (viewableItems.some(item => item.index === pendingScrollIndexRef.current)) {
+          pendingScrollIndexRef.current = null;
+          if (scrollRetryTimerRef.current) clearTimeout(scrollRetryTimerRef.current);
+        }
         if (!onVisiblePagesChange) {
           return;
         }
@@ -658,11 +699,30 @@ const RulesDocumentView = forwardRef(
         return;
       }
       pendingScrollIndexRef.current = index;
+      scrollRetryCountRef.current = 0;
+      if (Math.abs(index - listStartIndex) > 3) setListStartIndex(index);
       listRef.current?.scrollToIndex({
         index,
         animated: true,
         viewPosition: 0,
       });
+      queueScrollRetry();
+    };
+
+    const scrollToPage = (page: number) => {
+      const index = rows.findIndex(row => row.page === page);
+      if (index < 0) {
+        return;
+      }
+      pendingScrollIndexRef.current = index;
+      scrollRetryCountRef.current = 0;
+      if (Math.abs(index - listStartIndex) > 3) setListStartIndex(index);
+      listRef.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0,
+      });
+      queueScrollRetry();
     };
 
     const jumpToQueryHit = (direction: 'next' | 'prev') => {
@@ -682,11 +742,15 @@ const RulesDocumentView = forwardRef(
       }
 
       const rowIndex = queryHitRowIndexes[queryHitCursorRef.current];
+      pendingScrollIndexRef.current = rowIndex;
+      scrollRetryCountRef.current = 0;
+      if (Math.abs(rowIndex - listStartIndex) > 3) setListStartIndex(rowIndex);
       listRef.current?.scrollToIndex({
         index: rowIndex,
         animated: true,
-        viewPosition: 0.1,
+        viewPosition: 0,
       });
+      queueScrollRetry();
 
       return {current: queryHitCursorRef.current + 1, total};
     };
@@ -698,6 +762,12 @@ const RulesDocumentView = forwardRef(
 
     useImperativeHandle(ref, () => ({
       scrollToAnchor,
+      scrollToPage,
+      selectQueryPage: (page: number) => {
+        scrollToPage(page);
+        queryHitCursorRef.current = queryHitRowIndexes.findIndex(index => rows[index].page === page);
+        return {current: queryHitCursorRef.current + 1, total: queryHitRowIndexes.length};
+      },
       jumpToQueryHit,
       resetQueryHitCursor,
     }));
@@ -706,7 +776,7 @@ const RulesDocumentView = forwardRef(
       chunk: ParagraphChunk,
       runKeyPrefix: string,
     ): React.ReactElement => {
-      const displayRuns = normalizeParagraphRunsForDisplay(chunk.runs).map(run => ({
+      const displayRuns = preserveSourceFormatting ? chunk.runs : normalizeParagraphRunsForDisplay(chunk.runs).map(run => ({
         ...run,
         text: forceListBulletsToNewLine(run.text, cardTitlesByLeadingCharacter),
       }));
@@ -716,6 +786,11 @@ const RulesDocumentView = forwardRef(
       return (
         <Text style={{...paragraphStyle, color: theme.foregroundColor}}>
           {displayRuns.map((run, runIndex) => {
+            if (run.symbol) {
+              return <Image key={`${runKeyPrefix}-${runIndex}`} accessibilityLabel={run.symbol.label}
+                source={{uri: run.symbol.uri}} resizeMode="contain"
+                style={{width: 18, height: 18, tintColor: theme.foregroundColor}} />;
+            }
             const hrefAnchor = run.href?.startsWith('#') ? run.href.slice(1) : null;
             const runSegments = hrefAnchor
               ? [{text: run.text, anchorLink: hrefAnchor}]
@@ -800,7 +875,7 @@ const RulesDocumentView = forwardRef(
                           ? {
                               color: RULES_LINK_COLOR,
                               ...styles.linkText,
-                              fontFamily: rulesFontFamilies.regular,
+                              fontFamily: rulesFontFamilyForTraits({bold: run.bold, italic: run.italic}),
                             }
                           : {color: theme.foregroundColor}
                       }>
@@ -828,6 +903,7 @@ const RulesDocumentView = forwardRef(
       );
     }, [
       cardTitlesByLeadingCharacter,
+      preserveSourceFormatting,
       normalizedQuery,
       onAnchorNavigation,
       sectionReferenceMap,
@@ -838,8 +914,18 @@ const RulesDocumentView = forwardRef(
       return (
         <View
           testID={`rules-page-card-${item.page}`}
+          onLayout={event => {
+            const length = event.nativeEvent.layout.height + styles.pageCard.marginBottom;
+            if (Math.abs((pageLengthsRef.current[item.key] || 0) - length) > 0.5) {
+              pageLengthsRef.current[item.key] = length;
+              setLayoutVersion(version => version + 1);
+            }
+          }}
           style={{
             ...styles.pageCard,
+            width: '100%',
+            maxWidth: 720,
+            alignSelf: 'center',
             borderColor: theme.dividerColor,
             backgroundColor: theme.translucentBackgroundColor,
           }}>
@@ -850,7 +936,7 @@ const RulesDocumentView = forwardRef(
                   key={`${item.page}-heading-${index}`}
                   testID={`rules-section-${chunk.anchor}`}
                   style={styles.pageHeadingBlock}>
-                  <Text style={{...styles.headingText, color: theme.foregroundColor}}>{chunk.text}</Text>
+                  <Text style={{...styles.headingText, ...(chunk.level === 2 ? {fontSize: 20, lineHeight: 27} : chunk.level === 3 ? {fontSize: 17, lineHeight: 24} : {}), color: theme.foregroundColor}}>{chunk.text}</Text>
                 </View>
               );
             }
@@ -869,12 +955,14 @@ const RulesDocumentView = forwardRef(
                     backgroundColor: theme.translucentBackgroundColor,
                   }}>
                   <Image
+                    accessible={!!chunk.text}
+                    accessibilityLabel={chunk.text || chunk.imageCaption}
                     source={{uri: chunk.imageUri}}
                     resizeMode="contain"
                     style={{
                       width: '100%',
                       ...(aspectRatio
-                        ? {aspectRatio, minHeight: 220, maxHeight: 460}
+                        ? {aspectRatio}
                         : {height: chunk.imageUri && chunk.imageUri.length > 0 ? 240 : 220}),
                     }}
                   />
@@ -904,42 +992,55 @@ const RulesDocumentView = forwardRef(
     return (
       <>
         <FlatList
+          key={listStartIndex}
           testID="rules-document-scroll"
           ref={listRef}
           style={styles.contentContainer}
           contentContainerStyle={{
             ...styles.docContent,
+            ...(bottomInset !== undefined ? {paddingBottom: bottomInset} : {}),
             backgroundColor: theme.backgroundColor,
           }}
           data={rows}
+          extraData={layoutVersion}
+          onLayout={event => {
+            const width = event.nativeEvent.layout.width;
+            if (listWidthRef.current && Math.abs(listWidthRef.current - width) > 1) {
+              pageLengthsRef.current = {};
+              setLayoutVersion(version => version + 1);
+            }
+            listWidthRef.current = width;
+          }}
+          getItemLayout={(_data, index) => {
+            // Stable placeholders avoid changing every preceding page's size
+            // whenever FlatList measures one unusually long PDF page.
+            const lengthFor = (row: PageRow) => pageLengthsRef.current[row.key] || 5000;
+            return {index, length: lengthFor(rows[index]), offset: styles.docContent.paddingTop +
+              rows.slice(0, index).reduce((offset, row) => offset + lengthFor(row), 0)};
+          }}
           keyExtractor={item => item.key}
-          initialNumToRender={20}
-          maxToRenderPerBatch={20}
+          initialNumToRender={2}
+          initialScrollIndex={listStartIndex}
+          maxToRenderPerBatch={2}
           updateCellsBatchingPeriod={60}
-          windowSize={7}
+          windowSize={3}
           removeClippedSubviews={true}
           onScrollToIndexFailed={info => {
             const fallbackOffset =
-              Math.max(0, info.averageItemLength) * Math.max(0, info.index - 1);
+              Math.max(0, info.averageItemLength) * Math.max(0, info.index);
             listRef.current?.scrollToOffset({
               offset: fallbackOffset,
               animated: false,
             });
 
-            const retryIndex =
-              pendingScrollIndexRef.current !== null
-                ? pendingScrollIndexRef.current
-                : info.index;
-            setTimeout(() => {
-              listRef.current?.scrollToIndex({
-                index: retryIndex,
-                animated: true,
-                viewPosition: 0,
-              });
-            }, 80);
+            queueScrollRetry();
+          }}
+          onScrollBeginDrag={() => {
+            pendingScrollIndexRef.current = null;
+            if (scrollRetryTimerRef.current) clearTimeout(scrollRetryTimerRef.current);
           }}
           onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={{itemVisiblePercentThreshold: 35}}
+          viewabilityConfig={{viewAreaCoveragePercentThreshold: 1}}
           renderItem={renderPageRow}
         />
 

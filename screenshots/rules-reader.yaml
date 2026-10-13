@@ -1,0 +1,48 @@
+appId: com.ledwards.holocron
+---
+- launchApp
+- tapOn:
+    id: tab-rules
+- assertVisible:
+    id: rules-document-scroll
+- takeScreenshot: ${SCREENSHOT_PREFIX}-initial
+- tapOn:
+    id: rules-open-search
+- tapOn:
+    id: rules-search-input
+- inputText: vader
+- extendedWaitUntil:
+    visible:
+      text: "212 matches"
+    timeout: 15000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-search
+- tapOn:
+    id: rules-search-result-0
+- assertVisible:
+    id: rules-match-bar
+- extendedWaitUntil:
+    visible:
+      id: rules-visible-pages
+      text: "Page 10"
+    timeout: 15000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-reader
+- tapOn:
+    id: rules-next-hit
+- extendedWaitUntil:
+    visible:
+      id: rules-visible-pages
+      text: "Page 19"
+    timeout: 15000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-next
+- tapOn:
+    id: rules-open-search
+- assertVisible: vader
+- tapOn:
+    id: rules-clear
+- tapOn:
+    id: rules-close-search
+- tapOn:
+    id: rules-toc-toggle
+- assertVisible:
+    id: rules-toc-panel
+- takeScreenshot: ${SCREENSHOT_PREFIX}-contents

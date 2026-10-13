@@ -1,0 +1,21 @@
+appId: com.ledwards.holocron
+---
+- launchApp
+- tapOn:
+    id: tab-rules
+- tapOn:
+    id: rules-toc-toggle
+- tapOn:
+    id: rules-toc-item-3
+- extendedWaitUntil:
+    visible:
+      id: rules-visible-pages
+      text: "Page 9"
+    timeout: 15000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-page9
+- scrollUntilVisible:
+    element:
+      text: "Re-circulating"
+    direction: DOWN
+    timeout: 20000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-diagram

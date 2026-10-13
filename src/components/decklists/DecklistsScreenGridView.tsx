@@ -1,11 +1,13 @@
-import React, {createRef, useEffect, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {ScrollView, View, Dimensions, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
-import {Decklist} from '../../types/interfaces';
+import DecklistPresenter from '../../presenters/DecklistPresenter';
 
 // List of cards that have two sides
 const TWO_SIDED_CARDS = ["Jabba's Prize", 'The Falcon, Junkyard Garbage'];
@@ -26,14 +28,17 @@ const isTwoSided = (card: CardType): boolean => {
 interface DecklistsScreenGridViewProps {
   route: {
     params: {
-      decklist: Decklist;
+      decklist: DecklistPresenter;
     }
   };
-  navigation: Record<string, unknown>;
+  navigation?: Record<string, unknown>;
+  embedded?: boolean;
 }
 
 const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
-  const scrollViewRef = createRef<ScrollView>();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const headerHeight = useHeaderHeight();
+  const tabBarHeight = useBottomTabBarHeight();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
   
@@ -48,21 +53,10 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   
   const cardsPerRow = 4;
 
-  // Handle screen rotation/dimension changes
-  useEffect(() => {
-    const dimensionsHandler = Dimensions.addEventListener('change', () => {
-      setWindowWidth(Dimensions.get('window').width);
-    });
-
-    return () => {
-      dimensionsHandler?.remove();
-    };
-  }, []);
-
   // Flatten card list to include duplicates based on quantity
   const items: CardType[] = [];
   if (props.route.params.decklist && props.route.params.decklist.cards) {
-    props.route.params.decklist.cards.forEach((card: CardType) => {
+    (Array.isArray(props.route.params.decklist.cards) ? props.route.params.decklist.cards : []).forEach((card: CardType) => {
       for (let i = 0; i < card.quantity; i++) {
         items.push(card);
       }
@@ -108,10 +102,14 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   return (
     <>
       <ScrollView
+        testID="deck-grid"
+        onLayout={event => setWindowWidth(event.nativeEvent.layout.width)}
         ref={scrollViewRef}
+        contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
           ...styles.scrollView,
-          paddingBottom: layout.footerHeight(0, undefined) + 150,
+          paddingTop: props.embedded ? 0 : headerHeight,
+          paddingBottom: tabBarHeight + 16,
         }}>
         <View style={{
           flexDirection: 'row',

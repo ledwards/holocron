@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import {Animated, Easing, Dimensions, Keyboard, Text, View} from 'react-native';
+import React, {useState, useContext, useEffect} from 'react';
+import {Animated, Easing, useWindowDimensions, Keyboard, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
@@ -26,12 +26,16 @@ export interface CardListItemProps {
   index: number;
   scrollToIndex: ScrollToIndexFunction;
   quantity?: number;
+  onPress?: () => void;
+  testID?: string;
   flatListRef?: Animated.FlatList<any> | undefined;
   theme?: Theme;
 }
 
 const CardListItem = (props: CardListItemProps) => {
-  const windowWidth = Dimensions.get('window').width;
+  const window = useWindowDimensions();
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  const windowWidth = measuredWidth || window.width;
   const fillPercent = 0.55;
 
   const startingHeight = props.item.sideways
@@ -67,6 +71,17 @@ const CardListItem = (props: CardListItemProps) => {
     maxWidth: windowWidth,
     posY: 0,
   });
+
+  // Preserve the original crop geometry, sized to the actual list pane.
+  useEffect(() => {
+    const maxHeight = windowWidth * props.item.aspectRatio;
+    state.heightAnim.setValue(state.expanded ? maxHeight : startingHeight);
+    state.widthAnim.setValue(state.expanded ? windowWidth : windowWidth * fillPercent);
+    state.containerHeightAnim.setValue(state.expanded ? maxHeight : startingHeight / 2);
+    setState(previous => ({...previous, screenWidth: windowWidth,
+      minHeight: startingHeight, maxHeight, minWidth: windowWidth * fillPercent,
+      maxWidth: windowWidth}));
+  }, [windowWidth, startingHeight, props.item.aspectRatio]);
 
   // Use context to get theme if not provided as prop
   const theme = props.theme || useContext(ThemeContext) || {
@@ -133,14 +148,15 @@ const CardListItem = (props: CardListItemProps) => {
 
   return (
     <Animated.View
+      onLayout={event => setMeasuredWidth(event.nativeEvent.layout.width)}
       style={{
         height: state.containerHeightAnim,
       }}>
       <ListItem
-        testID={`card-item-${props.index}`}
+        testID={props.testID || `card-item-${props.index}`}
         accessibilityLabel={props.item.displayTitle || `card-item-${props.index}`}
         style={{marginLeft: -15}}
-        onPress={() => toggleExpanded()}
+        onPress={props.onPress || toggleExpanded}
         containerStyle={{
           ...styles.cardListItemContainer,
           ...(props.item.side === CardSide.Dark

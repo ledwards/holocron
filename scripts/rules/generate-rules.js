@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const path = require('path');
 require('@babel/register')({
@@ -236,7 +236,7 @@ function isHeadingLike(text) {
   if (!/^[A-Z]/.test(value)) {
     return false;
   }
-  return /^[A-Z][A-Za-z0-9'’&,\-]*(?:\s+[A-Z][A-Za-z0-9'’&,\-]*){0,10}$/.test(value);
+  return /^[A-Z][A-Za-z0-9'’&,-]*(?:\s+[A-Z][A-Za-z0-9'’&,-]*){0,10}$/.test(value);
 }
 
 function enforceRunSpacingAndBreaks(document) {
@@ -248,7 +248,7 @@ function enforceRunSpacingAndBreaks(document) {
     if (!/^[A-Z]/.test(value)) {
       return false;
     }
-    return /^[A-Z][A-Za-z0-9'’&,\-]*(?:\s+[A-Z][A-Za-z0-9'’&,\-]*){0,10}$/.test(value);
+    return /^[A-Z][A-Za-z0-9'’&,-]*(?:\s+[A-Z][A-Za-z0-9'’&,-]*){0,10}$/.test(value);
   };
 
   const shouldInsertStyleBoundarySpace = (previous, current) => {
@@ -500,42 +500,41 @@ function attachExtractedImages(document, extractedImages) {
   };
 }
 
-function buildSearchIndex(document) {
-  const tokenMap = {};
+const {buildRulesSearchIndex: buildSearchIndex} = require('../../src/lib/rules/search');
 
-  const normalizeToken = value =>
-    value.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
-
-  document.sections.forEach((section, sectionIndex) => {
-    section.blocks.forEach((block, blockIndex) => {
-      block.textRuns.forEach(run => {
-        const words = String(run.text || '')
-          .split(/\s+/)
-          .map(normalizeToken)
-          .filter(Boolean);
-
-        words.forEach((token, tokenPosition) => {
-          if (!tokenMap[token]) {
-            tokenMap[token] = [];
-          }
-          tokenMap[token].push({
-            sectionId: section.id,
-            sectionIndex,
-            blockIndex,
-            tokenPosition,
-          });
-        });
-      });
-    });
-  });
-
-  return {
-    version: document.version,
-    tokenMap,
+function writeArtifacts(finalDocument) {
+  const index = buildSearchIndex(finalDocument);
+  const meta = {
+    version: finalDocument.version,
+    extractionFormat: finalDocument.extractionFormat,
+    sourceUrl: finalDocument.sourceUrl,
+    sourceSha256: finalDocument.sourceSha256,
+    generatedAt: finalDocument.generatedAt,
+    sectionCount: finalDocument.sections.length,
+    tocCount: finalDocument.toc.length,
+    indexTokenCount: Object.keys(index.tokenMap).length,
   };
+
+  fs.mkdirSync(OUTPUT_DIR, {recursive: true});
+  fs.writeFileSync(OUTPUT_DOCUMENT_PATH, JSON.stringify(finalDocument, null, 2));
+  fs.writeFileSync(OUTPUT_INDEX_PATH, JSON.stringify(index, null, 2));
+  fs.writeFileSync(OUTPUT_META_PATH, JSON.stringify(meta, null, 2));
+
+  console.log(`Generated ${OUTPUT_DOCUMENT_PATH}`);
+  console.log(`Generated ${OUTPUT_INDEX_PATH}`);
+  console.log(`Generated ${OUTPUT_META_PATH}`);
 }
 
 function main() {
+  const structuredPath = parseArg('structured', '');
+  if (structuredPath) {
+    const document = JSON.parse(fs.readFileSync(structuredPath, 'utf8'));
+    if (document.extractionFormat !== 'pdf-spans-v1' || !document.sections.length) {
+      throw new Error('Invalid structured PDF artifact');
+    }
+    writeArtifacts(document);
+    return;
+  }
   const inputRunsPath = parseArg(
     'runs',
     fs.existsSync(INPUT_RUNS_PATH) ? INPUT_RUNS_PATH : INPUT_SAMPLE_PATH,
@@ -573,25 +572,7 @@ function main() {
   const normalizedDocument = normalizeDocumentText(imageAugmentedDocument);
   const spacingNormalizedDocument = enforceRunSpacingAndBreaks(normalizedDocument);
   const finalDocument = enforceDocumentRunFixes(spacingNormalizedDocument);
-  const index = buildSearchIndex(finalDocument);
-  const meta = {
-    version: finalDocument.version,
-    sourceUrl: finalDocument.sourceUrl,
-    sourceSha256: finalDocument.sourceSha256,
-    generatedAt: finalDocument.generatedAt,
-    sectionCount: finalDocument.sections.length,
-    tocCount: finalDocument.toc.length,
-    indexTokenCount: Object.keys(index.tokenMap).length,
-  };
-
-  fs.mkdirSync(OUTPUT_DIR, {recursive: true});
-  fs.writeFileSync(OUTPUT_DOCUMENT_PATH, JSON.stringify(finalDocument, null, 2));
-  fs.writeFileSync(OUTPUT_INDEX_PATH, JSON.stringify(index, null, 2));
-  fs.writeFileSync(OUTPUT_META_PATH, JSON.stringify(meta, null, 2));
-
-  console.log(`Generated ${OUTPUT_DOCUMENT_PATH}`);
-  console.log(`Generated ${OUTPUT_INDEX_PATH}`);
-  console.log(`Generated ${OUTPUT_META_PATH}`);
+  writeArtifacts(finalDocument);
 }
 
 main();

@@ -83,9 +83,14 @@ scripts/rules/input/*
 
 # screenshot automation artifacts/local config
 artifacts/screenshots/
+artifacts/layout-review/
 screenshots/devices.json
 
 # Expo
 .expo
 dist/
 web-build/
+
+# Rules extraction visual checks and Python bytecode
+artifacts/rules-review/
+__pycache__/

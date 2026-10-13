@@ -6,6 +6,7 @@ import {
   Animated,
   TouchableOpacity,
   Dimensions,
+  Keyboard,
 } from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {useHeaderHeight} from '@react-navigation/elements';
@@ -25,7 +26,10 @@ import { Theme } from '../../types/interfaces';
 interface SearchableDecklistListProps {
   nativeHeaderHeight: number;
   nativeFooterHeight: number;
-  navigation: any;
+  navigation?: any;
+  onSelect?: (deck: DecklistPresenter) => void;
+  selectedSlug?: string;
+  embedded?: boolean;
 }
 
 interface SearchableDecklistListState {
@@ -65,7 +69,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
     } else {
       searchFilterFunction();
     }
-  }, [query]);
+  }, [query, allDecklists]);
 
   const searchHandler = (text: string) => {
     const newInput = text.toLowerCase();
@@ -122,23 +126,19 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   );
   const renderDecklistItem = useCallback(
     ({item, index}: {item: DecklistPresenter; index: number}) => (
-      <TouchableOpacity
-        testID={`decklist-row-${index}`}
-        accessibilityLabel={item.displayTitle || `decklist-row-${index}`}
+      <TouchableOpacity testID={`decklist-row-${index}`}
+        accessibilityLabel={item.displayTitle} accessibilityRole="button"
+        accessibilityState={{selected: props.selectedSlug === item.slug}}
+        activeOpacity={1}
         onPress={() => {
-          props.navigation.navigate('View Decklist', {
-            decklist: item,
-          });
-        }}
-        activeOpacity={1}>
-        <DecklistListItem
-          theme={theme}
-          item={item}
-          index={index}
-        />
+          Keyboard.dismiss();
+          if (props.onSelect) props.onSelect(item);
+          else props.navigation?.navigate('View Decklist', {decklist: item});
+        }}>
+        <DecklistListItem theme={theme} item={item} index={index} />
       </TouchableOpacity>
     ),
-    [props.navigation, theme],
+    [props.onSelect, props.navigation, props.selectedSlug, theme],
   );
 
   if (state.loading) {
@@ -156,7 +156,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
         contentContainerStyle={{
           ...styles.flatListContentContainer,
           minHeight: Dimensions.get('window').height,
-          paddingTop: Math.max(headerHeight - 2, 0),
+          paddingTop: props.embedded ? 0 : Math.max(headerHeight - 2, 0),
           paddingBottom: dockDynamicHeight + 8,
         }}
         contentInsetAdjustmentBehavior="never"

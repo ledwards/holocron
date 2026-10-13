@@ -22,6 +22,7 @@ const DecklistEmptyFooter = (props: DecklistEmptyFooterProps) => {
       pointerEvents="none"
       style={{
         ...styles.glassDockContainer,
+        position: 'absolute',
         bottom: 0,
       }}>
       <BlurView

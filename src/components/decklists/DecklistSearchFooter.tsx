@@ -1,8 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, KeyboardAvoidingView, Platform} from 'react-native';
-import {SearchBar, Text} from 'react-native-elements';
+import {Text} from 'react-native-elements';
+import SearchField from '../adaptive/SearchField';
 import {BlurView} from '@react-native-community/blur';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/elements';
+import useSearchDockBottomPadding from '../../lib/useSearchDockBottomPadding';
 
 import DecklistsQueryStatusBar from './DecklistsQueryStatusBar';
 import styles from '../../styles/CardSearchFooterStyles';
@@ -19,24 +21,24 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
   const theme = useContext(ThemeContext);
   const [query, setQuery] = useState('');
   const [data, setData] = useState<Decklist[]>([]);
-  const tabBarHeight = useBottomTabBarHeight();
+  const bottomGlassPadding = useSearchDockBottomPadding();
+  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     setQuery(props.query);
     setData(props.data);
   }, [props.query, props.data]);
 
-  const onChangeText = (text: string) => {
+  const onChangeText = (text = '') => {
     setQuery(text);
     props.searchCallback(text);
   };
 
-  const bottomGlassPadding = Math.max(tabBarHeight, 58) + 2;
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'position' : undefined}
-      keyboardVerticalOffset={0}
+      keyboardVerticalOffset={headerHeight - bottomGlassPadding + 8}
       style={styles.overlayWrapper}
       pointerEvents="box-none">
       <View
@@ -68,30 +70,11 @@ const DecklistSearchFooter = (props: DecklistSearchFooterProps) => {
               <DecklistsQueryStatusBar query={query} data={data} />
             )}
           </View>
-          <SearchBar
+          <SearchField
             testID="decklists-search-input"
             placeholder="Search by tournament, player, or archetype"
-            round
             onChangeText={onChangeText}
-            autoCorrect={false}
             value={query}
-            containerStyle={{
-              ...styles.searchBarContainer,
-              ...styles.searchBarTight,
-            }}
-            inputContainerStyle={{
-              backgroundColor: theme?.secondaryBackgroundColor,
-            }}
-            searchIcon={{
-              name: 'search',
-              type: 'ionicon',
-              color: theme?.iconColor,
-            }}
-            clearIcon={{
-              name: 'close-outline',
-              type: 'ionicon',
-              color: theme?.iconColor,
-            }}
           />
         </View>
       </View>

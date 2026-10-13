@@ -1,0 +1,48 @@
+appId: com.ledwards.holocron
+---
+- launchApp
+- tapOn:
+    id: tab-cards
+- tapOn:
+    id: cards-search-input
+- inputText: agents
+- extendedWaitUntil:
+    visible:
+      id: card-item-0
+    timeout: 15000
+- takeScreenshot: ${SCREENSHOT_PREFIX}-search
+- tapOn:
+    id: card-item-0
+- takeScreenshot: ${SCREENSHOT_PREFIX}-card
+- tapOn:
+    id: card-item-0
+- takeScreenshot: ${SCREENSHOT_PREFIX}-card-back
+- tapOn:
+    id: card-item-0
+- assertVisible: agents
+- tapOn:
+    id: tab-decklists
+- tapOn:
+    id: decklist-row-0
+- assertVisible:
+    id: deck-grid
+- takeScreenshot: ${SCREENSHOT_PREFIX}-deck-grid
+- tapOn:
+    id: deck-mode-toggle
+- assertVisible:
+    id: deck-card-list
+- takeScreenshot: ${SCREENSHOT_PREFIX}-deck-list
+- tapOn:
+    id: deck-mode-toggle
+- assertVisible:
+    id: deck-text
+- takeScreenshot: ${SCREENSHOT_PREFIX}-deck-text
+- tapOn:
+    id: adaptive-back
+- assertVisible:
+    id: decklists-search-input
+- tapOn:
+    id: tab-rules
+- assertVisible:
+    id: rules-document-scroll
+- takeScreenshot: ${SCREENSHOT_PREFIX}-rules

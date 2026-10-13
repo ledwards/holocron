@@ -1,4 +1,6 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {
   View,
   ActivityIndicator,
@@ -18,10 +20,12 @@ import layout from '../../constants/layout';
 import ThemeContext from '../../contexts/ThemeContext';
 import { Theme } from '../../types/interfaces';
 
-const DecklistsScreenListView = ({route}: {route: any}) => {
+const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedded?: boolean}) => {
   const theme = useContext<Theme | null>(ThemeContext);
   const allCards = useContext(AllCardsContext);
   const flatListRef = useRef<any>(null);
+  const headerHeight = useHeaderHeight();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const [data, setData] = useState<any[]>([]);
   const [state, setState] = useState<{
@@ -100,8 +104,14 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
   return (
     <>
       <Animated.FlatList
+        testID="deck-card-list"
         ref={flatListRef}
-        contentContainerStyle={styles.flatListContentContainer}
+        contentInsetAdjustmentBehavior="never"
+        contentContainerStyle={{
+          ...styles.flatListContentContainer,
+          paddingTop: embedded ? 0 : headerHeight,
+          paddingBottom: tabBarHeight + 16,
+        }}
         data={data}
         renderItem={({item, index}) =>
           item && (
@@ -117,7 +127,7 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
                   animated: true,
                   index: i,
                   // viewPosition: 0.5,
-                  viewOffset: layout.nativeHeaderHeight(),
+                  viewOffset: embedded ? 8 : headerHeight + 8,
                 })
               }
             />
@@ -134,7 +144,6 @@ const DecklistsScreenListView = ({route}: {route: any}) => {
         ListFooterComponentStyle={{
           flexGrow: 1, // important!
           backgroundColor: theme?.backgroundColor,
-          height: layout.footerHeight(layout.tabBarHeight(), undefined),
           borderTopWidth: 0,
           borderColor: theme?.dividerColor,
         }}

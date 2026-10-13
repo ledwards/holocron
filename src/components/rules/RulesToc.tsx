@@ -6,6 +6,7 @@ import styles from '../../styles/RulesScreenStyles';
 import {rulesFontFamilies} from '../../styles/rulesTypography';
 
 interface RulesTocProps {
+  embedded?: boolean;
   entries: TocEntry[];
   onAnchorPress: (anchor: string) => void;
   theme: Theme;
@@ -59,6 +60,7 @@ function filterTree(nodes: TocNode[], query: string): TocNode[] {
 }
 
 const RulesToc = ({
+  embedded = false,
   entries,
   onAnchorPress,
   theme,
@@ -113,15 +115,15 @@ const RulesToc = ({
   };
 
   return (
-    <View testID="rules-toc-panel" style={styles.tocDrawerOverlay}>
-      <TouchableOpacity
+    <View testID="rules-toc-panel" style={embedded ? {flex: 1} : styles.tocDrawerOverlay}>
+      {!embedded && <TouchableOpacity
         testID="rules-toc-backdrop"
         style={styles.tocDrawerBackdrop}
         onPress={onClose}
-      />
+      />}
       <View
         style={{
-          ...styles.tocDrawer,
+          ...(embedded ? {flex: 1, paddingHorizontal: 12} : styles.tocDrawer),
           borderColor: theme.dividerColor,
           backgroundColor: theme.backgroundColor,
         }}>
@@ -130,7 +132,7 @@ const RulesToc = ({
           value={query}
           onChangeText={setQuery}
           placeholder="Filter TOC"
-          placeholderTextColor={theme.dividerColor}
+          placeholderTextColor={theme.foregroundColor}
           autoCapitalize="none"
           autoCorrect={false}
           style={{

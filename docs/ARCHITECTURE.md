@@ -25,11 +25,20 @@ Holocron is a React Native app that runs with Expo dev client tooling on top of 
 - `scripts/screenshots`: screenshot automation scripts.
 
 ## Rules Content Pipeline
-1. Extract source document data (`rules:extract`).
-2. Generate normalized app artifacts (`rules:generate`).
-3. Consume generated JSON from `src/data/rules` at runtime.
+1. Extract source spans, font traits, columns, headings, lists, and diagrams with PyMuPDF (`rules:extract`).
+2. Generate native artifacts and index from exact block text (`rules:generate`); bypass legacy word-repair passes.
+3. Consume `pdf-spans-v1` JSON from `src/data/rules`, preserving source spans and heading levels in the existing native reader. See [rules extraction](RULES_EXTRACTION.md).
+
+Rules pages use measured per-page heights and stable placeholders for unmeasured pages. Long jumps seed rendering at the destination and correct the offset until that page is visible, avoiding a document-wide moving average that can land on another page. Width changes invalidate measured heights. Source figures use their natural aspect ratio without a minimum height that could force them wider than the reader.
 
 ## Design Constraints
 - Offline-first behavior for cached content.
 - Correct search/filter behavior takes precedence over cosmetic changes.
 - Theme behavior must stay consistent across tabs and screens.
+
+## Adaptive iOS Layout
+Navigation reports the actual compact icon-bar height to content; horizontal/top safe areas come from the screen wrappers. Headerless Rules gets top safe-area protection in the navigation wrapper; deck detail screens use measured navigator heights. Search docks keep content in normal flow inside an anchored keyboard-avoiding wrapper. See [adaptive layout guidance](ADAPTIVE_LAYOUT.md).
+
+`index.js` registers both Expo's `main` and the existing native `holocron` entry. The iOS app uses a single `UIWindowScene`, attaching the React Native-created window in `HolocronSceneDelegate` to support iOS 27 lifecycle requirements.
+
+`AdaptiveWorkspace` owns measured compact/wide layout and keeps the browser and detail mounted. Selection belongs above pane visibility changes. `CardArtwork` fits intrinsic source dimensions into measured bounds, including rotated site cards. `AdaptiveDeckDetail` embeds the original deck views; grid sizing uses measured pane width. The existing single mode icon and Back chevron stay in the navigation header. Rules keeps its full document mounted alongside the search browser. Compact devices show either the browser or reader; wide devices show both. Search updates as text changes, selecting a result dismisses the keyboard, and the reader uses an in-flow icon toolbar for matching-page navigation. Contents remains unfiltered by the active query.

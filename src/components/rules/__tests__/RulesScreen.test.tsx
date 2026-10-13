@@ -1,5 +1,5 @@
 import React from 'react';
-import {fireEvent, render} from '@testing-library/react-native';
+import {act, fireEvent, render} from '@testing-library/react-native';
 import RulesScreen from '../RulesScreen';
 import {RulesDocument, RulesSearchIndex} from '../../../lib/rules/types';
 
@@ -52,51 +52,95 @@ const indexFixture: RulesSearchIndex = {
 };
 
 describe('RulesScreen', () => {
-  it('filters sections from search input', () => {
-    const {getByTestId, getByText, queryByText} = render(
-      <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />,
-    );
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => { jest.clearAllTimers(); jest.useRealTimers(); });
+  const setup = () => render(<RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />);
+  const search = (screen: ReturnType<typeof setup>, query = 'actions') => {
+    fireEvent.press(screen.getByTestId('rules-open-search'));
+    fireEvent.changeText(screen.getByTestId('rules-search-input'), query);
+    act(() => jest.advanceTimersByTime(250));
+  };
 
-    fireEvent.changeText(getByTestId('rules-search-input'), 'actions');
-    fireEvent.press(getByTestId('rules-submit-search'));
-    expect(queryByText('Introduction')).toBeNull();
-    expect(queryByText('Timing')).toBeTruthy();
-    expect(getByText('Showing 1 of 2 sections • 1 hit')).toBeTruthy();
+  it('starts with an unobstructed reader and page label', () => {
+    const screen = setup();
+    expect(screen.getByTestId('rules-document-scroll')).toBeTruthy();
+    expect(screen.getByTestId('rules-visible-pages').props.children).toBe('Page 1');
+    expect(screen.queryByTestId('rules-search-input')).toBeNull();
+    expect(screen.queryByTestId('rules-match-bar')).toBeNull();
   });
 
-  it('toggles toc and handles toc item press', () => {
-    const {getByTestId, queryByTestId} = render(
-      <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />,
-    );
-
-    fireEvent.press(getByTestId('rules-toc-toggle'));
-    expect(getByTestId('rules-toc-panel')).toBeTruthy();
-    fireEvent.press(getByTestId('rules-toc-item-1'));
-    expect(queryByTestId('rules-toc-panel')).toBeNull();
+  it('waits for typing to settle before searching the document', () => {
+    const screen = setup();
+    fireEvent.press(screen.getByTestId('rules-open-search'));
+    fireEvent.changeText(screen.getByTestId('rules-search-input'), 'a');
+    act(() => jest.advanceTimersByTime(200));
+    expect(screen.queryByTestId('rules-search-results-list')).toBeNull();
+    fireEvent.changeText(screen.getByTestId('rules-search-input'), 'actions');
+    act(() => jest.advanceTimersByTime(200));
+    expect(screen.queryByTestId('rules-search-results-list')).toBeNull();
+    act(() => jest.advanceTimersByTime(50));
+    expect(screen.getByTestId('rules-search-result-0')).toBeTruthy();
   });
 
-  it('shows an initial visible page label instead of fallback placeholder', () => {
-    const {getByTestId} = render(
-      <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />,
-    );
-
-    expect(getByTestId('rules-visible-pages').props.children).toBe('Page 1');
+  it('shows live results separately from the reader without duplicate action buttons', () => {
+    const screen = setup();
+    search(screen);
+    expect(screen.getByText('1 matches')).toBeTruthy();
+    expect(screen.getByTestId('rules-search-result-0')).toBeTruthy();
+    expect(screen.queryByTestId('rules-document-scroll')).toBeNull();
+    expect(screen.queryByTestId('rules-submit-search')).toBeNull();
+    expect(screen.queryByTestId('rules-next-hit')).toBeNull();
   });
 
-  it('navigates query hits with next/prev controls', () => {
-    const {getByTestId, getByText} = render(
-      <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />,
-    );
+  it('opens a result, retains the full document, and returns to the same results', () => {
+    const screen = setup();
+    search(screen);
+    fireEvent.press(screen.getByTestId('rules-search-result-0'));
+    expect(screen.getByTestId('rules-document-scroll')).toBeTruthy();
+    expect(screen.getByText('Welcome to the rules.')).toBeTruthy();
+    expect(screen.getByTestId('rules-match-bar')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('rules-next-hit'));
+    expect(screen.getByTestId('rules-hit-progress').props.children).toBe('1 of 1 pages');
+    fireEvent.press(screen.getByTestId('rules-prev-hit'));
+    expect(screen.getByTestId('rules-hit-progress').props.children).toBe('1 of 1 pages');
+    fireEvent.press(screen.getByTestId('rules-open-search'));
+    expect(screen.getByTestId('rules-search-input').props.value).toBe('actions');
+  });
 
-    fireEvent.changeText(getByTestId('rules-search-input'), 'actions');
-    fireEvent.press(getByTestId('rules-submit-search'));
-    expect(getByTestId('rules-hit-progress').props.children).toBe('0/1');
+  it('clears search and recovers from empty results', () => {
+    const screen = setup();
+    search(screen, 'zzzz');
+    expect(screen.getByText('No matching rules found.')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('rules-clear'));
+    expect(screen.getByTestId('rules-search-input').props.value).toBe('');
+    fireEvent.press(screen.getByTestId('rules-close-search'));
+    expect(screen.queryByTestId('rules-match-bar')).toBeNull();
+  });
 
-    fireEvent.press(getByTestId('rules-next-hit'));
-    expect(getByTestId('rules-hit-progress').props.children).toBe('1/1');
+  it('keeps all contents available while a search is active', () => {
+    const screen = setup();
+    search(screen);
+    fireEvent.press(screen.getByTestId('rules-search-result-0'));
+    fireEvent.press(screen.getByTestId('rules-toc-toggle'));
+    expect(screen.getByTestId('rules-toc-item-0')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('rules-toc-item-1'));
+    expect(screen.queryByTestId('rules-toc-panel')).toBeNull();
+  });
 
-    fireEvent.press(getByTestId('rules-prev-hit'));
-    expect(getByTestId('rules-hit-progress').props.children).toBe('1/1');
-    expect(getByText('Showing 1 of 2 sections • 1 hit')).toBeTruthy();
+  it('keeps query and selected reader across wide and compact layouts', () => {
+    const screen = setup();
+    const resize = (width: number) => fireEvent(screen.getByTestId('rules-workspace'), 'layout', {nativeEvent: {layout: {width}}});
+    resize(951);
+    fireEvent.changeText(screen.getByTestId('rules-wide-search-input'), 'actions');
+    act(() => jest.advanceTimersByTime(250));
+    fireEvent.press(screen.getByTestId('rules-wide-result-0'));
+    resize(375);
+    expect(screen.getByTestId('rules-document-scroll')).toBeTruthy();
+    resize(951);
+    expect(screen.getByTestId('rules-wide-search-input').props.value).toBe('actions');
+    fireEvent.press(screen.getByTestId('rules-wide-clear'));
+    expect(screen.getByTestId('rules-toc-panel')).toBeTruthy();
   });
 });
+
+jest.mock('react-native-elements', () => ({Icon: () => null}));

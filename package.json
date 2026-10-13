@@ -21,8 +21,8 @@
     "test:e2e": "jest --config jest.e2e.config.js",
     "rules:test": "jest --config jest.config.js src/lib/rules/__tests__",
     "rules:download": "node scripts/rules/download-rulebook.js",
-    "rules:extract": "node scripts/rules/extract-pdf.js",
-    "rules:generate": "node scripts/rules/generate-rules.js",
+    "rules:extract": "python3 scripts/rules/extract-structured.py",
+    "rules:generate": "node scripts/rules/generate-rules.js --structured=scripts/rules/input/structured.document.json",
     "rules:audit": "node scripts/rules/audit-rules.js",
     "rules:focused-regenerate": "node scripts/rules/focused-regenerate.js",
     "rules:quality-gate": "node scripts/rules/quality-gate.js",
@@ -32,7 +32,10 @@
     "screenshots:dry-run": "node scripts/screenshots/release.js --dry-run --continue-on-error",
     "test:all": "npm run test:unit && npm run test:e2e",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
-    "postversion": "react-native-version --never-amend"
+    "postversion": "react-native-version --never-amend",
+    "rules:extract:legacy": "node scripts/rules/extract-pdf.js",
+    "rules:generate:legacy": "node scripts/rules/generate-rules.js",
+    "rules:test:extraction": "python3 -m unittest discover -s scripts/rules/tests -v"
   },
   "dependencies": {
     "@react-native-community/blur": "^4.4.1",

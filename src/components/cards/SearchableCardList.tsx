@@ -1,9 +1,11 @@
 import React, {useState, useEffect, useContext, useRef, useMemo, useCallback} from 'react';
-import {View, ActivityIndicator, Text, Animated, FlatList} from 'react-native';
+import {View, ActivityIndicator, Text, Animated, FlatList, Keyboard} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {useHeaderHeight} from '@react-navigation/elements';
 
-import CardListItem  from './CardListItem';
+import AdaptiveWorkspace, {EmptyDetail} from '../adaptive/AdaptiveWorkspace';
+import CardListItem from './CardListItem';
+import CardDetail from '../adaptive/CardDetail';
 import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../../presenters/CardPresenter';
 import FilterQuerySet from '../../models/FilterQuerySet';
@@ -46,6 +48,7 @@ const fallbackTheme: Theme = {
  */
 const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   // State variables
+  const [selectedCard, setSelectedCard] = useState<CardPresenter | null>(null);
   const [query, setQuery] = useState<string>('');
   const [data, setData] = useState<Card[]>([]);
   const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet>(new FilterQuerySet(''));
@@ -57,7 +60,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   });
 
   // FlatList reference for scrolling
-  const flatListRef = useRef<FlatList<Card>>(null);
+  const flatListRef = useRef<FlatList<CardPresenter>>(null);
 
   // Get theme from context or provide default
   const themeContext = useContext(ThemeContext);
@@ -246,7 +249,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
       flatListRef.current.scrollToIndex({
         animated: true,
         index: index,
-        viewOffset: headerHeight + 8,
+        viewOffset: 8,
       });
     }
   }, [headerHeight]);
@@ -259,16 +262,11 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     [data, query],
   );
 
-  const renderItem = useCallback(({item, index}: {item: CardPresenter; index: number}) => {
-    return (
-      <CardListItem
-        theme={theme}
-        item={item}
-        index={index}
-        scrollToIndex={scrollToIndex}
-      />
-    );
-  }, [scrollToIndex, theme]);
+  const renderItem = useCallback((split: boolean) => ({item, index}: {item: CardPresenter; index: number}) => (
+    <CardListItem item={item} theme={theme} index={index}
+      scrollToIndex={scrollToIndex}
+      onPress={split ? () => {Keyboard.dismiss(); setSelectedCard(item);} : undefined} />
+  ), [theme, scrollToIndex]);
 
   /**
    * Loading indicator
@@ -288,11 +286,16 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     56 +
     Math.max(tabBarHeight, 58) +
     2;
-  const contentTopInset = Math.max(headerHeight - 2, 0);
+  const contentTopInset = 0;
   const contentBottomInset = dockDynamicHeight + 8;
 
   return (
-    <>
+    <AdaptiveWorkspace title="Cards" topInset={headerHeight} selected={!!selectedCard}
+      onBack={() => setSelectedCard(null)}
+      detail={selectedCard ? <CardDetail card={{id: selectedCard.id, title: selectedCard.displayTitle,
+        imageUrl: selectedCard.displayImageUrl, backImageUrl: selectedCard.displayBackImageUrl,
+        sideways: selectedCard.sideways, subtitle: `${selectedCard.displayExpansionSet} · ${selectedCard.displayType}`}} /> : <EmptyDetail label="Select a card" />}
+      browser={split => <>
       <Animated.FlatList
         ref={flatListRef}
         contentContainerStyle={{
@@ -302,7 +305,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         }}
         contentInsetAdjustmentBehavior="never"
         data={presentedData}
-        renderItem={renderItem}
+        renderItem={renderItem(split)}
         ListEmptyComponent={query ? NoResultsListComponent : EmptyListComponent}
         ListHeaderComponent={() => <></>}
         ListHeaderComponentStyle={{
@@ -339,7 +342,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         searchCallback={searchRouter}
         toggleSearchMode={toggleSearchMode}
       />
-    </>
+    </>} />
   );
 };
 

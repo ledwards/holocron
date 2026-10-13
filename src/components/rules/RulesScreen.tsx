@@ -1,13 +1,36 @@
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {Text, View} from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Text,
+  View,
+  useWindowDimensions,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {workspaceLayout} from '../../lib/adaptiveLayout';
+import RulesBrowser from './RulesBrowser';
+import documentData from '../../data/rules/rules.document.json';
+import indexData from '../../data/rules/rules.index.json';
+import {PaneIconButton} from '../adaptive/AdaptiveWorkspace';
 import ThemeContext from '../../contexts/ThemeContext';
 import {Theme} from '../../types/interfaces';
-import {countQueryHits, filterSectionsByQuery, findMatchingSectionIds} from '../../lib/rules/search';
+import {
+  buildSearchPreviews,
+  filterSectionsByQuery,
+  RulesSearchPreview,
+} from '../../lib/rules/search';
 import {
   RulesDocument,
   RulesSearchIndex,
   RulesSection,
-  TocEntry,
 } from '../../lib/rules/types';
 import styles from '../../styles/RulesScreenStyles';
 import RulesToc from './RulesToc';
@@ -38,8 +61,8 @@ function formatVisiblePagesLabel(pages: number[]): string {
   return `Pages ${sorted[0]}-${sorted[sorted.length - 1]}`;
 }
 
-const fileDocument = require('../../data/rules/rules.document.json') as RulesDocument;
-const fileIndex = require('../../data/rules/rules.index.json') as RulesSearchIndex;
+const fileDocument = documentData as RulesDocument;
+const fileIndex = indexData as RulesSearchIndex;
 
 function isSourceTocSection(section: RulesSection): boolean {
   const title = String(section.title || '').toLowerCase();
@@ -53,7 +76,13 @@ function isSourceTocSection(section: RulesSection): boolean {
 
   const paragraphTexts = section.blocks
     .filter(block => block.type === 'paragraph')
-    .map(block => block.textRuns.map(run => run.text).join(' ').replace(/\s+/g, ' ').trim())
+    .map(block =>
+      block.textRuns
+        .map(run => run.text)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    )
     .filter(text => text.length > 0);
 
   const tocLikeCount = paragraphTexts.filter(text => {
@@ -69,16 +98,25 @@ function isSourceTocSection(section: RulesSection): boolean {
 }
 
 const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
+  const window = useWindowDimensions();
+  const [width, setWidth] = useState(window.width);
+  const {split, browserWidth} = workspaceLayout(width, window.fontScale);
+  const bottomInset = useBottomTabBarHeight();
   const theme = useContext<Theme | null>(ThemeContext) || fallbackTheme;
+  const [searchOpen, setSearchOpen] = useState(false);
   const [draftQuery, setDraftQuery] = useState<string>('');
   const [query, setQuery] = useState<string>('');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [hitProgress, setHitProgress] = useState<{current: number; total: number}>({
+  const [hitProgress, setHitProgress] = useState<{
+    current: number;
+    total: number;
+  }>({
     current: 0,
     total: 0,
   });
   const [showToc, setShowToc] = useState<boolean>(false);
-  const [collapsedTocAnchors, setCollapsedTocAnchors] = useState<Set<string>>(new Set());
+  const [collapsedTocAnchors, setCollapsedTocAnchors] = useState<Set<string>>(
+    new Set(),
+  );
   const [visiblePagesLabel, setVisiblePagesLabel] = useState<string>('Page -');
   const visiblePagesLabelRef = useRef<string>('Page -');
   const documentRef = useRef<RulesDocumentViewHandle>(null);
@@ -87,8 +125,12 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
   const rulesDocument = useMemo(
     () => ({
       ...sourceDocument,
-      sections: sourceDocument.sections.filter(section => !isSourceTocSection(section)),
-      toc: sourceDocument.toc.filter(entry => !/^(?:contents|table of contents)$/i.test(entry.title)),
+      sections: sourceDocument.sections.filter(
+        section => !isSourceTocSection(section),
+      ),
+      toc: sourceDocument.toc.filter(
+        entry => !/^(?:contents|table of contents)$/i.test(entry.title),
+      ),
     }),
     [sourceDocument],
   );
@@ -98,36 +140,21 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
     () => filterSectionsByQuery(rulesDocument.sections, rulesIndex, query),
     [rulesDocument.sections, rulesIndex, query],
   );
-  const searchMetrics = useMemo(() => {
-    const trimmed = query.trim();
-    if (!trimmed) {
-      return {hitCount: 0};
-    }
-
-    const tokenSectionIds = findMatchingSectionIds(rulesIndex, trimmed);
-    const hitCount = countQueryHits(rulesIndex, trimmed, tokenSectionIds);
-    return {hitCount};
-  }, [query, rulesIndex]);
-  const visibleAnchors = useMemo(
-    () => new Set(filteredSections.map(section => section.anchor)),
-    [filteredSections],
-  );
-  const visibleToc: TocEntry[] = useMemo(() => {
-    if (!query.trim()) {
-      return rulesDocument.toc;
-    }
-
-    return rulesDocument.toc.filter(entry => visibleAnchors.has(entry.anchor));
-  }, [rulesDocument.toc, visibleAnchors, query]);
   const hitProgressLabel = useMemo(() => {
     if (!query.trim()) {
       return '';
     }
     if (!hitProgress.total) {
-      return '0/0';
+      return '0 matching pages';
     }
-    return `${hitProgress.current}/${hitProgress.total}`;
+    return `${hitProgress.current} of ${hitProgress.total} pages`;
   }, [query, hitProgress]);
+  const searchResults: RulesSearchPreview[] = useMemo(() => {
+    if (!query.trim()) {
+      return [];
+    }
+    return buildSearchPreviews(filteredSections, query, 300);
+  }, [filteredSections, query]);
 
   useEffect(() => {
     const progress = documentRef.current?.resetQueryHitCursor();
@@ -135,21 +162,29 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
   }, [query, filteredSections]);
 
   useEffect(() => {
-    if (isSearching) {
-      setIsSearching(false);
-    }
-  }, [isSearching, query, filteredSections]);
+    const timer = setTimeout(() => setQuery(draftQuery.trim()), 250);
+    return () => clearTimeout(timer);
+  }, [draftQuery]);
 
   const submitSearch = useCallback(() => {
     const trimmed = draftQuery.trim();
-    setIsSearching(true);
     setQuery(trimmed);
+    Keyboard.dismiss();
   }, [draftQuery]);
 
   const onAnchorPress = (anchor: string) => {
+    Keyboard.dismiss();
     documentRef.current?.scrollToAnchor(anchor);
     setShowToc(false);
+    setSearchOpen(false);
   };
+  const onSelectSearchResult = useCallback((result: RulesSearchPreview) => {
+    Keyboard.dismiss();
+    setSearchOpen(false);
+    const progress = documentRef.current?.selectQueryPage(result.pageRef);
+    if (progress) setHitProgress(progress);
+    requestAnimationFrame(() => documentRef.current?.scrollToPage(result.pageRef));
+  }, []);
   const onPrevHit = () => {
     const progress = documentRef.current?.jumpToQueryHit('prev');
     if (progress) {
@@ -171,6 +206,19 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
     setVisiblePagesLabel(nextLabel);
   }, []);
 
+  const clearQuery = () => {
+    setDraftQuery('');
+    setQuery('');
+    setHitProgress({current: 0, total: 0});
+  };
+  const toggleCollapsed = (anchor: string) =>
+    setCollapsedTocAnchors(current => {
+      const next = new Set(current);
+      if (next.has(anchor)) next.delete(anchor);
+      else next.add(anchor);
+      return next;
+    });
+
   if (!rulesDocument.sections.length) {
     return (
       <View
@@ -185,66 +233,125 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
     );
   }
 
+  const browsing = split || searchOpen;
   return (
-    <View style={{...styles.container, backgroundColor: theme.backgroundColor}}>
-      {showToc && (
-        <RulesToc
-          entries={visibleToc}
-          onAnchorPress={onAnchorPress}
-          theme={theme}
-          collapsedAnchors={collapsedTocAnchors}
-          onToggleCollapsed={anchor =>
-            setCollapsedTocAnchors(current => {
-              const next = new Set(current);
-              if (next.has(anchor)) {
-                next.delete(anchor);
-              } else {
-                next.add(anchor);
-              }
-              return next;
-            })
-          }
-          onClose={() => setShowToc(false)}
-        />
-      )}
-      {filteredSections.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={{...styles.emptyText, color: theme.foregroundColor}}>
-            No matching rules found.
-          </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{flex: 1, backgroundColor: theme.backgroundColor}}>
+      <View testID="rules-workspace" onLayout={event => setWidth(event.nativeEvent.layout.width)} style={{flex: 1, flexDirection: 'row'}}>
+        <View
+          style={{
+            position: split ? 'relative' : 'absolute',
+            top: 0, bottom: 0, left: 0, zIndex: 2,
+            backgroundColor: theme.backgroundColor,
+            width: split ? browserWidth : '100%',
+            display: browsing ? 'flex' : 'none',
+            borderRightWidth: split ? 0.5 : 0,
+            borderColor: theme.dividerColor,
+          }}>
+          <RulesBrowser
+            theme={theme}
+            draftQuery={draftQuery}
+            query={query}
+            onChange={setDraftQuery}
+            onSubmit={submitSearch}
+            onClear={clearQuery}
+            results={searchResults}
+            onResult={onSelectSearchResult}
+            entries={rulesDocument.toc}
+            onAnchor={onAnchorPress}
+            collapsed={collapsedTocAnchors}
+            onCollapse={toggleCollapsed}
+            bottomInset={bottomInset}
+            compact={!split}
+            onClose={() => {
+              Keyboard.dismiss();
+              setSearchOpen(false);
+            }}
+          />
         </View>
-      ) : (
-        <RulesDocumentView
-          ref={documentRef}
-          sections={filteredSections}
-          query={query}
-          theme={theme}
-          onVisiblePagesChange={handleVisiblePagesChange}
-        />
-      )}
-      <RulesSearchFooter
-        draftQuery={draftQuery}
-        query={query}
-        onDraftQueryChange={setDraftQuery}
-        onSubmitQuery={submitSearch}
-        isSearching={isSearching}
-        onClearQuery={() => {
-          setDraftQuery('');
-          setQuery('');
-          setIsSearching(false);
-          setHitProgress({current: 0, total: 0});
-        }}
-        showToc={showToc}
-        onToggleToc={() => setShowToc(value => !value)}
-        filteredCount={filteredSections.length}
-        totalCount={rulesDocument.sections.length}
-        hitCount={searchMetrics.hitCount}
-        onPrevHit={onPrevHit}
-        onNextHit={onNextHit}
-        hitProgressLabel={hitProgressLabel}
-        visiblePagesLabel={visiblePagesLabel}
-      />
-    </View>
+        <View
+          accessibilityElementsHidden={!split && searchOpen}
+          importantForAccessibility={!split && searchOpen ? 'no-hide-descendants' : 'auto'}
+          pointerEvents={!split && searchOpen ? 'none' : 'auto'}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            opacity: !split && searchOpen ? 0 : 1,
+            paddingBottom: bottomInset,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 8,
+              minHeight: 48,
+            }}>
+            <PaneIconButton
+              testID="rules-open-search"
+              label={query ? 'Back to search results' : 'Search rules'}
+              icon={query ? 'chevron-back' : 'search-outline'}
+              onPress={() => setSearchOpen(true)}
+            />
+            <Text
+              style={{
+                flex: 1,
+                textAlign: 'center',
+                color: theme.foregroundColor,
+                fontSize: 17,
+                fontWeight: '600',
+              }}>
+              Rules
+            </Text>
+            <PaneIconButton
+              testID="rules-toc-toggle"
+              label="Table of contents"
+              icon="list-outline"
+              onPress={() => setShowToc(value => !value)}
+            />
+          </View>
+          <RulesDocumentView
+            ref={documentRef}
+            preserveSourceFormatting={rulesDocument.extractionFormat === 'pdf-spans-v1'}
+            sections={rulesDocument.sections}
+            query={query}
+            theme={theme}
+            onVisiblePagesChange={handleVisiblePagesChange}
+            bottomInset={16}
+          />
+          <Text
+            testID="rules-visible-pages"
+            style={{
+              textAlign: 'center',
+              padding: 8,
+              fontSize: 13,
+              color: theme.foregroundColor,
+              opacity: 0.65,
+            }}>
+            {visiblePagesLabel}
+          </Text>
+          {!!query && (
+            <RulesSearchFooter
+              query={query}
+              hitProgressLabel={hitProgressLabel}
+              onOpenSearch={() => setSearchOpen(true)}
+              onPrevHit={onPrevHit}
+              onNextHit={onNextHit}
+            />
+          )}
+          {showToc && (
+            <RulesToc
+              entries={rulesDocument.toc}
+              onAnchorPress={onAnchorPress}
+              theme={theme}
+              collapsedAnchors={collapsedTocAnchors}
+              onToggleCollapsed={toggleCollapsed}
+              onClose={() => setShowToc(false)}
+            />
+          )}
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

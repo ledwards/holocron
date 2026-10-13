@@ -18,6 +18,7 @@ export interface ExtractedTextRun {
 }
 
 export interface RulesTextRun {
+  symbol?: {uri: string; label: string};
   text: string;
   href?: string;
   bold?: boolean;
@@ -38,6 +39,10 @@ export interface RulesImageData {
 export interface RulesBlock {
   type: 'paragraph' | 'heading' | 'image';
   textRuns: RulesTextRun[];
+  /** Exact plain text; spans concatenate without inventing spaces at style boundaries. */
+  text?: string;
+  level?: number;
+  listItem?: boolean;
   pageRef?: number;
   image?: RulesImageData;
   confidenceScore?: number;
@@ -79,6 +84,7 @@ export interface RulesSearchIndex {
 }
 
 export interface RulesDocument {
+  extractionFormat?: 'pdf-spans-v1';
   version: string;
   sourceUrl: string;
   sourceSha256: string;

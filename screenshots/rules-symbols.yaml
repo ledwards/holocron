@@ -1,0 +1,32 @@
+appId: com.ledwards.holocron
+---
+- launchApp
+- tapOn:
+    id: tab-rules
+- tapOn:
+    id: rules-open-search
+- tapOn:
+    id: rules-search-input
+- inputText: next maintenance
+- extendedWaitUntil:
+    visible:
+      id: rules-search-result-0
+    timeout: 15000
+- hideKeyboard
+- tapOn:
+    id: rules-search-result-0
+- extendedWaitUntil:
+    visible:
+      id: rules-visible-pages
+      text: "Page 99"
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      text: "Icons - Maintenance Cards"
+    direction: DOWN
+    timeout: 20000
+- swipe:
+    start: 50%, 76%
+    end: 50%, 32%
+    duration: 600
+- takeScreenshot: ${SCREENSHOT_PREFIX}-symbols

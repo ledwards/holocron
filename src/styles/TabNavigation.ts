@@ -4,11 +4,12 @@ const styles = StyleSheet.create({
   tabBarStyle: {
     position: 'absolute',
     borderTopWidth: 0,
-    paddingBottom: 0,
     backgroundColor: 'transparent',
     elevation: 0,
     shadowOpacity: 0,
+    // Preserve the compact, icon-only bar; center controls in its visible band.
     height: 62,
+    paddingBottom: 0,
   },
   tabBarBackground: {
     flex: 1,
@@ -23,8 +24,6 @@ const styles = StyleSheet.create({
 
   tabBarItemStyle: {
     borderRadius: 20,
-    marginTop: 3,
-    marginBottom: 3,
     marginLeft: 12,
     marginRight: 12,
   },

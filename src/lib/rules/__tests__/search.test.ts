@@ -1,4 +1,5 @@
 import {
+  buildSearchPreviews,
   countQueryHits,
   filterSectionsByQuery,
   findMatchingSectionIds,
@@ -74,5 +75,34 @@ describe('rules search helpers', () => {
     expect(countQueryHits(index, 'actions')).toBe(1);
     const sectionIds = findMatchingSectionIds(index, 'draw');
     expect(countQueryHits(index, 'draw', sectionIds)).toBe(1);
+  });
+
+  it('builds contextual search previews with page and section metadata', () => {
+    const previews = buildSearchPreviews(
+      [
+        {
+          ...sections[1],
+          blocks: [
+            {type: 'heading', textRuns: [{text: 'Timing'}]},
+            {
+              type: 'paragraph',
+              pageRef: 5,
+              textRuns: [{text: 'Actions happen in windows. See action timing details.'}],
+            },
+          ],
+        },
+      ],
+      'action',
+    );
+
+    expect(previews.length).toBeGreaterThan(0);
+    expect(previews[0]).toEqual(
+      expect.objectContaining({
+        sectionAnchor: 'timing',
+        sectionTitle: 'Timing',
+        pageRef: 5,
+      }),
+    );
+    expect(previews[0].snippet.toLowerCase()).toContain('action');
   });
 });

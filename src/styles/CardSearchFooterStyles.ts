@@ -32,7 +32,9 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   glassDockContainer: {
-    position: 'absolute',
+    // The outer wrapper anchors the dock. Keep its contents in flow so the
+    // keyboard-avoiding view has a real height and exposes controls to iOS.
+    position: 'relative',
     left: 0,
     right: 0,
     overflow: 'hidden',

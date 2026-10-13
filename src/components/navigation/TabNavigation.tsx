@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
-import {View} from 'react-native';
+import {PlatformPressable} from '@react-navigation/elements';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {Icon} from 'react-native-elements';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BlurView} from '@react-native-community/blur';
@@ -24,7 +25,7 @@ interface TabNavigationProps {
 }
 
 function TabNavigation(_props: TabNavigationProps) {
-  const iconSize = 24;
+  const iconSize = 28;
   const themeContext = useContext(ThemeContext);
   const theme: Theme | null = themeContext || {
     name: 'dark',
@@ -39,7 +40,13 @@ function TabNavigation(_props: TabNavigationProps) {
       initialRouteName="Cards"
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarHideOnKeyboard: true,
+        // UIKit's vertical tab item remains top-aligned even without labels.
+        tabBarIconStyle: {width: 32, height: 32},
+        tabBarButton: props => <PlatformPressable {...props}
+          style={[props.style, {justifyContent: 'center'}]} />,
+        // The native keyboard covers this absolute bar. Avoid a second animated
+        // translation, which can remain offscreen after a Duo geometry change.
+        tabBarHideOnKeyboard: false,
         headerShown: false,
         tabBarStyle: {
           ...styles.tabBarStyle,
@@ -49,13 +56,14 @@ function TabNavigation(_props: TabNavigationProps) {
       <Tab.Screen
         name="Cards"
         children={() => (
-          <View
+          <SafeAreaView
+            edges={['left', 'right']}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
             }}>
             <CardsScreen />
-          </View>
+          </SafeAreaView>
         )}
         options={{
           tabBarLabel: 'Search',
@@ -90,15 +98,21 @@ function TabNavigation(_props: TabNavigationProps) {
       <Tab.Screen
         name="Decklists"
         children={() => (
-          <View
+          <SafeAreaView
+            edges={['left', 'right']}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
             }}>
             <DecklistsScreen />
-          </View>
+          </SafeAreaView>
         )}
         options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerTitle: 'Decklists',
+          headerTitleStyle: {color: theme?.foregroundColor, fontSize: 17, fontWeight: '600'},
+          headerBackground: () => <BlurView style={styles.headerBackground} blurType={theme?.name === 'dark' ? 'dark' : 'light'} blurAmount={16} />,
           tabBarLabel: 'Decklists',
           tabBarButtonTestID: 'tab-decklists',
           tabBarBackground: () => null,
@@ -115,13 +129,15 @@ function TabNavigation(_props: TabNavigationProps) {
       <Tab.Screen
         name="Rules"
         children={() => (
-          <View
+          <SafeAreaView
+            testID="rules-safe-area"
+            edges={['top', 'left', 'right']}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
             }}>
             <RulesScreen />
-          </View>
+          </SafeAreaView>
         )}
         options={{
           tabBarLabel: 'Rules',

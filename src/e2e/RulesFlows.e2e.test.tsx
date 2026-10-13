@@ -52,18 +52,24 @@ const indexFixture: RulesSearchIndex = {
 };
 
 describe('Rules flow e2e', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => { jest.clearAllTimers(); jest.useRealTimers(); });
   it('filters rules and supports toc panel interactions', () => {
     const {getByTestId, queryByText} = render(
       <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />,
     );
 
+    fireEvent.press(getByTestId('rules-open-search'));
     fireEvent.changeText(getByTestId('rules-search-input'), 'actions');
-    fireEvent.press(getByTestId('rules-submit-search'));
+    fireEvent(getByTestId('rules-search-input'), 'submitEditing');
     expect(queryByText('Introduction')).toBeNull();
-    expect(queryByText('Actions')).toBeTruthy();
+    fireEvent.press(getByTestId('rules-search-result-0'));
+    expect(getByTestId('rules-section-actions')).toBeTruthy();
 
     fireEvent.press(getByTestId('rules-toc-toggle'));
     expect(getByTestId('rules-toc-panel')).toBeTruthy();
     fireEvent.press(getByTestId('rules-toc-item-1'));
   });
 });
+
+jest.mock('react-native-elements', () => ({Icon: () => null}));

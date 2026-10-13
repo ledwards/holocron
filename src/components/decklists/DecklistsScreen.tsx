@@ -1,139 +1,53 @@
-import React, {useState, useContext} from 'react';
-import {LogBox} from 'react-native';
-import {Icon} from 'react-native-elements';
-import {BlurView} from '@react-native-community/blur';
-
-import DecklistsScreenHome from './DecklistsScreenHome';
-import DecklistsScreenListView from './DecklistsScreenListView';
-import DecklistsScreenGridView from './DecklistsScreenGridView';
-import DecklistsScreenTextView from './DecklistsScreenTextView';
-import {createStackNavigator} from '@react-navigation/stack';
-
+import React, {useState, useContext, useLayoutEffect} from 'react';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useNavigation} from '@react-navigation/native';
 import ThemeContext from '../../contexts/ThemeContext';
-import {Theme} from '../../types/interfaces';
+import AdaptiveWorkspace, {EmptyDetail, PaneIconButton} from '../adaptive/AdaptiveWorkspace';
+import SearchableDecklistList from './SearchableDecklistList';
+import AdaptiveDeckDetail, {DeckDisplayMode} from './AdaptiveDeckDetail';
+import DecklistPresenter from '../../presenters/DecklistPresenter';
 
-// Define a union type for BlurType to match the native component requirements
-type BlurType = 'dark' | 'light' | 'xlight' | 'prominent' | 'regular' | 'extraDark' | 'materialDark' | 'materialLight' | 'thickMaterialDark' | 'thickMaterialLight' | 'ultraThinMaterialDark' | 'ultraThinMaterialLight' | 'chromeMaterialDark' | 'chromeMaterialLight';
-
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-]);
-
-const Stack = createStackNavigator();
-
-interface DisplayMode {
-  index: number;
-  label: string;
-  icon: string;
-  view: React.ComponentType<any>;
-}
-
-// No props needed for this component
-const DecklistsScreen = () => {
-  const [displayMode, setDisplayMode] = useState<number>(0);
-  const theme = useContext<Theme | null>(ThemeContext);
-
-  const displayModes: Record<number, DisplayMode> = {
-    0: {
-      index: 0,
-      label: 'grid',
-      icon: 'grid-outline',
-      view: DecklistsScreenGridView,
-    },
-    1: {
-      index: 1,
-      label: 'list',
-      icon: 'list-outline',
-      view: DecklistsScreenListView,
-    },
-    2: {
-      index: 2,
-      label: 'text',
-      icon: 'document-text-outline',
-      view: DecklistsScreenTextView,
-    },
-  };
-
-  const toggleDisplayMode = (): void => {
-    setDisplayMode((displayMode + 1) % 3);
-  };
-
-  const currentDisplayMode = (): DisplayMode => displayModes[displayMode];
-  const nextDisplayMode = (): DisplayMode => displayModes[(displayMode + 1) % 3];
-
+export default function DecklistsScreen() {
+  const [selected, setSelected] = useState<DecklistPresenter | null>(null);
+  const headerHeight = useHeaderHeight();
+  const navigation = useNavigation();
+  const theme = useContext(ThemeContext);
+  const [mode, setMode] = useState<DeckDisplayMode>('grid');
+  const next = mode === 'grid' ? 'list' : mode === 'list' ? 'text' : 'grid';
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: selected?.searchTournamentName || 'Decklists',
+      headerLeft: selected ? () => <PaneIconButton testID="adaptive-back" icon="chevron-back"
+        label="Back to decklists" onPress={() => setSelected(null)} /> : undefined,
+      headerRight: selected ? () => <PaneIconButton testID="deck-mode-toggle"
+        label={`Show ${next} view`}
+        icon={next === 'grid' ? 'grid-outline' : next === 'list' ? 'list-outline' : 'document-text-outline'}
+        onPress={() => setMode(next)} /> : undefined,
+    });
+  }, [navigation, selected, next, theme]);
   return (
-    <>
-
-      {/* Navigator requires id property but works fine without it */}
-      <Stack.Navigator initialRouteName="Tournament Decklists">
-        <Stack.Screen
-          name="Tournament Decklists"
-          component={DecklistsScreenHome}
-          options={{
-            headerShown: true,
-            headerTransparent: true,
-            headerTitle: 'Decklists',
-            headerTitleStyle: {
-              color: theme?.foregroundColor,
-              fontWeight: '600',
-              fontSize: 17,
-            },
-            headerBackground: () => (
-              <BlurView
-                style={{
-                  position: 'absolute',
-                  height: '100%',
-                  width: '100%',
-                }}
-                blurType={(theme?.name === 'dark' ? 'dark' : 'light') as BlurType}
-                blurAmount={16}
-                reducedTransparencyFallbackColor={
-                  theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'
-                }
-              />
-            ),
-          }}
+    <AdaptiveWorkspace
+      title="Decklists"
+      showBackButton={false}
+      topInset={headerHeight}
+      selected={!!selected}
+      onBack={() => setSelected(null)}
+      browser={
+        <SearchableDecklistList
+          nativeHeaderHeight={0}
+          nativeFooterHeight={0}
+          embedded
+          onSelect={deck => {setSelected(deck); setMode('grid');}}
+          selectedSlug={selected?.slug}
         />
-        <Stack.Screen
-          name="View Decklist"
-          component={currentDisplayMode().view}
-          options={() => ({
-            headerShown: true,
-            headerTransparent: true,
-            headerStyle: {},
-            headerTintColor: theme?.foregroundColor,
-            headerBackTitleVisible: false,
-            headerBackTitle: '',
-            headerTitleStyle: {},
-            headerRight: () => (
-              <Icon
-                name={nextDisplayMode().icon}
-                type="ionicon"
-                color={theme?.foregroundColor}
-                size={24}
-                style={{marginRight: 10}}
-                onPress={() => toggleDisplayMode()}
-              />
-            ),
-            headerBackground: () => (
-              <BlurView
-                style={{
-                  position: 'absolute',
-                  height: '100%',
-                  width: '100%',
-                }}
-                blurType={(theme?.name === 'dark' ? 'dark' : 'light') as BlurType}
-                blurAmount={16}
-                reducedTransparencyFallbackColor={
-                  theme?.translucentBackgroundColor || 'rgba(0,0,0,0.7)'
-                }
-              />
-            ),
-          })}
-        />
-      </Stack.Navigator>
-    </>
+      }
+      detail={
+        selected ? (
+          <AdaptiveDeckDetail deck={selected} mode={mode} />
+        ) : (
+          <EmptyDetail label="Select a decklist" />
+        )
+      }
+    />
   );
-};
-
-export default DecklistsScreen;
+}

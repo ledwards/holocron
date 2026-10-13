@@ -1,6 +1,6 @@
 import React from 'react';
 import {render, fireEvent} from '@testing-library/react-native';
-import {Text} from 'react-native';
+import {Animated} from 'react-native';
 import CardListItem from '../CardListItem';
 import {CardSide} from '../../../types/enums';
 import {Theme} from '../../../types/interfaces';
@@ -24,7 +24,7 @@ jest.mock('react-native-elements', () => {
 
 jest.mock('react-native-fast-image', () => {
   const {View: RNView} = require('react-native');
-  const FastImageMock = ({children}: any) => <RNView>{children}</RNView>;
+  const FastImageMock = (props: any) => <RNView {...props} testID="original-row-art" />;
   FastImageMock.resizeMode = {cover: 'cover'};
   return {
     __esModule: true,
@@ -113,4 +113,19 @@ describe('CardListItem', () => {
 
     expect(getByText('2')).toBeTruthy();
   });
+  it('preserves the cover crop and presenter offset when opening a detail pane', () => {
+    const onPress = jest.fn();
+    const screen = render(<CardListItem item={{...mockCardItem, offsetY: -30}}
+      index={0} scrollToIndex={mockScrollToIndex} onPress={onPress} />);
+    const art = screen.getByTestId('original-row-art');
+    expect(art.props.resizeMode).toBe('cover');
+    expect(art.props.style).toMatchObject({left: -30, position: 'relative'});
+    expect(screen.UNSAFE_getAllByType(Animated.View).some(node =>
+      node.props.style?.right === -60 && node.props.style?.top === -30)).toBe(true);
+    fireEvent.press(screen.getByTestId('card-item-0'));
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(mockScrollToIndex).not.toHaveBeenCalled();
+    expect(screen.getByText('Test Set • Character • R')).toBeTruthy();
+  });
+
 });

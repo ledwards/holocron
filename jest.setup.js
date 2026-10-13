@@ -29,15 +29,13 @@ jest.mock('@react-native-community/blur', () => ({
 }));
 
 // Mock FastImage
-jest.mock('react-native-fast-image', () => ({
-  default: 'FastImage',
-  resizeMode: {
-    contain: 'contain',
-    cover: 'cover',
-    stretch: 'stretch',
-    center: 'center',
-  },
-}));
+jest.mock('react-native-fast-image', () => {
+  const React = require('react');
+  const {Image} = require('react-native');
+  const FastImage = props => React.createElement(Image, props);
+  FastImage.resizeMode = {contain: 'contain', cover: 'cover', stretch: 'stretch', center: 'center'};
+  return {__esModule: true, default: FastImage};
+});
 
 jest.mock('react-native-device-info', () => ({
   hasNotch: () => false,
@@ -66,14 +64,14 @@ jest.mock('react-native/Libraries/Utilities/Dimensions', () => ({
       width: 375,
       height: 812,
     })),
-    addEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({remove: jest.fn()})),
     removeEventListener: jest.fn(),
   },
   get: jest.fn(() => ({
     width: 375,
     height: 812,
   })),
-  addEventListener: jest.fn(),
+  addEventListener: jest.fn(() => ({remove: jest.fn()})),
   removeEventListener: jest.fn(),
 }));
 

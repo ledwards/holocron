@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {View, Dimensions} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
@@ -23,39 +23,26 @@ interface DecklistListItemProps {
 }
 
 const DecklistListItem = (props: DecklistListItemProps) => {
-  const windowWidth = Dimensions.get('window').width;
+  const window = useWindowDimensions();
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  const windowWidth = measuredWidth || window.width;
   const fillPercent = 0.55;
 
   const height = props.item.sideways
     ? ((windowWidth / props.item.aspectRatio) * fillPercent) / 2.5
     : (windowWidth * props.item.aspectRatio * fillPercent) / 2.5;
 
-  interface State {
-    expanded: boolean;
-    showingBack: boolean;
-    screenWidth: number;
-    containerHeight: number;
-    labelOpacity: number;
-    height: number;
-    width: number;
-    theme: Theme | null;
-  }
-
-  const [state] = useState<State>({
+  const state = {
     expanded: false,
-    showingBack: false,
-    screenWidth: windowWidth,
     containerHeight: height / 2,
-    labelOpacity: 1.0,
-    height: height,
+    labelOpacity: 1,
+    height,
     width: windowWidth * fillPercent,
-    theme: props.theme,
-  });
-
-  // State is already initialized with default values
+  };
 
   return (
     <View
+      onLayout={event => setMeasuredWidth(event.nativeEvent.layout.width)}
       style={{
         height: state.containerHeight,
       }}>

@@ -1,0 +1,62 @@
+# Adaptive layout and Duo design
+
+## App identity
+
+The App Store app is **SW:CCG Holocron**, ID **6473052017**, bundle ID **com.ledwards.holocron**. This repository owns that bundle. `holocron.old` is an older checkout of the same repository; `swu-holocron` uses `com.swuholocron.app` and is a different product.
+
+Verified against [Apple's lookup](https://itunes.apple.com/lookup?id=6473052017) and [App Store listing](https://apps.apple.com/app/id6473052017).
+
+## Layout ownership
+
+- Preserve the original 62-point icon-only bottom bar. Icons are 28 points and explicitly vertically centered (the existing `PlatformPressable` receives `justifyContent: center`); React Navigation otherwise leaves its vertical UIKit items top-aligned when labels are hidden. Existing screen footers provide the glass background. Verify gesture-area clearance on each device; do not add a second oversized blur panel.
+- Screen wrappers protect horizontal safe areas. Rules has no navigation header, so its wrapper also protects the top safe area. Cards and Decklists get top protection from their headers.
+- Cards and Decklists reserve `useHeaderHeight()` once at the workspace boundary. Detail scroll content reserves `useBottomTabBarHeight()` below content. Do not infer these values from notch detection.
+- The search dock's outer keyboard-avoiding wrapper is absolutely positioned; its inner content stays in normal layout flow. Making both absolute gives the wrapper zero height and removes visible controls from the iOS accessibility hierarchy.
+- `useSearchDockBottomPadding` always reserves navigation space. Keyboard avoidance accounts for the navigator header and that reserved space, leaving eight points above the keyboard without maintaining a second keyboard-visibility state. This prevents a hidden search input after rotation. Cards and Decklists share a normal-flow native `SearchField` with accessible mode/clear buttons. The native keyboard covers the fixed bottom tabs; the navigator does not run an additional hide translation.
+- Decorative deck footers remain absolute and do not intercept touches.
+
+## Native startup
+
+Expo registers `main`, while existing native binaries request `holocron`. The JS entry registers both names against the same App component.
+
+The iOS scene manifest declares one application scene. `HolocronSceneDelegate` in `AppDelegate.mm` attaches the window created by React Native 0.73 to its `UIWindowScene`; it does not create another React bridge. Multiple independent app windows are not enabled. The scene delegate also posts `RCTWindowFrameDidChangeNotification` on coordinate-space changes, preserving React Native 0.73’s window-metrics update during folding and rotation. Omitting that callback can leave the tab navigator positioned using stale dimensions.
+
+This is needed for iOS 27 SDK builds: the previous native app terminated in `UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption` on the iOS 27.1 Duo simulator. See [Apple's scene migration guide](https://developer.apple.com/documentation/uikit/transitioning-to-the-uikit-scene-based-life-cycle).
+
+## Duo comps
+
+Open `docs/layout-comps/index.html` directly or serve the directory:
+
+```bash
+python3 -m http.server 8769 --bind 127.0.0.1 --directory docs/layout-comps
+```
+
+These are historical exploratory comps, not an approved redesign or the current native implementation. Their generic rows, labeled mode tabs, grouped gallery, and extra headings were rejected; do not copy them into the app. They cover:
+
+- Decklists: persistent search/results on the left; selected deck grid, list, or text on the right. Tapping a deck card inspects it within detail and provides a return-to-deck control.
+- Cards: search/results on the left; complete card artwork and metadata on the right.
+- Rules: sections/search on the left; a bounded reading column on the right.
+- Light/dark appearance, narrow phone layout, open Duo, portrait Duo, empty selection, and no results.
+
+Sample decks come from the public `ledwards/swccg-data` deck dataset; card artwork loads from `res.starwarsccg.org`. Rules excerpts come from this repository's generated rulebook. The browser preview uses illustrative device frames, not exact OS chrome.
+
+## Native adaptive panes
+
+`AdaptiveWorkspace` measures its available width. At normal text size it uses two panes from 620 points: a 280–380 point browser and at least 340 points for detail. Larger text raises the required width. This applies to available space, not a hardcoded device name. Both panes stay mounted across width changes; compact Back returns to the existing query and list.
+
+- Cards retain title/natural-language search and the original tap-to-expand/flip/collapse rows on phones. Wide layouts open selected artwork in the detail pane; tapping that artwork flips it.
+- Decklists keep their browser visible on wide layouts. `AdaptiveDeckDetail` embeds the original grid/list/text components. Preserve the four-column edge-to-edge gallery, repeated copies, original expanding card interactions, and cropped list rows. Grid geometry measures its pane instead of caching window width. The original single next-mode icon belongs in the navigation header; no labeled tabs or additional toolbar.
+- Rules uses the approved document-search design: on compact screens, search results replace the reader while searching; selecting a result returns to the complete document and dismisses the keyboard. Wide screens retain results beside the reader. Search and clear use a single field; contents and previous/next use icons. The slim in-flow match bar labels its count as matching pages (the reader navigation unit), while the result list counts occurrences. Query, reader component, and TOC collapse state survive width changes.
+- `CardArtwork` uses the source image dimensions, `contain`, and a fitted layout frame for rotated site artwork. Rotation swaps the frame dimensions; it never relies on transformed pixels extending outside a portrait frame.
+- The card inspector measures its heading before allocating artwork height, resets the visible face for a newly selected card, and flips when the artwork is tapped. Missing artwork has an explicit fallback.
+- Existing footer blur treatments keep navigation readable. Theme colors remain context-driven.
+
+The original deck view components are the live implementation inside `AdaptiveDeckDetail`. Do not replace them with a newly designed gallery or inspector.
+
+Validation evidence is local in `artifacts/layout-review/`. Use the native `screenshots/adaptive-panes.yaml` compact-device flow and Device Hub for Duo's Open/Closed/Rotate controls. Device Hub can expose the inner display when Maestro targets the closed display. Physical-device release checks remain necessary; simulator fold/rotation checks do not substitute for hardware testing.
+
+The navigator keyboard-hide animation is disabled: native keyboard coverage handles typing without a second translation that can remain offscreen after a Duo rotation. Keep this behavior protected alongside safe-area ownership.
+
+## Preserve Holocron list rows
+
+Card search and deck card lists use `CardListItem`; the deck browser uses `DecklistListItem`. These retain the original zoomed, right-aligned artwork crop, presenter-specific vertical offsets, translucent text backgrounds, side colors, typography, and quantity treatment. Adaptive navigation changes the press destination, not the row design. Measure the actual pane width for the existing geometry; never replace these rows with generic whole-card thumbnails.
