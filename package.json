@@ -35,7 +35,9 @@
     "postversion": "react-native-version --never-amend",
     "rules:extract:legacy": "node scripts/rules/extract-pdf.js",
     "rules:generate:legacy": "node scripts/rules/generate-rules.js",
-    "rules:test:extraction": "python3 -m unittest discover -s scripts/rules/tests -v"
+    "rules:test:extraction": "python3 -m unittest discover -s scripts/rules/tests -v",
+    "test:upstream": "jest --config jest.config.js --coverage=false src/models/__tests__/UpstreamCorpus.test.ts",
+    "cards:refresh-corpus": "python3 scripts/cards/refresh-upstream-corpus.py"
   },
   "dependencies": {
     "@react-native-community/blur": "^4.4.1",
