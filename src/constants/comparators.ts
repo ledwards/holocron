@@ -124,16 +124,50 @@ const LTE_COMPARATOR = new Comparator(
   ],
 );
 
+// Text comparison. With `compact`, whitespace is removed from both sides so a
+// value typed without the space bar ("badfeeling") finds "bad feeling".
+// FilterQuery only asks for that when the exact comparison found nothing.
+const squash = (text: string): string => text.replace(/\s+/g, '');
+const sanitize = (text: string): string =>
+  text.replaceAll(/[^a-zA-Z0-9 -]/g, '').toLowerCase().trim();
+// Card text never changes after load, and every keystroke re-reads it.
+const TEXT_CACHE = new WeakMap<Card, Map<string, string>>();
+const cardText = (card: Card, attribute: string, compact?: boolean): string | undefined => {
+  let texts = TEXT_CACHE.get(card);
+  const key = compact ? `${attribute}\u0000compact` : attribute;
+  const cached = texts?.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const text = card.getSanitized(attribute);
+  if (typeof text !== 'string') {
+    return text as undefined;
+  }
+  const result = compact ? squash(text) : text;
+  if (!texts) {
+    texts = new Map();
+    TEXT_CACHE.set(card, texts);
+  }
+  texts.set(key, result);
+  return result;
+};
+const typedText = (value: string, compact?: boolean): string =>
+  compact ? squash(sanitize(value)) : sanitize(value);
+const listIncludes = (card: Card, attribute: string, value: string, compact?: boolean) =>
+  (card.get(attribute) as string[])
+    ?.filter(attr => {
+      const item = attr.toLowerCase();
+      const needle = value.toLowerCase();
+      return compact
+        ? squash(item).indexOf(squash(needle)) > -1
+        : item.indexOf(needle) > -1;
+    }).length;
+
 // STRING
 const SUBSTR_COMPARATOR = new Comparator(
   'matches',
-  (card: Card, attribute: string, value: string) =>
-    (card.getSanitized(attribute) as string)?.includes(
-      value
-        .replaceAll(/[^a-zA-Z0-9 -]/g, '')
-        .toLowerCase()
-        .trim(),
-    ),
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    cardText(card, attribute, compact)?.includes(typedText(value, compact)) as boolean,
   [
     'm',
     'contains',
@@ -150,13 +184,8 @@ const SUBSTR_COMPARATOR = new Comparator(
 
 const NOT_SUBSTR_COMPARATOR = new Comparator(
   'does not match',
-  (card: Card, attribute: string, value: string) =>
-    !(card.getSanitized(attribute) as string)?.includes(
-      value
-        .replaceAll(/[^a-zA-Z0-9 -]/g, '')
-        .toLowerCase()
-        .trim(),
-    ),
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    !cardText(card, attribute, compact)?.includes(typedText(value, compact)),
   [
     'nm',
     'does not contain',
@@ -173,44 +202,30 @@ const NOT_SUBSTR_COMPARATOR = new Comparator(
 
 const STRING_EQUALS_COMPARATOR = new Comparator(
   '=',
-  (card: Card, attribute: string, value: string) =>
-    card.getSanitized(attribute) ==
-    value
-      .replaceAll(/[^a-zA-Z0-9 -]/g, '')
-      .toLowerCase()
-      .trim(),
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    cardText(card, attribute, compact) == typedText(value, compact),
   ['equals', 'eq', 'exactly', 'is exactly'],
 );
 
 const STRING_NOT_EQUALS_COMPARATOR = new Comparator(
   '≠',
-  (card: Card, attribute: string, value: string) =>
-    card.getSanitized(attribute) !==
-    value
-      .replaceAll(/[^a-zA-Z0-9 -]/g, '')
-      .toLowerCase()
-      .trim(),
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    cardText(card, attribute, compact) !== typedText(value, compact),
   ['not equals', 'neq', 'is not', 'is not exactly', `isn't`, `isn't exactly`],
 );
 
 // ARRAY
 const INCLUDES_COMPARATOR = new Comparator(
   'includes',
-  (card: Card, attribute: string, value: string) =>
-    (card
-      .get(attribute) as string[])
-      ?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1)
-      .length > 0,
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    (listIncludes(card, attribute, value, compact) as number) > 0,
   ['c', 'include', 'has', 'contains', 'matches'],
 );
 
 const NOT_INCLUDES_COMPARATOR = new Comparator(
   'not includes',
-  (card: Card, attribute: string, value: string) =>
-    (card
-      .get(attribute) as string[])
-      ?.filter(attr => attr.toLowerCase().indexOf(value.toLowerCase()) > -1)
-      .length == 0,
+  (card: Card, attribute: string, value: string, compact?: boolean) =>
+    listIncludes(card, attribute, value, compact) == 0,
   [
     'nc',
     'not include',

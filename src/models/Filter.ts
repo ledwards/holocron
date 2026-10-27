@@ -14,10 +14,10 @@ class Filter {
     this.value = value;
   }
 
-  execute(cards: Card[]): FilterResult {
+  execute(cards: Card[], compact = false): FilterResult {
     const startTime = performance.now();
     const filteredCards = cards.filter(c =>
-      this.comparator.execute(c, this.field, this.value),
+      this.comparator.execute(c, this.field, this.value, compact),
     );
     const executionTime = performance.now() - startTime;
     

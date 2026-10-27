@@ -10,6 +10,7 @@ import CardSearchFooter from './CardSearchFooter';
 import CardPresenter from '../../presenters/CardPresenter';
 import FilterQuerySet from '../../models/FilterQuerySet';
 import Card from '../../models/Card';
+import {searchCardsByTitle} from '../../models/TitleSearch';
 
 import styles from '../../styles/SearchableCardListStyles';
 import AllCardsContext from '../../contexts/AllCardsContext';
@@ -133,7 +134,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
    * Process a natural language query filter
    */
   const queryFilterFunction = (text: string): boolean => {
-    const newFilterQuerySet = new FilterQuerySet(text);
+    const newFilterQuerySet = new FilterQuerySet(text, allCards);
 
     setQuery(text);
     setFilterQuerySet(newFilterQuerySet);
@@ -152,22 +153,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
    * Process a simple title search filter
    */
   const searchFilterFunction = (text: string): void => {
-    const newData = allCards.filter(card => {
-      const textData = text;
-      const itemData = `${card.title} ${card.sortTitle} ${card.abbr || ' '}`
-        .toLowerCase()
-        .trim();
-
-      // Allow for unordered word matches
-      const textDataList = textData.split(' ');
-      const matches = textDataList.filter(
-        (w: string) => itemData.indexOf(w) > -1,
-      );
-
-      return matches.length === textDataList.length;
-    });
-
-    setData(newData);
+    setData(searchCardsByTitle(allCards, text));
   };
 
   /**

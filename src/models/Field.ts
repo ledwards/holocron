@@ -33,6 +33,20 @@ class Field {
   nameAndAliases() {
     return [this.name].concat(this.aliases).sort((a, b) => b.length - a.length);
   }
+
+  /**
+   * Every spelling a query may start with, longest first: the name, its
+   * aliases, and each multi-word alias without its spaces ("gametext" for
+   * "game text"), so a query typed without the space bar still parses.
+   */
+  matchNames(): string[] {
+    return withCompactSpellings(this.nameAndAliases());
+  }
 }
+
+export const withCompactSpellings = (names: string[]): string[] =>
+  [...new Set(names.flatMap(n => [n, n.replace(/\s+/g, '')]))]
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
 
 export default Field;

@@ -24,10 +24,10 @@ const FIELDS = [
   new Field('power', NUMERIC_COMPARATORS, EQ_COMPARATOR, ['p', 'pow', 'pwr']),
 
   new Field('extratext', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['extra text', 'xtra', 'xt']),
-  new Field('gametext', STRING_COMPARATORS, null, ['game text', 'gt', 'txt', 'text']),
-  new Field('lore', STRING_COMPARATORS, null, ['l']),
-  new Field('title', STRING_COMPARATORS, null, ['t', 'name'], 'card'),
-  new Field('type', STRING_COMPARATORS, null, []),
+  new Field('gametext', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['game text', 'gt', 'txt', 'text']),
+  new Field('lore', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['l']),
+  new Field('title', STRING_COMPARATORS, SUBSTR_COMPARATOR, ['t', 'name'], 'card'),
+  new Field('type', STRING_COMPARATORS, SUBSTR_COMPARATOR, []),
 
   new Field('characteristics', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['characteristic', 'chars', 'char']),
   new Field('icons', ARRAY_COMPARATORS, INCLUDES_COMPARATOR, ['i']),

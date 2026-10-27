@@ -23,8 +23,8 @@
 import Card from '../Card';
 import FilterQuery from '../FilterQuery';
 import FilterQuerySet from '../FilterQuerySet';
+import fixture from '../../data/__fixtures__/query-audit.json';
 
-const fixture = require('../../data/__fixtures__/query-audit.json');
 const cards: Card[] = fixture.cards.map(
   (c: {set: string}) => new Card(c as any, fixture.sets.find((s: {id: string}) => s.id === c.set)),
 );
@@ -80,27 +80,30 @@ describe('query audit: pinned behaviour', () => {
   });
 });
 
+// D1, D2, D4, D5, D6 and the value half of D3 were fixed on 2026-10-27 with
+// the no-space query support (CompactQuery.test.ts); their tests are now plain
+// `it`. D3's comparison and D7 remain open.
 describe('query audit: known defects', () => {
   // D1. FilterQuerySet splits on the substring "and", not the word. Any
   // title, value or FIELD containing "and" is cut in two: 165 live titles
   // ("Commander …", "… Hand", "Coarse And Rough …") and the landspeed field.
-  it.failing('D1 "title c commander" is not split inside "commander"', () => {
+  it('D1 "title c commander" is not split inside "commander"', () => {
     expect(titles('title c commander')).toEqual(['•Commander Brandei']);
   });
-  it.failing('D1 "title c hand" is not split inside "hand"', () => {
+  it('D1 "title c hand" is not split inside "hand"', () => {
     expect(titles('title c hand')).toEqual(['•Invisible Hand']);
   });
-  it.failing('D1 "landspeed > 2" is not split inside the field name', () => {
+  it('D1 "landspeed > 2" is not split inside the field name', () => {
     expect(titles('landspeed > 2')).toEqual(['•Blizzard Scout 1']);
   });
 
   // D2. ASCII ">=" / "<=" parse as ">" / "<" plus a value of "= 6": the field
   // regex takes the first separator in list order, not the longest. "≥" works.
-  it.failing('D2 "power >= 6" equals "power ≥ 6"', () => {
+  it('D2 "power >= 6" equals "power ≥ 6"', () => {
     expect(titles('power >= 6')).toEqual(titles('power ≥ 6'));
     expect(titles('power >= 6')).not.toEqual([]);
   });
-  it.failing('D2 "deploy <= 3" equals "deploy ≤ 3"', () => {
+  it('D2 "deploy <= 3" equals "deploy ≤ 3"', () => {
     expect(titles('deploy <= 3')).toEqual(titles('deploy ≤ 3'));
     expect(titles('deploy <= 3')).not.toEqual([]);
   });
@@ -111,34 +114,34 @@ describe('query audit: known defects', () => {
     expect(titles('power != 6')).not.toContain('•Darth Vader');
     expect(titles('power != 6')).not.toContain('•Invisible Hand');
   });
-  it.failing('D3 "power is not 6" parses its value as "6"', () => {
+  it('D3 "power is not 6" parses its value as "6"', () => {
     expect(new FilterQuery('power is not 6').value).toBe('6');
   });
 
   // D4. The default comparator only applies when there is NO space between
   // field and value: "pwr6" works, "power 6" is invalid. The help text and
   // README imply "pulls falcon" / "power 6" style queries work.
-  it.failing('D4 "power 6" equals "pwr6"', () => {
+  it('D4 "power 6" equals "pwr6"', () => {
     expect(titles('power 6')).toEqual(titles('pwr6'));
   });
-  it.failing('D4 "side light" equals "side = light"', () => {
+  it('D4 "side light" equals "side = light"', () => {
     expect(titles('side light')).toEqual(titles('side = light'));
   });
 
   // D5. Comparator detection scans the WHOLE query, field name included.
   // "cancels" contains "nc" (the alias for "not includes"), so the query is
   // inverted. The old commented-out test in FilterQuery.test.ts saw this.
-  it.failing('D5 "cancels c sense" finds the cards that cancel Sense', () => {
+  it('D5 "cancels c sense" finds the cards that cancel Sense', () => {
     expect(titles('cancels c sense')).toEqual(['Alter']);
   });
-  it.failing('D5 "canceledby c sense" finds the cards Sense cancels', () => {
+  it('D5 "canceledby c sense" finds the cards Sense cancels', () => {
     expect(titles('canceledby c sense')).toEqual(['Alter']);
   });
 
   // D6. …and the value too: "premiere" contains "m" (an alias for
   // "matches"), which ties with "=" and wins on list order, so "=" quietly
   // becomes a substring test whenever the value contains "c" or "m".
-  it.failing('D6 "set = premiere" is exact, like "set eq premiere"', () => {
+  it('D6 "set = premiere" is exact, like "set eq premiere"', () => {
     expect(titles('set = premiere')).toEqual(titles('set eq premiere'));
   });
 

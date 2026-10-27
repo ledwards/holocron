@@ -7,6 +7,14 @@ const normalize = (value: string): string =>
   value.replaceAll(/[^a-zA-Z0-9 ]/g, '').toLowerCase().trim();
 
 /**
+ * Exact alias match. A value typed without spaces ("mathhunter") also matches
+ * the alias with its spaces removed; a value typed WITH spaces must match as
+ * typed.
+ */
+const sameAlias = (alias: string, needle: string): boolean =>
+  alias === needle || (!/\s/.test(needle) && alias.replace(/\s+/g, '') === needle);
+
+/**
  * Resolves a typed query value that is an ALIAS into the canonical name the
  * data actually stores: a card nickname ("Math Hunter") into the card's title,
  * or a set abbreviation ("P") into the set's name.
@@ -15,9 +23,23 @@ const normalize = (value: string): string =>
  * card's title ("premiere", "dark", "pilot") is not an alias for that card and
  * is returned unchanged; the comparator decides what a substring means.
  */
+const RESOLVERS = new WeakMap<Card[], AliasResolver>();
+
 class AliasResolver {
   cards: Card[];
   sets: ExpansionSet[];
+  private cardTitleByAlias?: Map<string, string>;
+  private cardTitleByCompactAlias?: Map<string, string>;
+
+  /** The resolver for a card list, built once; card lists are never mutated. */
+  static for(cards: Card[]): AliasResolver {
+    let resolver = RESOLVERS.get(cards);
+    if (!resolver) {
+      resolver = new AliasResolver(cards);
+      RESOLVERS.set(cards, resolver);
+    }
+    return resolver;
+  }
 
   constructor(cards: Card[]) {
     this.cards = cards;
@@ -48,12 +70,36 @@ class AliasResolver {
       return value;
     }
 
-    const card = this.cards.find(c =>
-      typeof c?.nameAndAliases === 'function' &&
-      c.nameAndAliases().some(alias => typeof alias === 'string' && alias === needle),
-    );
+    const {exact, compact} = this.cardAliasIndex();
+    return exact.get(needle) || (!/\s/.test(needle) && compact.get(needle)) || value;
+  }
 
-    return card?.sortTitle || value;
+  /** alias -> sortTitle of the FIRST card (in list order) carrying it. */
+  private cardAliasIndex(): {exact: Map<string, string>; compact: Map<string, string>} {
+    if (!this.cardTitleByAlias || !this.cardTitleByCompactAlias) {
+      const exact = new Map<string, string>();
+      const compact = new Map<string, string>();
+      this.cards.forEach(c => {
+        if (typeof c?.nameAndAliases !== 'function' || !c.sortTitle) {
+          return;
+        }
+        c.nameAndAliases().forEach(alias => {
+          if (typeof alias !== 'string' || !alias) {
+            return;
+          }
+          if (!exact.has(alias)) {
+            exact.set(alias, c.sortTitle);
+          }
+          const squashed = alias.replace(/\s+/g, '');
+          if (!compact.has(squashed)) {
+            compact.set(squashed, c.sortTitle);
+          }
+        });
+      });
+      this.cardTitleByAlias = exact;
+      this.cardTitleByCompactAlias = compact;
+    }
+    return {exact: this.cardTitleByAlias, compact: this.cardTitleByCompactAlias};
   }
 
   resolveSet(value: string): string {
@@ -64,7 +110,7 @@ class AliasResolver {
 
     const set = this.sets.find(s =>
       typeof s?.nameAndAliases === 'function' &&
-      s.nameAndAliases().some(alias => typeof alias === 'string' && normalize(alias) === needle),
+      s.nameAndAliases().some(alias => typeof alias === 'string' && sameAlias(normalize(alias), needle)),
     );
 
     return set?.name || value;

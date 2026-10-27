@@ -4,6 +4,8 @@
 - Card search no longer repeats rows or shows cards left over from an earlier search.
 - Natural-language searches on set, side, type, rarity, icons, and similar fields return the matching cards again (for example `set c premiere`, `side = dark`, `icons c pilot`).
 - Set abbreviations work as search values (`set c p` finds Premiere).
+- Type searches without spaces: `setcpremiere`, `power>=6`, `sidedarkandtypecstarship`, `gtcbadfeeling`, and `darthvader` in title search all work.
+- `>=`, `<=`, `power 6`, `side light`, `is imperial`, and `cancels c sense` now work as written, and words containing "and" (Commander, Hand, landspeed) no longer break a search.
 
 ## 1.2.0
 - Improved layout and navigation spacing across iPhone screen sizes.
