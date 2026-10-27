@@ -88,6 +88,14 @@ describe('upstream corpus: counts checked against an independent computation', (
     ['title c hand', 17],
     ['landspeed > 2', 43],
     ['type = character', 1100],
+    // stats a card does not have, and "*", are not numbers and never match
+    ['power != 6', 1361],
+    ['power < 1', 47],
+    ['power under 2', 324],
+    ['deploy = 0', 12],
+    ['forfeit = 0', 27],
+    ['ability = 0', 3],
+    ['deploy<=2 and side=dark', 301],
   ])('%s → %i', (query, expected) => {
     expect(count(query)).toBe(expected);
   });

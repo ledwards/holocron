@@ -80,9 +80,11 @@ describe('query audit: pinned behaviour', () => {
   });
 });
 
-// D1, D2, D4, D5, D6 and the value half of D3 were fixed on 2026-10-27 with
-// the no-space query support (CompactQuery.test.ts); their tests are now plain
-// `it`. D3's comparison and D7 remain open.
+// All seven defects were fixed on 2026-10-27: D1, D2, D4, D5, D6 and the
+// value half of D3 with the no-space query support (CompactQuery.test.ts),
+// D3's comparison and D7 by keeping absent stats absent (statValue). Their
+// tests are now plain `it` and guard against the defects returning. Record
+// the next defect found here as `it.failing` with the correct expectation.
 describe('query audit: known defects', () => {
   // D1. FilterQuerySet splits on the substring "and", not the word. Any
   // title, value or FIELD containing "and" is cut in two: 165 live titles
@@ -110,7 +112,7 @@ describe('query audit: known defects', () => {
 
   // D3. Numeric "not equal" compares the stored STRING with !== against a
   // number, so it is true for every card. Live: "power != 6" returns all 3664.
-  it.failing('D3 "power != 6" excludes power-6 cards', () => {
+  it('D3 "power != 6" excludes power-6 cards', () => {
     expect(titles('power != 6')).not.toContain('•Darth Vader');
     expect(titles('power != 6')).not.toContain('•Invisible Hand');
   });
@@ -148,7 +150,7 @@ describe('query audit: known defects', () => {
   // D7. A stat the card does not have is stored as 0, so every Effect and
   // Interrupt "has power 0". Live: "power < 1" returns 2252 cards; 47 have a
   // power stat below 1.
-  it.failing('D7 "power < 1" only returns cards that have a power stat', () => {
+  it('D7 "power < 1" only returns cards that have a power stat', () => {
     expect(titles('power < 1')).toEqual(['2X-7KPR (Tooex)']);
   });
 });

@@ -6,6 +6,7 @@
 - Set abbreviations work as search values (`set c p` finds Premiere).
 - Type searches without spaces: `setcpremiere`, `power>=6`, `sidedarkandtypecstarship`, `gtcbadfeeling`, and `darthvader` in title search all work.
 - `>=`, `<=`, `power 6`, `side light`, `is imperial`, and `cancels c sense` now work as written, and words containing "and" (Commander, Hand, landspeed) no longer break a search.
+- Number searches only match cards that have that stat: `power < 1` no longer lists every Effect and Interrupt, and `power != 6` no longer lists every card.
 
 ## 1.2.0
 - Improved layout and navigation spacing across iPhone screen sizes.

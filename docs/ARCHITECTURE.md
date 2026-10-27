@@ -62,4 +62,6 @@ Values match exactly first. Only when that finds nothing and the value has no sp
 
 `and` between spaces always joins clauses; `and` inside a word never does. A space-free `and` splits only where every resulting clause is valid, the clause after it starts with a field spelled with two or more letters, and — with cards — each clause finds cards.
 
+Card stats keep upstream's shape: numeric strings, sometimes `*` or `4½`, and absent when the card has no such stat — never defaulted to 0. Numeric comparators read them through `statValue` and match only cards with a plain number, so `power < 1` is about cards that have a power and `power != 6` excludes cards with none.
+
 Filter runs, alias lookups and normalized card text are cached per card list (card lists are replaced, never mutated), because a keystroke asks the same question several times and the next keystroke asks most of them again.

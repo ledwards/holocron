@@ -115,7 +115,9 @@ describe('Card', () => {
       expect(card.gametext).toBe('This is test gametext / ');
     });
 
-    it('should set default values for missing numeric attributes', () => {
+    // Changed 2026-10-27 (audit defect D7): a missing stat used to read as 0,
+    // so "power < 1" matched every Effect and Interrupt. Absent stays absent.
+    it('leaves stats the card does not have undefined, not 0', () => {
       const minimalCardJSON = {
         gempId: '67890',
         front: {
@@ -133,12 +135,12 @@ describe('Card', () => {
 
       const card = new Card(minimalCardJSON, mockExpansionSetJSON);
 
-      expect(card.ability).toBe(0);
-      expect(card.armor).toBe(0);
-      expect(card.deploy).toBe(0);
-      expect(card.destiny).toBe(0);
-      expect(card.ferocity).toBe(0);
-      expect(card.forfeit).toBe(0);
+      expect(card.ability).toBeUndefined();
+      expect(card.armor).toBeUndefined();
+      expect(card.deploy).toBeUndefined();
+      expect(card.destiny).toBeUndefined();
+      expect(card.ferocity).toBeUndefined();
+      expect(card.forfeit).toBeUndefined();
     });
 
     it('should normalize numeric gempId values to strings', () => {

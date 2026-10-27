@@ -1,17 +1,36 @@
 import Card from '../models/Card';
 import Comparator from '../models/Comparator';
 
+/**
+ * A card's stat as a number, or undefined when the card has no such stat or
+ * its value is not a plain number ("*", "π", "1 or 6"). Numeric comparators
+ * match only cards with a number: "power < 1" is about cards that have a
+ * power, and "power != 6" is not true of a card with no power at all.
+ */
+export const statValue = (card: Card, attribute: string): number | undefined => {
+  const raw = card.get(attribute);
+  if (raw === undefined || raw === null || raw === '') {
+    return undefined;
+  }
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : undefined;
+};
+
+const numeric = (test: (stat: number, typed: number) => boolean) =>
+  (card: Card, attribute: string, value: string): boolean => {
+    const stat = statValue(card, attribute);
+    return stat !== undefined && test(stat, parseFloat(value));
+  };
+
 const EQ_COMPARATOR = new Comparator(
   '=',
-  (card: Card, attribute: string, value: string) =>
-    card.get(attribute) == parseFloat(value),
+  numeric((stat, typed) => stat === typed),
   ['==', '===', 'equals', 'eq', 'is', 'is exactly'],
 );
 
 const NEQ_COMPARATOR = new Comparator(
   '≠',
-  (card: Card, attribute: string, value: string) =>
-    card.get(attribute) !== parseFloat(value),
+  numeric((stat, typed) => stat !== typed),
   [
     '!=',
     '=/=',
@@ -36,8 +55,7 @@ const NEQ_COMPARATOR = new Comparator(
 
 const GT_COMPARATOR = new Comparator(
   '>',
-  (card: Card, attribute: string, value: string) =>
-    (card.get(attribute) as number) > parseFloat(value),
+  numeric((stat, typed) => stat > typed),
   [
     'gt',
     'greater than',
@@ -61,8 +79,7 @@ const GT_COMPARATOR = new Comparator(
 
 const LT_COMPARATOR = new Comparator(
   '<',
-  (card: Card, attribute: string, value: string) =>
-    (card.get(attribute) as number) < parseFloat(value),
+  numeric((stat, typed) => stat < typed),
   [
     'lt',
     'less than',
@@ -80,8 +97,7 @@ const LT_COMPARATOR = new Comparator(
 
 const GTE_COMPARATOR = new Comparator(
   '≥',
-  (card: Card, attribute: string, value: string) =>
-    (card.get(attribute) as number) >= parseFloat(value),
+  numeric((stat, typed) => stat >= typed),
   [
     '>=',
     'gte',
@@ -106,8 +122,7 @@ const GTE_COMPARATOR = new Comparator(
 
 const LTE_COMPARATOR = new Comparator(
   '≤',
-  (card: Card, attribute: string, value: string) =>
-    (card.get(attribute) as number) <= parseFloat(value),
+  numeric((stat, typed) => stat <= typed),
   [
     '<=',
     'lte',

@@ -13,6 +13,10 @@ class Card {
   imageUrl: string;
   backImageUrl: string;
 
+  // Card stats as upstream ships them: usually numeric strings ("6"), sometimes
+  // "*" or "4½", and ABSENT when the card has no such stat. Absent stays
+  // undefined, never 0: an Effect has no power, it does not have power 0.
+  // Numeric comparators read these through statValue (constants/comparators).
   ability: number;
   armor: number;
   dsicons: number;
@@ -68,20 +72,21 @@ class Card {
     this.imageUrl = cardJSON.front.imageUrl;
     this.backImageUrl = cardJSON.back?.imageUrl || '';
 
-    this.ability = cardJSON.front.ability || 0;
-    this.armor = cardJSON.front.armor || 0;
-    this.dsicons = cardJSON.front.darkSideIcons || 0;
-    this.deploy = cardJSON.front.deploy || 0;
-    this.destiny = cardJSON.front.destiny || 0;
-    this.ferocity = parseInt(cardJSON.front.ferocity || '0');
-    this.forfeit = cardJSON.front.forfeit || 0;
-    this.hyperspeed = cardJSON.front.hyperspeed || 0;
-    this.landspeed = cardJSON.front.landspeed || 0;
-    this.lsicons = cardJSON.front.lightSideIcons || 0;
-    this.maneuver = cardJSON.front.maneuver || 0;
-    this.parsec = cardJSON.front.parsec || 0;
-    this.politics = cardJSON.front.politics || 0;
-    this.power = cardJSON.front.power || 0;
+    this.ability = cardJSON.front.ability;
+    this.armor = cardJSON.front.armor;
+    this.dsicons = cardJSON.front.darkSideIcons;
+    this.deploy = cardJSON.front.deploy;
+    this.destiny = cardJSON.front.destiny;
+    this.ferocity =
+      cardJSON.front.ferocity === undefined ? undefined : parseInt(cardJSON.front.ferocity);
+    this.forfeit = cardJSON.front.forfeit;
+    this.hyperspeed = cardJSON.front.hyperspeed;
+    this.landspeed = cardJSON.front.landspeed;
+    this.lsicons = cardJSON.front.lightSideIcons;
+    this.maneuver = cardJSON.front.maneuver;
+    this.parsec = cardJSON.front.parsec;
+    this.politics = cardJSON.front.politics;
+    this.power = cardJSON.front.power;
 
     this.extratext = `${cardJSON.front.extraText?.join(' ') || ''}${
       cardJSON?.back?.extraText ? ' / ' + cardJSON.back.extraText.join(' ') : ''
