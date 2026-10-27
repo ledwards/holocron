@@ -1,0 +1,970 @@
+{
+ "_source": "Verbatim rows from github.com/swccgpc/swccg-card-json (Dark.json, Light.json, sets.json) fetched 2026-10-27. Real upstream shapes: numeric stats are strings or absent, power can be '*'. Used by QueryAudit.test.ts; do not hand-edit values.",
+ "sets": [
+  {
+   "id": "1",
+   "name": "Premiere",
+   "gempName": "Premiere",
+   "abbr": "P",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "1995-12-01",
+   "position": 1,
+   "size": 324
+  },
+  {
+   "id": "3",
+   "name": "Hoth",
+   "gempName": "Hoth",
+   "abbr": "H",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "1996-11-01",
+   "position": 3,
+   "size": 162
+  },
+  {
+   "id": "4",
+   "name": "Dagobah",
+   "gempName": "Dagobah",
+   "abbr": "DAG",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "1997-04-23",
+   "position": 4,
+   "size": 180
+  },
+  {
+   "id": "5",
+   "name": "Cloud City",
+   "gempName": "Cloud City",
+   "abbr": "CC",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "1997-11-01",
+   "position": 5,
+   "size": 180
+  },
+  {
+   "id": "7",
+   "name": "Special Edition",
+   "gempName": "Special Edition",
+   "abbr": "SE",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "1998-11-01",
+   "position": 7,
+   "size": 324
+  },
+  {
+   "id": "12",
+   "name": "Coruscant",
+   "gempName": "Coruscant",
+   "abbr": "COR",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "2001-08-01",
+   "position": 12,
+   "size": 180
+  },
+  {
+   "id": "101",
+   "name": "Premiere Introductory Two Player Game",
+   "gempName": "Premiere 2-Player",
+   "abbr": "P2P",
+   "legacy": false,
+   "cycle_code": "premium",
+   "date_release": "1996-02-01",
+   "position": 101,
+   "size": 6
+  },
+  {
+   "id": "200",
+   "name": "Virtual Set 0",
+   "gempName": "Set 0",
+   "abbr": "V0",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "2014-09-24",
+   "position": 200,
+   "size": 152
+  },
+  {
+   "id": "211",
+   "name": "Virtual Set 11",
+   "gempName": "Set 11",
+   "abbr": "V11",
+   "legacy": false,
+   "cycle_code": "full",
+   "date_release": "2019-08-02",
+   "position": 211,
+   "size": 65
+  }
+ ],
+ "cards": [
+  {
+   "abbr": [
+    "Space Vader",
+    "Math Vader"
+   ],
+   "combo": [
+    "Darth Vader + Grand Moff Tarkin Once per battle, Tarkin may cancel one opponent's destiny just drawn.",
+    "Darth Vader + I Have You Now Add one battle destiny (two if Rebel is Luke) if a Dark Jedi and a Rebel with ability > 2 are involved in the same battle.",
+    "Darth Vader + Force Field Cancels an attempt to target a Dark Jedi with a character weapon."
+   ],
+   "front": {
+    "ability": "6",
+    "deploy": "6",
+    "destiny": "1",
+    "errataSymbol": "E1",
+    "extraText": [
+     "Dark Jedi"
+    ],
+    "forfeit": "8",
+    "gametext": "When in battle, adds 1 to each of your battle destiny draws. Adds 3 to power of anything he pilots (or 4 to power and 3 to maneuver if Vader's Custom TIE). Immune to attrition < 5.",
+    "icons": [
+     "Pilot",
+     "Warrior"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Dark/large/darthvader.gif",
+    "lore": "Dark Lord of the Sith. Servant of Emperor's. Encased in armor with cybernetic life support. Student of Obi-Wan Kenobi. Was the best starpilot in the galaxy. Cunning warrior.",
+    "power": "6",
+    "subType": "Imperial",
+    "title": "•Darth Vader",
+    "type": "Character",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Darth Vader (Errata)/image.png",
+    "printableSlipType": "ERRATA"
+   },
+   "gempId": "1_168",
+   "id": 634,
+   "legacy": false,
+   "matching": [
+    "Vader's Custom TIE",
+    "Vader's Custom TIE (V)",
+    "Vader's Personal Shuttle",
+    "Vader's Personal Shuttle (V)"
+   ],
+   "matchingWeapon": [
+    "Darth Vader's Lightsaber",
+    "Darth Vader's Lightsaber (V)",
+    "Vader's Lightsaber"
+   ],
+   "printings": [
+    {
+     "set": "1"
+    }
+   ],
+   "pulledBy": [
+    "Blizzard 4",
+    "The Empire's Back"
+   ],
+   "rarity": "R1",
+   "rulings": [
+    "This card is a Black Squadron pilot."
+   ],
+   "set": "1",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 635,
+     "title": "Darth Vader (V)"
+    }
+   ],
+   "personas": [
+    "Vader"
+   ]
+  },
+  {
+   "canceledBy": [
+    "Control",
+    "Control (EP1)",
+    "Control & Tunnel Vision",
+    "Sense",
+    "Sense (EP1)"
+   ],
+   "cancels": [
+    "One Effect",
+    "One Utinni Effect",
+    "Sense",
+    "Sense (EP1)",
+    "Sense & Recoil In Fear"
+   ],
+   "counterpart": "Alter",
+   "front": {
+    "destiny": "4",
+    "gametext": "Cancel one Effect (or Utinni Effect) by drawing a destiny < ability of your highest-ability character on table. OR Cancel one Sense card just played.",
+    "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Dark/large/alter.gif",
+    "lore": "A user of the Force can subjugate the will of others or alter the environment at a distance, as when Vader 'disciplines' those whose lack of faith disturbs him.",
+    "subType": "Used",
+    "title": "Alter",
+    "type": "Interrupt"
+   },
+   "gempId": "1_234",
+   "id": 94,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "1"
+    }
+   ],
+   "rarity": "U1",
+   "rulings": [
+    "Cannot cancel an Immediate Effect, Mobile Effect, Political Effect, or Starting Effect.",
+    "The first function requires targeting a specific character with ability for the comparison.",
+    "Can be played as a top-level action.",
+    "Can be played as a response to the attempted deployment of an Effect or Utinni Effect. If successful, the target has no result."
+   ],
+   "set": "1",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "title": "Alter (Premiere) (V)",
+     "cardId": 6085
+    }
+   ]
+  },
+  {
+   "canceledBy": [
+    "Alter",
+    "Alter (EP1)",
+    "Alter (V)",
+    "Control",
+    "Control (EP1)",
+    "Control & Tunnel Vision"
+   ],
+   "cancels": [
+    "Alter",
+    "Alter & Friendly Fire",
+    "Alter (EP1)",
+    "Alter (V)",
+    "One Interrupt",
+    "One react"
+   ],
+   "counterpart": "Sense",
+   "front": {
+    "destiny": "3",
+    "gametext": "Cancel one Interrupt (or one 'react') by drawing a destiny < ability of your highest-ability character on table. OR Cancel one Alter card just played.",
+    "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Dark/large/sense.gif",
+    "lore": "'I sense something. A presence I've not felt since...'",
+    "subType": "Used",
+    "title": "Sense",
+    "type": "Interrupt"
+   },
+   "gempId": "1_267",
+   "id": 2216,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "1"
+    }
+   ],
+   "rarity": "U1",
+   "set": "1",
+   "side": "Dark"
+  },
+  {
+   "canceledBy": [
+    "A Trophy Sacrificed",
+    "Alter",
+    "Alter (EP1)",
+    "Alter (V)",
+    "Control",
+    "Control & Set For Stun",
+    "Control (EP1)"
+   ],
+   "cancels": [
+    "Alter",
+    "Alter & Collateral Damage",
+    "Alter (EP1)",
+    "Alter (V)",
+    "One Interrupt",
+    "One react"
+   ],
+   "counterpart": "Sense (EP1)",
+   "front": {
+    "destiny": "3",
+    "gametext": "If opponent just played an Interrupt (or just initiated a 'react'), target one of your characters on table. Draw destiny. If destiny < ability of target, that Interrupt (or 'react') is canceled. OR Cancel Alter.",
+    "icons": [
+     "Episode I",
+     "Coruscant"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Coruscant-Light/large/sense.gif",
+    "lore": "Yoda calls upon the Force often to try and foresee what destiny has in store.",
+    "subType": "Lost",
+    "title": "Sense",
+    "type": "Interrupt"
+   },
+   "gempId": "12_68",
+   "id": 2221,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "12"
+    }
+   ],
+   "pulledBy": [
+    "Yoda, Master Of The Force"
+   ],
+   "rarity": "U",
+   "set": "12",
+   "side": "Light",
+   "underlyingCardFor": [
+    "Yoda, Keeper Of The Peace"
+   ]
+  },
+  {
+   "abbr": [
+    "Sand Effect"
+   ],
+   "counterpart": "I Don't Like Sand",
+   "front": {
+    "destiny": "4",
+    "gametext": "Deploy on table; shuffle your Reserve Deck, peek at top two cards, and stack them face-up here. During battle, may take a card here into hand to prevent all battle destiny draws from being modified or canceled (each player may draw no more than one battle destiny). (Immune to Alter.)",
+    "icons": [
+     "Episode I",
+     "Set 0"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Virtual0-Dark/large/coarseandroughandirritating.gif",
+    "lore": "Tatooine's twin suns cause turbulent storms that strike with little or no warning. Strong winds whip rocks through the air with enormous force.",
+    "title": "•Coarse And Rough And Irritating",
+    "type": "Effect",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Coarse And Rough And Irritating/image.png",
+    "printableSlipType": "VIRTUAL"
+   },
+   "gempId": "200_109",
+   "id": 1276,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "200"
+    }
+   ],
+   "pulledBy": [
+    "Twi'lek Advisor",
+    "We Must Accelerate Our Plans",
+    "Surface Defense (V)"
+   ],
+   "rarity": "U2",
+   "rulings": [
+    "Preventing destiny draws from being modified even prevents global modifiers such as from the Silence Is Golden (V) and the Senate Objective.",
+    "Preventing destiny draws from being modified can be circumvented with a substituted destiny that has been modified <u>before</u> the substitution (e.g. Darklighter Spin on a modified maneuver value, or a senator on Sando Aqua Monster that is already receiving a global modifier from the Senate Objective)."
+   ],
+   "set": "200",
+   "side": "Dark"
+  },
+  {
+   "abbr": [
+    "Sand Effect"
+   ],
+   "counterpart": "Coarse And Rough And Irritating",
+   "front": {
+    "destiny": "4",
+    "gametext": "Deploy on table; shuffle your Reserve Deck, peek at top two cards, and stack them face-up here. During battle, may take a card here into hand to prevent all battle destiny draws from being modified or canceled (each player may draw no more than one battle destiny). (Immune to Alter.)",
+    "icons": [
+     "Episode I",
+     "Set 0"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Virtual0-Light/large/idontlikesand.gif",
+    "lore": "",
+    "title": "•I Don't Like Sand",
+    "type": "Effect",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/I Dont Like Sand/image.png",
+    "printableSlipType": "VIRTUAL"
+   },
+   "gempId": "200_39",
+   "id": 890,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "200"
+    }
+   ],
+   "pulledBy": [
+    "Don't Tread On Me (V)",
+    "The Signal",
+    "We Wish To Board At Once"
+   ],
+   "rarity": "U",
+   "rulings": [
+    "Preventing destiny draws from being modified even prevents global modifiers such as from the Silence Is Golden (V) and the Senate Objective.",
+    "Preventing destiny draws from being modified can be circumvented with a substituted destiny that has been modified <u>before</u> the substitution (e.g. Darklighter Spin on a modified maneuver value, or a senator on Sando Aqua Monster that is already receiving a global modifier from the Senate Objective)."
+   ],
+   "set": "200",
+   "side": "Light"
+  },
+  {
+   "combo": [
+    "Commander Brandei + Sienar Fleet Systems + Dreaded Imperial Starfleet + TIE's with matching pilots."
+   ],
+   "front": {
+    "ability": "3",
+    "characteristics": [
+     "commander"
+    ],
+    "deploy": "3",
+    "destiny": "2",
+    "errataSymbol": "E1",
+    "extraText": [
+     "Force-Attuned"
+    ],
+    "forfeit": "3",
+    "gametext": "Adds 2 to power of anything he pilots. Once during each of your control phases, when aboard a Star Destroyer or at any docking bay, may use 1 Force to take one TIE into hand from Reserve Deck; reshuffle.",
+    "icons": [
+     "Pilot",
+     "Dagobah"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Dagobah-Dark/large/commanderbrandei.gif",
+    "lore": "Technical Services Officer of the Fleet Support Branch. Responsible for keeping Executor's 12 TIE squadrons serviced and combat ready. Just received transfer to Judicator.",
+    "power": "1",
+    "subType": "Imperial",
+    "title": "•Commander Brandei",
+    "type": "Character",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Commander Brandei (Errata)/image.png",
+    "printableSlipType": "ERRATA"
+   },
+   "gempId": "4_95",
+   "id": 491,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "4"
+    }
+   ],
+   "pulledBy": [
+    "Admiral Piett"
+   ],
+   "pulls": [
+    "One TIE when at a Star Destroyer or any docking bay",
+    "Black 2",
+    "Black 2 (V)",
+    "Black 3",
+    "Black 4",
+    "Black 5 (V)",
+    "Black 11",
+    "Black Squadron TIE",
+    "Colonel Jendon In Onyx 1 (V)",
+    "Obsidian 10",
+    "Obsidian 7",
+    "Obsidian 8",
+    "Obsidian Squadron TIE",
+    "Onyx 1",
+    "Onyx 2",
+    "Onyx 2 (V)",
+    "OS-72-1 In Obsidian 1",
+    "OS-72-2 In Obsidian 2",
+    "Saber 1",
+    "Saber 2",
+    "Saber 3",
+    "Saber 4",
+    "Scimitar 1",
+    "Scimitar 2",
+    "Scimitar Squadron TIE",
+    "Scythe 1",
+    "Scythe 3",
+    "Scythe Squadron TIE",
+    "TIE Advanced x1",
+    "TIE Avenger",
+    "TIE Bomber",
+    "TIE Defender Mark I",
+    "TIE Fighter",
+    "TIE Interceptor",
+    "TIE Scout",
+    "TIE Vanguard",
+    "Vader's Custom TIE",
+    "Vader's Custom TIE (V)"
+   ],
+   "rarity": "U",
+   "set": "4",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 6181,
+     "title": "Commander Brandei (V)"
+    }
+   ]
+  },
+  {
+   "front": {
+    "armor": "5",
+    "deploy": "6",
+    "destiny": "2",
+    "forfeit": "8",
+    "gametext": "May add 3 pilots, 5 passengers, and 4 [Trade Federation] starfighters. Permanent pilot provides ability of 3. Adds one battle destiny if Grievous on table. Immune to attrition < 5.",
+    "hyperspeed": "3",
+    "icons": [
+     "Separatist",
+     "Trade Federation",
+     "Pilot",
+     "Nav Computer",
+     "Scomp Link",
+     "Episode I",
+     "Set 11"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Virtual11-Dark/large/invisiblehand.gif",
+    "lore": "Blank.",
+    "power": "6",
+    "subType": "Capital: Providence-Class Dreadnaught",
+    "title": "•Invisible Hand",
+    "type": "Starship",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Invisible Hand/image.png",
+    "printableSlipType": "VIRTUAL"
+   },
+   "gempId": "211_23",
+   "id": 6419,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "211"
+    }
+   ],
+   "rarity": "PM",
+   "set": "211",
+   "side": "Dark",
+   "personas": [
+    "Invisible Hand"
+   ]
+  },
+  {
+   "abbr": [
+    "Chicken Walker"
+   ],
+   "combo": [
+    "Blizzard Scout 1 + Admiral Motti + Snowtroopers (at other locations).",
+    "Blizzard Scout 1 + Trample Trample opponent's undercover spies."
+   ],
+   "front": {
+    "armor": "4",
+    "characteristics": [
+     "enclosed"
+    ],
+    "deploy": "3",
+    "destiny": "4",
+    "errataSymbol": "E1",
+    "forfeit": "5",
+    "gametext": "May add 1 pilot or passenger. May move as a 'react.' Power +1 at any Hoth site. Permanent pilot provides ability of 1.",
+    "icons": [
+     "Pilot",
+     "Scomp Link",
+     "Hoth"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Hoth-Dark/large/blizzardscout1.gif",
+    "landspeed": "3",
+    "lore": "Enclosed All Terrain Scout Transport (AT-ST). Provides flanking support to the AT-ATs of Blizzard Force. Modified for cold weather combat.",
+    "power": "3",
+    "subType": "Combat: AT-ST",
+    "title": "•Blizzard Scout 1",
+    "type": "Vehicle",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Blizzard Scout 1 (Errata)/image.png",
+    "printableSlipType": "ERRATA"
+   },
+   "gempId": "3_156",
+   "id": 272,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "3"
+    }
+   ],
+   "pulledBy": [
+    "Aratech Corporation (V)",
+    "Battle Deployment",
+    "Veers (V)"
+   ],
+   "rarity": "R1",
+   "set": "3",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 273,
+     "title": "Blizzard Scout 1 (V)"
+    }
+   ]
+  },
+  {
+   "counterpart": "Bog-wing",
+   "front": {
+    "characteristics": [
+     "selective",
+     "parasite"
+    ],
+    "deploy": "2",
+    "destiny": "5",
+    "errataSymbol": "E1",
+    "extraText": [
+     "FLIGHT: 2"
+    ],
+    "ferocity": "destiny -1",
+    "forfeit": "0",
+    "gametext": "* Ferocity = destiny -1. Habitat: Dagobah. Parasite: Character (that can move). Relocate Bog-wing and host up to two sites away (opponent of victim chooses). Bog-wing then detaches.",
+    "icons": [
+     "Selective Creature",
+     "Dagobah"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Dagobah-Dark/large/bogwing.gif",
+    "lore": "Avian jungle-dweller. Fiercely territorial. Uses powerful talons to pick up and bear off victims. Carries up to nine times it's own body weight. Feeds primarily on root lizards and vine snakes.",
+    "power": "*",
+    "subType": "Avian",
+    "title": "Bog-wing",
+    "type": "Creature",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Bog-wing (Errata)/image.png",
+    "printableSlipType": "ERRATA"
+   },
+   "gempId": "4_108",
+   "id": 296,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "4"
+    }
+   ],
+   "rarity": "C",
+   "set": "4",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 7242,
+     "title": "Night Buzzard"
+    }
+   ]
+  },
+  {
+   "abbr": [
+    "2 Player Vader"
+   ],
+   "combo": [
+    "Vader + I Have You Now Add one battle destiny (two if Rebel is Luke) if a Dark Jedi and a Rebel with ability > 2 are involved in the same battle.",
+    "Vader + Force Field Cancels an attempt to target a Dark Jedi with a character weapon."
+   ],
+   "front": {
+    "ability": "6",
+    "deploy": "7",
+    "destiny": "1",
+    "extraText": [
+     "Dark Jedi"
+    ],
+    "forfeit": "5",
+    "gametext": "Must deploy on Death Star, but may move elsewhere. May not be deployed if two or more of opponent's unique (•) characters on table. If in a losing battle, draw destiny. If destiny > 4, 'choke' (lose) one Imperial present (your choice).",
+    "icons": [
+     "Warrior"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/PremiereIntroductoryTwoPlayerGame-Dark/large/vader.gif",
+    "lore": "Sought to extinguish all Jedi. Former student of Obi-Wan Kenobi. Seduced by the dark side of the Force.",
+    "power": "4",
+    "subType": "Imperial",
+    "title": "•Vader",
+    "type": "Character",
+    "uniqueness": "*"
+   },
+   "gempId": "101_5",
+   "id": 2693,
+   "legacy": false,
+   "matchingWeapon": [
+    "Darth Vader's Lightsaber",
+    "Darth Vader's Lightsaber (V)",
+    "Vader's Lightsaber"
+   ],
+   "printings": [
+    {
+     "set": "101"
+    }
+   ],
+   "pulledBy": [
+    "Blizzard 4",
+    "The Empire's Back"
+   ],
+   "rarity": "PM",
+   "set": "101",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 7098,
+     "title": "Vader (V)"
+    }
+   ],
+   "personas": [
+    "Vader"
+   ]
+  },
+  {
+   "combo": [
+    "Devastator + Imperial Helmsman Draw one battle destiny if not able to otherwise."
+   ],
+   "front": {
+    "armor": "6",
+    "characteristics": [
+     "Imperial (starship)",
+     "ship-docking capability"
+    ],
+    "deploy": "8",
+    "destiny": "1",
+    "forfeit": "9",
+    "gametext": "May add 6 pilots, 8 passengers, 2 vehicles and 4 TIEs. Has ship-docking capability. Permanent pilot aboard provides ability of 2.",
+    "hyperspeed": "3",
+    "icons": [
+     "Pilot",
+     "Nav Computer",
+     "Scomp Link"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Dark/large/devastator.gif",
+    "lore": "Supported the devastating subjugation of Ralltiir. While under the command of Darth Vader, chased and captured the traitor Princess Leia Organa aboard the consular ship Tantive IV.",
+    "power": "9",
+    "subType": "Capital: Imperial-Class Star Destroyer",
+    "title": "•Devastator",
+    "type": "Starship",
+    "uniqueness": "*"
+   },
+   "gempId": "1_301",
+   "id": 723,
+   "legacy": false,
+   "matching": [
+    "Commander Praji"
+   ],
+   "printings": [
+    {
+     "set": "1"
+    }
+   ],
+   "pulledBy": [
+    "Commander Nemet (V)",
+    "Kuat Drive Yards"
+   ],
+   "rarity": "R1",
+   "set": "1",
+   "side": "Dark",
+   "underlyingCardFor": [
+    {
+     "cardId": 6911,
+     "title": "Devastator (V)"
+    }
+   ]
+  },
+  {
+   "counterpart": "2X-3KPR (Tooex)",
+   "front": {
+    "characteristics": [
+     "security droid"
+    ],
+    "deploy": "2",
+    "destiny": "3",
+    "extraText": [
+     "Security Patrol Droid"
+    ],
+    "forfeit": "2",
+    "gametext": "Where present under 'nighttime conditions,' each of your Imperials and aliens at same planet site is power +2 and immune to attrition < 3.",
+    "icons": [
+     "Special Edition"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/SpecialEdition-Dark/large/2x7kprtooex.gif",
+    "lore": "Basic security droid. Monitors perimeter sensors and floodlights at Imperial outposts. Responsible for maintenance of security devices. Stolen from Jabba.",
+    "power": "0",
+    "subType": "Droid",
+    "title": "2X-7KPR (Tooex)",
+    "type": "Character"
+   },
+   "gempId": "7_163",
+   "id": 3,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "7"
+    }
+   ],
+   "rarity": "C",
+   "rulings": [
+    "This card is a security droid.",
+    "This card is <u>not</u> a maintenance droid."
+   ],
+   "set": "7",
+   "side": "Dark"
+  },
+  {
+   "combo": [
+    "Captain Han Solo + Life Debt Deploy Chewbacca for free from Reserve Deck if Han is defending a battle alone.",
+    "Captain Han Solo + Millennium Falcon + Punch It!",
+    "Captain Han Solo + Millennium Falcon + R2-D2 (Artoo-Detoo) Millennium Falcon is power 8, Maneuver 8 and Hyperspeed 8 and immune to attrition < 5. All Wings Report In & Darklighter Spin on that Falcon means a battle destiny of 8.",
+    "Captain Han Solo + Millennium Falcon + Moving To Attack Position"
+   ],
+   "front": {
+    "ability": "3",
+    "characteristics": [
+     "smuggler",
+     "Corellian",
+     "scoundrel"
+    ],
+    "deploy": "4",
+    "destiny": "1",
+    "errataSymbol": "E1",
+    "extraText": [
+     "Force-Attuned"
+    ],
+    "forfeit": "7",
+    "gametext": "Deploys only on Falcon, Hoth or Cloud City. Adds 3 to power of anything he pilots. When piloting Falcon, adds one battle destiny and 2 to maneuver. Once during each battle, may use 2 Force to cancel one opponent's destiny just drawn and cause a re-draw.",
+    "icons": [
+     "Pilot",
+     "Warrior",
+     "Cloud City"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/CloudCity-Light/large/captainhansolo.gif",
+    "lore": "Smuggler and scoundrel. His piloting abilities have become legend in the Rebellion. Intends to leave the Alliance to pay off Jabba the Hutt.",
+    "power": "4",
+    "subType": "Rebel",
+    "title": "•Captain Han Solo",
+    "type": "Character",
+    "uniqueness": "*",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Captain Han Solo (errata)/image.png",
+    "printableSlipType": "ERRATA"
+   },
+   "gempId": "5_1",
+   "id": 360,
+   "legacy": false,
+   "matching": [
+    "Gold Squadron 1",
+    "Millennium Falcon",
+    "The Falcon",
+    "The Falcon, Junkyard Garbage"
+   ],
+   "matchingWeapon": [
+    "Han's Heavy Blaster Pistol",
+    "Han's Heavy Blaster Pistol (V)"
+   ],
+   "printings": [
+    {
+     "set": "5"
+    }
+   ],
+   "pulledBy": [
+    "Han's Back"
+   ],
+   "rarity": "R",
+   "set": "5",
+   "side": "Light",
+   "underlyingCardFor": [
+    {
+     "title": "Captain Han Solo (V)",
+     "cardId": 7422
+    }
+   ],
+   "personas": [
+    "Han"
+   ]
+  },
+  {
+   "combo": [
+    "Millennium Falcon + Captain Han Solo + R2-D2 (Artoo-Detoo) (V) Millennium Falcon is power 9, Maneuver 9 and Hyperspeed 9 and immune to attrition < 5. All Wings Report In & Darklighter Spin on that Falcon means a battle destiny of 9.",
+    "Millennium Falcon + Captain Han Solo + Moving To Attack Position"
+   ],
+   "front": {
+    "characteristics": [
+     "Rebel (starship)",
+     "ship-docking capability"
+    ],
+    "deploy": "3",
+    "destiny": "2",
+    "forfeit": "7",
+    "gametext": "May add 2 pilots and 2 passengers. Immune to attrition < 5 if Han, Chewie or Lando piloting. Has ship-docking capability. Must have pilot aboard to use power, maneuver or hyperspeed.",
+    "hyperspeed": "6",
+    "icons": [
+     "Nav Computer",
+     "Scomp Link"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Premiere-Light/large/millenniumfalcon.gif",
+    "lore": "Modified YT-1300 freighter. Owned by Lando Calrissian until won by Han in a sabacc game. 26.7 meters long. 'She may not look like much, but she's got it where it counts.'",
+    "maneuver": "4",
+    "power": "3",
+    "subType": "Starfighter: Modified Light Freighter",
+    "title": "•Millennium Falcon",
+    "type": "Starship",
+    "uniqueness": "*"
+   },
+   "gempId": "1_143",
+   "id": 1677,
+   "legacy": false,
+   "matching": [
+    "Artoo & Threepio",
+    "Captain Han Solo",
+    "Chewbacca",
+    "Chewbacca Of Kashyyyk",
+    "Chewbacca, Protector",
+    "Chewie",
+    "Chewie (V)",
+    "Chewie With Blaster Rifle",
+    "Chewie With Bowcaster",
+    "Chewie, Enraged",
+    "General Calrissian",
+    "General Solo",
+    "General Solo (V)",
+    "Han",
+    "Han (V)",
+    "Han Solo",
+    "Han With Heavy Blaster Pistol",
+    "Lando Calrissian",
+    "Lando Calrissian (V)",
+    "Lando Calrissian, Scoundrel",
+    "Lando With Blaster Pistol",
+    "Lando With Vibro-Ax",
+    "Solo",
+    "Tamtel Skreej"
+   ],
+   "printings": [
+    {
+     "set": "1"
+    }
+   ],
+   "pulledBy": [
+    "All Wings Report In & Darklighter Spin",
+    "Best Starpilot In The Galaxy",
+    "Life Debt"
+   ],
+   "rarity": "R1",
+   "set": "1",
+   "side": "Light",
+   "underlyingCardFor": [
+    "Millennium Falcon (V)"
+   ],
+   "personas": [
+    "Falcon"
+   ]
+  },
+  {
+   "front": {
+    "destiny": "4",
+    "gametext": "USED: Cancel Sense. LOST: Target an Effect, Political Effect, or Utinni Effect, and one of your characters on table. Draw destiny. If destiny < character's ability, target Effect is canceled (you lose no Force to Do, Or Do Not). (Immune to opponent's Objective.)",
+    "icons": [
+     "Set 0"
+    ],
+    "imageUrl": "https://res.starwarsccg.org/cards/Virtual0-Dark/large/alterpremiere.gif",
+    "lore": "A user of the Force can subjugate the will of others or alter the environment at a distance, as when Vader 'disciplines' those whose lack of faith disturbs him.",
+    "subType": "Used Or Lost",
+    "title": "Alter (Premiere) (V)",
+    "type": "Interrupt",
+    "printableSlipUrl": "https://res.starwarsccg.org/vkit/cards/standard/Alter (Premiere) (Dark)/image.png",
+    "printableSlipType": "VIRTUAL"
+   },
+   "gempId": "200_115",
+   "id": 6085,
+   "legacy": false,
+   "printings": [
+    {
+     "set": "200"
+    }
+   ],
+   "rarity": "U1",
+   "rulings": [
+    "Cannot cancel an Immediate Effect, Mobile Effect, or Starting Effect.",
+    "Can be played as a top-level action.",
+    "Can be played as a response to the attempted deployment of an Effect, Political Effect, or Utinni Effect. If successful, the target has no result.",
+    "'Immune to opponent's Objective' only works while initiating/playing it.",
+    "It is protected from (for example) both sides of Mind What You Have Learned.",
+    "It is not protected from (for example) Sanity And Compassion."
+   ],
+   "set": "200",
+   "side": "Dark"
+  }
+ ]
+}
