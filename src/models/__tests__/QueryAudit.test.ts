@@ -39,7 +39,8 @@ describe('query audit: fixture sanity', () => {
     const byTitle = (t: string) => cards.find(c => c.title === t);
     expect(byTitle('•Darth Vader')?.power).toBe('6'); // a string, not a number
     expect(byTitle('Bog-wing')?.power).toBe('*');
-    expect(byTitle('Alter')?.power).toBe(0); // absent upstream, defaulted by Card
+    const rawAlter = fixture.cards.find((c: {front: {title: string}}) => c.front.title === 'Alter');
+    expect(rawAlter.front.power).toBeUndefined(); // absent upstream, not "0"
     expect(cards).toHaveLength(16);
   });
 });
@@ -64,6 +65,10 @@ describe('query audit: pinned behaviour', () => {
     // "matches" is a substring test, so Premiere's 2-player intro set is in.
     ['set c premiere', ['Alter', 'Sense', '•Darth Vader', '•Devastator', '•Millennium Falcon', '•Vader']],
     ['set c v0', ['Alter (Premiere) (V)', '•Coarse And Rough And Irritating', "•I Don't Like Sand"]],
+    // Works today only because "effect" contains "c" (an alias of "matches"),
+    // see D6. `type` has no default comparator, so a fix for D5/D6 must give it
+    // one or this query stops working. Caught by the prototype on 2026-10-27.
+    ['type effect', ['•Coarse And Rough And Irritating', "•I Don't Like Sand"]],
   ])('%s', (query, expected) => {
     expect(titles(query)).toEqual([...expected].sort());
   });
