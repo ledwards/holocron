@@ -195,7 +195,87 @@ describe('FilterQuery: string comparator queries', () => {
     const query = 'set eq p';
     const filterQuery = new FilterQuery(query);
     const cards = filterQuery.execute(allCards).map(h => h.title);
-    expect(cards).toEqual([]);
+    expect(cards).toEqual(['•Hayes Hunter']);
+  });
+});
+
+// Regression (2026-10-27): "set c premiere", "side = dark", "icons c pilot"
+// all returned 0 results in production because the value was rewritten into
+// the title of the first card that CONTAINED it ("Alter (Premiere) (V)",
+// "Dark Hours", ...). A value is only ever an alias for a field that holds card
+// names or set names, and only when it matches an alias exactly.
+describe('FilterQuery: typed values are taken literally', () => {
+  const makeCard = (
+    gempId: string,
+    title: string,
+    set: {id: string; name: string; abbr: string; gempName: string},
+    front: Record<string, unknown> = {},
+    side = 'Dark',
+    abbr: string[] = [],
+  ) =>
+    new Card(
+      {
+        gempId,
+        side,
+        set: set.id,
+        rarity: 'U',
+        abbr,
+        front: {
+          title,
+          type: 'Effect',
+          subType: '',
+          characteristics: [],
+          icons: [],
+          imageUrl: '',
+          ...front,
+        },
+      } as any,
+      set,
+    );
+
+  const premiere = {id: '1', name: 'Premiere', abbr: 'P', gempName: 'Premiere'};
+  const virtual0 = {id: '200', name: 'Virtual Set 0', abbr: 'V0', gempName: 'Set 0'};
+  const cards = [
+    makeCard('200_115', 'Alter (Premiere) (V)', virtual0),
+    makeCard('1_1', '•Dark Hours', premiere, {type: 'Interrupt'}),
+    makeCard('1_2', '•Pilot Proficiency', premiere, {type: 'Interrupt'}),
+    makeCard('1_3', '•Effective Repairs', premiere, {type: 'Interrupt'}),
+    // "pilot" is also this card's nickname: an exact alias hit on a field that
+    // does not hold card names must still leave the value alone.
+    makeCard('1_4', '•Hayes Hunter', premiere, {type: 'Character', icons: ['Pilot']}, 'Light', ['pilot']),
+  ];
+  const titles = (query: string) =>
+    new FilterQuery(query).execute(cards).map(c => c.title).sort();
+
+  it('set c premiere matches the Premiere set, not a card titled "(Premiere)"', () => {
+    expect(titles('set c premiere')).toEqual(
+      ['•Dark Hours', '•Effective Repairs', '•Hayes Hunter', '•Pilot Proficiency'],
+    );
+  });
+
+  it('side = dark is not rewritten into "Dark Hours"', () => {
+    expect(titles('side = dark')).toEqual(
+      ['Alter (Premiere) (V)', '•Dark Hours', '•Effective Repairs', '•Pilot Proficiency'],
+    );
+  });
+
+  it('icons c pilot is not rewritten into "Pilot Proficiency" or into a nicknamed card', () => {
+    expect(titles('icons c pilot')).toEqual(['•Hayes Hunter']);
+  });
+
+  it('title c pilot does resolve the nickname, because title holds card names', () => {
+    expect(titles('title c pilot')).toEqual(['•Hayes Hunter']);
+  });
+
+  it('type c effect is not rewritten into "Effective Repairs"', () => {
+    expect(titles('type c effect')).toEqual(['Alter (Premiere) (V)']);
+  });
+
+  it('execute does not mutate the parsed value shown in the status bar', () => {
+    const filterQuery = new FilterQuery('set eq p');
+    filterQuery.execute(cards);
+    expect(filterQuery.value).toBe('p');
+    expect(filterQuery.rawValue).toBe('p');
   });
 });
 

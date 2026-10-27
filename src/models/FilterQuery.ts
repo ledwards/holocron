@@ -394,25 +394,36 @@ class FilterQuery {
    * @returns Filtered cards
    */
   execute(cards: Card[]): Card[] {
-    if (!this.valid() || !this.value || !this.filter) {
+    if (!this.valid() || !this.value || !this.filter || !this.field || !this.comparator) {
       return [];
     }
 
-    const aliasResolver = new AliasResolver(cards);
-    const shouldResolveAliasValue =
-      this.field &&
-      !['gametext', 'lore', 'extratext'].includes(this.field.name);
+    const value = this.resolveValue(cards);
+    const filter =
+      value === this.filter.value
+        ? this.filter
+        : new Filter(this.field, this.comparator, value);
 
-    if (this.value && shouldResolveAliasValue) {
-      const aliasResolvedValue = aliasResolver.resolve(this.value);
-      if (aliasResolvedValue && this.filter) {
-        this.value = aliasResolvedValue;
-        this.filter.value = aliasResolvedValue;
-      }
+    const result = filter.execute(cards);
+    return result.cards as Card[];
+  }
+
+  /**
+   * The value the filter actually runs with. Only fields declared to hold
+   * card names or set names may have their value rewritten, and only when the
+   * typed value is exactly an alias (see AliasResolver). The parsed value and
+   * filter are left untouched so the status bar keeps showing what was typed.
+   * @param cards The cards whose titles/sets supply the alias table
+   * @returns The resolved value, or the typed value when nothing applies
+   */
+  resolveValue(cards: Card[]): string {
+    const typed = this.value || '';
+    const kind = this.field?.valueAlias;
+    if (!kind || !typed) {
+      return typed;
     }
 
-    const result = this.filter.execute(cards);
-    return result.cards as Card[];
+    return new AliasResolver(cards).resolve(typed, kind);
   }
 
   /**

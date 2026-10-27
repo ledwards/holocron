@@ -78,6 +78,38 @@ const readCardFilePromise = (side: string): Promise<CardData[]> => {
     });
 };
 
+/**
+ * Upstream ships alternate-image printings as extra rows: "(AI)", "(Holo AI 2)",
+ * "(C-Slip AI)" and, since late 2026, "(ALT)". They are the same card as the row
+ * they duplicate and usually carry the same gempId.
+ */
+const isAlternateImagePrinting = (card: Card): boolean =>
+  /\(.*AI.*\)|\(ALT\)/.test(card.title);
+
+/**
+ * `Card.id` (gempId) is the identity the app keys on — list rows, selection,
+ * decklist lookups — so it must be unique in the loaded set. Upstream does not
+ * guarantee that: besides alternate images, some ids carry two title variants
+ * ("Fanfare (Tatooine) (V)" / "Fanfare (V)"). Keep one row per id, preferring
+ * the title with the fewest qualifiers, and say how many were collapsed.
+ */
+export const onePrintingPerId = (cards: Card[]): Card[] => {
+  const keptById = new Map<string, Card>();
+  cards.forEach(card => {
+    const kept = keptById.get(card.id);
+    if (!kept || card.title.length < kept.title.length) {
+      keptById.set(card.id, card);
+    }
+  });
+
+  const collapsed = cards.length - keptById.size;
+  if (collapsed > 0) {
+    console.log(`[cards] collapsed ${collapsed} duplicate-id printings`);
+  }
+
+  return cards.filter(card => keptById.get(card.id) === card);
+};
+
 const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => {
   return Promise.allSettled([
     readCardFilePromise('Dark'),
@@ -97,7 +129,7 @@ const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => 
                 return card;
               })
               .filter((c): c is Card => c !== null)
-              .filter((c: Card) => !c.title.match(/\(.*AI.*\)/)) // excludes (AI) and (Holo AI 2), etc.
+              .filter((c: Card) => !isAlternateImagePrinting(c))
               .filter((c: Card) => c.type !== 'Game Aid')
               .sort((a: Card, b: Card) =>
                 a.sortTitle > b.sortTitle
@@ -111,6 +143,7 @@ const loadCardDefinitions = (expansionSets: ExpansionSet[]): Promise<Card[]> => 
         })
         .flat();
     })
+    .then(onePrintingPerId)
     .catch(err => {
       console.log(err);
       return [] as Card[];

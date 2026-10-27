@@ -63,6 +63,49 @@ describe('loaders', () => {
     expect(sets[0].id).toBe('2');
   });
 
+  // Regression (2026-10-27): upstream started shipping "(ALT)" alternate-image
+  // rows that reuse the original card's gempId. The card list keys rows by that
+  // id, and duplicate keys made the list repeat rows and show stale results from
+  // earlier searches.
+  it('loads exactly one card per gempId, preferring the canonical printing', async () => {
+    const row = (gempId: string, title: string, imageUrl = '') => ({
+      gempId,
+      side: 'Dark',
+      set: '200',
+      rarity: 'U',
+      front: {title, type: 'Effect', subType: '', characteristics: [], icons: [], imageUrl},
+    });
+    const payload = JSON.stringify({
+      cards: [
+        row('200_109', '•Coarse And Rough And Irritating'),
+        row('200_109', '•Coarse And Rough And Irritating (ALT)'),
+        row('200_95', '•Fanfare (Tatooine) (V)'),
+        row('200_95', '•Fanfare (V)'),
+        row('200_1', '•Aayla Secura'),
+        row('200_1', '•Aayla Secura (Holo AI)'),
+        row('227_29', '•Qui-Gon Jinn (V) (ALT)'),
+        row('227_22', '•Qui-Gon Jinn (V)'),
+      ],
+    });
+    mockReadFile.mockImplementation((path: string) =>
+      path.endsWith('/Dark.json') ? Promise.resolve(payload) : Promise.resolve(''),
+    );
+
+    const cards = await loadCardDefinitions([
+      new ExpansionSet({id: '200', name: 'Virtual Set 0', gempName: 'Set 0', abbr: 'V0', legacy: false}),
+    ]);
+
+    const ids = cards.map(c => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(cards.map(c => c.title).sort()).toEqual([
+      '•Aayla Secura',
+      '•Coarse And Rough And Irritating',
+      '•Fanfare (V)',
+      '•Qui-Gon Jinn (V)',
+    ]);
+    expect(consoleLogSpy).toHaveBeenCalledWith('[cards] collapsed 1 duplicate-id printings');
+  });
+
   it('falls back to bundled fixtures for cards when local files are missing', async () => {
     mockReadFile.mockRejectedValue(new Error('No such file'));
 
