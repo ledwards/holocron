@@ -45,7 +45,7 @@ const queries: string[] = Object.keys(recorded.counts);
 
 let cards: Card[] = [];
 beforeAll(async () => {
-  jest.spyOn(console, 'log').mockImplementation(() => {});
+  jest.spyOn(console, 'log').mockImplementation(() => undefined);
   cards = await loadCardDefinitions(await loadExpansionSets());
 });
 afterAll(() => {

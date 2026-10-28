@@ -1,5 +1,6 @@
 // jest.setup.js
 import 'react-native-gesture-handler/jestSetup';
+import {format} from 'util';
 
 // Mock dependencies that might cause issues in tests
 jest.mock(
@@ -43,18 +44,40 @@ jest.mock('react-native-device-info', () => ({
 
 // Setup to silence specific expected warnings
 const originalConsoleError = console.error;
+
+// React list-key warnings FAIL the test that caused them. They used to be
+// silenced here, and duplicate keys are exactly how the 2026-10-27 card
+// search bug showed up: upstream reused gempIds, the card list keyed rows by
+// them, and rows repeated or stayed behind from an earlier search.
+const KEY_WARNINGS = [
+  'Each child in a list should have a unique',
+  'Encountered two children with the same key',
+];
+const keyWarnings = [];
+global.__keyWarnings = keyWarnings;
+
 console.error = (...args) => {
+  const message = typeof args[0] === 'string' ? args[0] : '';
+  if (KEY_WARNINGS.some(w => message.includes(w))) {
+    keyWarnings.push(format(...args).split('\n').slice(0, 4).join('\n'));
+    return;
+  }
   // Filter out specific warning messages
   if (
-    typeof args[0] === 'string' && 
-    (args[0].includes('Warning: ReactDOM.render') || 
-     args[0].includes('Warning: React.createElement') ||
-     args[0].includes('Warning: Each child in a list should have a unique'))
+    message.includes('Warning: ReactDOM.render') ||
+    message.includes('Warning: React.createElement')
   ) {
     return;
   }
   originalConsoleError(...args);
 };
+
+afterEach(() => {
+  if (keyWarnings.length) {
+    const found = keyWarnings.splice(0);
+    throw new Error(`React list-key warning (duplicate or missing key):\n${found.join('\n---\n')}`);
+  }
+});
 
 // Set up basic mocks for dimensions
 jest.mock('react-native/Libraries/Utilities/Dimensions', () => ({
