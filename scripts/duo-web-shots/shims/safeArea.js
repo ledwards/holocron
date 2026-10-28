@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Web stand-in for react-native-safe-area-context: the scenario's iPhone Duo
 // insets, which a browser cannot report.
 const React = require('react');

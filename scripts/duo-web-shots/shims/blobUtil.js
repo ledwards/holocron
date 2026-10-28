@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Web stand-in for react-native-blob-util: serves the pinned upstream data.
 const files = {
   'Dark.json': JSON.stringify(require('../data/Dark.json')),

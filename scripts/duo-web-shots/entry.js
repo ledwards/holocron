@@ -1,3 +1,5 @@
+/* eslint-env browser */
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Screenshot harness entry. run.sh copies it into a temporary copy of the
 // repo as shots/entry.js; it is never part of the app's own bundle.
 import 'react-native-gesture-handler';

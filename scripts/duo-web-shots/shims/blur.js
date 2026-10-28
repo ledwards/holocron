@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
 // The web cannot blur behind a native view; stand in with the translucent
 // colour the app itself uses as its reduced-transparency fallback.
 const React = require('react');

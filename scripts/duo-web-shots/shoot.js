@@ -1,3 +1,6 @@
+/* eslint-env node */
+/* global document */
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Drives the real Holocron web build through iPhone Duo poses and screenshots each.
 const {chromium} = require('playwright');
 const fs = require('fs');

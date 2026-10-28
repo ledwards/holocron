@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const React = require('react');
 const {Image} = require('react-native');
 const FastImage = React.forwardRef((props, ref) => React.createElement(Image, {...props, ref}));
