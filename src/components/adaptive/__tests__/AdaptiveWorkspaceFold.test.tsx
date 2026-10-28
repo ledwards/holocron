@@ -4,6 +4,13 @@ import {fireEvent, render} from '@testing-library/react-native';
 import AdaptiveWorkspace from '../AdaptiveWorkspace';
 import DeviceLayoutContext, {defaultDeviceLayout} from '../../../contexts/DeviceLayoutContext';
 import {Region} from '../../../lib/duoLayout';
+import useBottomClearance from '../../../lib/useBottomClearance';
+
+jest.mock('@react-navigation/bottom-tabs', () => ({useBottomTabBarHeight: () => 62}));
+
+function Clearance({testID}: {testID: string}) {
+  return <Text testID={testID}>{String(useBottomClearance(58))}</Text>;
+}
 
 jest.mock('@react-navigation/native', () => ({useFocusEffect: jest.fn()}));
 jest.mock('react-native-elements', () => ({Icon: () => null}));
@@ -12,7 +19,7 @@ const renderWorkspace = (fold: Region | null, width: number, height: number) => 
   const screen = render(
     <DeviceLayoutContext.Provider value={{...defaultDeviceLayout, fold}}>
       <AdaptiveWorkspace title="Cards" selected={true} onBack={jest.fn()}
-        browser={<Text>browser</Text>} detail={<Text>detail</Text>} />
+        browser={<Clearance testID="browser-clearance" />} detail={<Clearance testID="detail-clearance" />} />
     </DeviceLayoutContext.Provider>,
   );
   fireEvent(screen.getByTestId('adaptive-workspace'), 'layout', {nativeEvent: {layout: {x: 0, y: 0, width, height}}});
@@ -42,6 +49,19 @@ describe('AdaptiveWorkspace on a partly folded display', () => {
     expect(style(screen.getByTestId('fold-gap', {includeHiddenElements: true})).height).toBe(24);
     const order = workspace.props.children.map((child: {key: string}) => child.key);
     expect(order).toEqual(['detail', 'fold', 'browse']);
+  });
+
+  it('reserves no tab bar space in a detail pane that ends at the fold', () => {
+    // found in a web render: the card art above the fold shrank to leave room
+    // for a tab bar that is below the fold, not below the pane
+    const screen = renderWorkspace({x: 0, y: 433, width: 626, height: 24}, 626, 828);
+    expect(screen.getByTestId('detail-clearance').props.children).toBe('0');
+    expect(screen.getByTestId('browser-clearance').props.children).toBe('62');
+  });
+
+  it('keeps tab bar space in both panes when side by side', () => {
+    const screen = renderWorkspace({x: 433, y: 0, width: 24, height: 626}, 826, 626);
+    expect(screen.getByTestId('detail-clearance').props.children).toBe('62');
   });
 
   it('shows both panes when stacked, even on a compact width', () => {

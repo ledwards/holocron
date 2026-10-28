@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {ScrollView, Text} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
@@ -12,7 +12,7 @@ import ThemeContext from '../../contexts/ThemeContext';
 const DecklistsScreenTextView = ({route, embedded = false}) => {
   const theme = useContext(ThemeContext);
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = useBottomClearance();
 
   return (
     <>

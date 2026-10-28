@@ -8,6 +8,7 @@ import {
   BackHandler,
 } from 'react-native';
 import usePaneFold from '../../lib/usePaneFold';
+import {PaneReachesBottomContext} from '../../contexts/DeviceLayoutContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
 import ThemeContext from '../../contexts/ThemeContext';
@@ -97,7 +98,9 @@ export default function AdaptiveWorkspace({
           onPress={onBack}
         />
       )}
-      {detail}
+      <PaneReachesBottomContext.Provider value={!stacked}>
+        {detail}
+      </PaneReachesBottomContext.Provider>
     </View>
   );
   return (

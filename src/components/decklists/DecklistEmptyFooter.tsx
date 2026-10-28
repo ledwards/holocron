@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
 import {View} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
+import DeviceLayoutContext from '../../contexts/DeviceLayoutContext';
 
 import styles from '../../styles/CardSearchFooterStyles'; // TODO: Rename to DecklistSearchFooterStyles
 import ThemeContext from '../../contexts/ThemeContext';
@@ -14,8 +15,14 @@ type DecklistEmptyFooterProps = {
 
 const DecklistEmptyFooter = (props: DecklistEmptyFooterProps) => {
   const theme = useContext<Theme | null>(ThemeContext);
-  const tabBarHeight = useBottomTabBarHeight();
-  const bottomGlassPadding = Math.max(tabBarHeight, 58) + 2;
+  const {placement} = useContext(DeviceLayoutContext);
+  const bottomGlassPadding = useBottomClearance(58) + 2;
+
+  // The glass backs the bottom tab bar; beside iPhone Duo's vertical strip
+  // there is no bar to back.
+  if (placement !== 'bottom') {
+    return null;
+  }
 
   return (
     <View

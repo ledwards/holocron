@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 import {
   View,
   ActivityIndicator,
@@ -25,7 +25,7 @@ const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedde
   const allCards = useContext(AllCardsContext);
   const flatListRef = useRef<any>(null);
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = useBottomClearance();
 
   const [data, setData] = useState<any[]>([]);
   const [state, setState] = useState<{

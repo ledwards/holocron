@@ -94,3 +94,6 @@ web-build/
 # Rules extraction visual checks and Python bytecode
 artifacts/rules-review/
 __pycache__/
+
+# iPhone Duo web screenshots (scripts/duo-web-shots)
+artifacts/duo-web-shots/

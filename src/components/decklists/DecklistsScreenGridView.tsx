@@ -1,7 +1,7 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {ScrollView, View, Dimensions, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
 import DecklistEmptyFooter from './DecklistEmptyFooter';
 
@@ -38,7 +38,7 @@ interface DecklistsScreenGridViewProps {
 const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = useBottomClearance();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
   

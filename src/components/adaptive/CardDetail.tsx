@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {View, Text, ScrollView, Pressable} from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 import ThemeContext from '../../contexts/ThemeContext';
 import CardArtwork from './CardArtwork';
 
@@ -10,7 +10,7 @@ export default function CardDetail({card}: {card: DetailCard}) {
 }
 function SelectedCard({card}: {card: DetailCard}) {
   const theme = useContext(ThemeContext);
-  const bottom = useBottomTabBarHeight();
+  const bottom = useBottomClearance();
   const [back, setBack] = useState(false);
   const [headingHeight, setHeadingHeight] = useState(100);
   const [size, setSize] = useState({width: 320, height: 500});

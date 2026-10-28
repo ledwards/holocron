@@ -23,3 +23,10 @@ export const defaultDeviceLayout: DeviceLayout = {
 
 const DeviceLayoutContext = createContext<DeviceLayout>(defaultDeviceLayout);
 export default DeviceLayoutContext;
+
+/**
+ * False inside a pane that ends above the bottom of the screen (the detail
+ * pane stacked above a horizontal fold): nothing in it needs room for the tab
+ * bar or the home indicator.
+ */
+export const PaneReachesBottomContext = createContext<boolean>(true);
