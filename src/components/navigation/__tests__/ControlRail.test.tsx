@@ -1,0 +1,59 @@
+import React from 'react';
+import {Text} from 'react-native';
+import {fireEvent, render} from '@testing-library/react-native';
+import ControlRail from '../ControlRail';
+
+const routes = [{key: 'c', name: 'Cards'}, {key: 'd', name: 'Decklists'}, {key: 'r', name: 'Rules'}];
+const icon = (name: string) => () => <Text>{`${name} icon`}</Text>;
+
+const renderRail = (index = 1, headerActions = true) => {
+  const navigation = {
+    emit: jest.fn(() => ({defaultPrevented: false})),
+    navigate: jest.fn(),
+  };
+  const descriptors = {
+    c: {options: {tabBarLabel: 'Search', tabBarButtonTestID: 'tab-cards', tabBarIcon: icon('cards')}},
+    d: {options: {
+      tabBarLabel: 'Decklists', tabBarButtonTestID: 'tab-decklists', tabBarIcon: icon('decks'),
+      headerLeft: headerActions ? () => <Text testID="adaptive-back">back</Text> : undefined,
+      headerRight: headerActions ? () => <Text testID="deck-mode-toggle">mode</Text> : undefined,
+    }},
+    r: {options: {tabBarLabel: 'Rules', tabBarButtonTestID: 'tab-rules', tabBarIcon: icon('rules')}},
+  };
+  const screen = render(
+    <ControlRail state={{index, routes} as never} descriptors={descriptors as never} navigation={navigation as never}
+      insets={{top: 0, right: 54, bottom: 20, left: 0}} side="right" width={64} topInset={0} bottomInset={20} />,
+  );
+  return {screen, navigation};
+};
+
+describe('ControlRail', () => {
+  it("puts the focused screen's Back first, then its mode action, at the top", () => {
+    const {screen} = renderRail();
+    const actions = screen.getByTestId('control-rail-actions');
+    const ids = actions.props.children.filter(Boolean).map((child: {props: {testID?: string}}) => child.props.testID);
+    expect(ids).toEqual(['adaptive-back', 'deck-mode-toggle']);
+  });
+
+  it('shows no actions when the screen has none', () => {
+    const {screen} = renderRail(0, false);
+    expect(screen.queryByTestId('adaptive-back')).toBeNull();
+  });
+
+  it('keeps the tab test IDs, labels and selected state', () => {
+    const {screen} = renderRail(1);
+    expect(screen.getByTestId('tab-decklists').props.accessibilityState).toEqual({selected: true});
+    expect(screen.getByTestId('tab-cards').props.accessibilityState).toEqual({selected: false});
+    expect(screen.getByLabelText('Search')).toBeTruthy();
+    expect(screen.getByLabelText('Rules')).toBeTruthy();
+  });
+
+  it('navigates to another tab, and not to the focused one', () => {
+    const {screen, navigation} = renderRail(1);
+    fireEvent.press(screen.getByTestId('tab-rules'));
+    expect(navigation.navigate).toHaveBeenCalledWith('Rules', undefined);
+    navigation.navigate.mockClear();
+    fireEvent.press(screen.getByTestId('tab-decklists'));
+    expect(navigation.navigate).not.toHaveBeenCalled();
+  });
+});

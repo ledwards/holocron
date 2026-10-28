@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, useColorScheme, Appearance, StatusBar, ColorSchemeName} from 'react-native';
 import {NavigationContainer, DefaultTheme, Theme as NavigationTheme} from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
+import {SafeAreaProvider, initialWindowMetrics} from 'react-native-safe-area-context';
 import Card from './src/models/Card';
 import ExpansionSet from './src/models/ExpansionSet';
 import Decklist from './src/models/Decklist';
@@ -130,6 +131,7 @@ const App = () => {
                   flex: 1,
                 }}>
                 <StatusBar barStyle={theme.statusBarStyle as 'light-content' | 'dark-content' | 'default'} />
+                <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                 <NavigationContainer theme={NavigationContainerTheme}>
                   <View
                     style={{
@@ -142,6 +144,7 @@ const App = () => {
                     />
                   </View>
                 </NavigationContainer>
+                </SafeAreaProvider>
               </View>
             </View>
           </ThemeContext.Provider>

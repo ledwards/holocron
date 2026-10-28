@@ -14,7 +14,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
+import usePaneFold from '../../lib/usePaneFold';
 import {workspaceLayout} from '../../lib/adaptiveLayout';
 import RulesBrowser from './RulesBrowser';
 import documentData from '../../data/rules/rules.document.json';
@@ -99,9 +100,13 @@ function isSourceTocSection(section: RulesSection): boolean {
 
 const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
   const window = useWindowDimensions();
-  const [width, setWidth] = useState(window.width);
-  const {split, browserWidth} = workspaceLayout(width, window.fontScale);
-  const bottomInset = useBottomTabBarHeight();
+  // Partly folded like a book, contents and reader meet at the fold. A
+  // horizontal fold is left alone: continuous reading content does not
+  // displace (Apple, "Strike a pose with adaptive layouts on iPhone Duo").
+  const pane = usePaneFold();
+  const verticalFold = pane.fold?.axis === 'vertical' ? pane.fold : null;
+  const {split, browserWidth, gap} = workspaceLayout(pane.width, window.fontScale, verticalFold);
+  const bottomInset = useBottomClearance();
   const theme = useContext<Theme | null>(ThemeContext) || fallbackTheme;
   const [searchOpen, setSearchOpen] = useState(false);
   const [draftQuery, setDraftQuery] = useState<string>('');
@@ -238,15 +243,16 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{flex: 1, backgroundColor: theme.backgroundColor}}>
-      <View testID="rules-workspace" onLayout={event => setWidth(event.nativeEvent.layout.width)} style={{flex: 1, flexDirection: 'row'}}>
+      <View testID="rules-workspace" ref={pane.ref} onLayout={pane.onLayout} style={{flex: 1, flexDirection: 'row'}}>
         <View
           style={{
             position: split ? 'relative' : 'absolute',
             top: 0, bottom: 0, left: 0, zIndex: 2,
             backgroundColor: theme.backgroundColor,
             width: split ? browserWidth : '100%',
+            marginRight: split ? gap : 0,
             display: browsing ? 'flex' : 'none',
-            borderRightWidth: split ? 0.5 : 0,
+            borderRightWidth: split && !gap ? 0.5 : 0,
             borderColor: theme.dividerColor,
           }}>
           <RulesBrowser

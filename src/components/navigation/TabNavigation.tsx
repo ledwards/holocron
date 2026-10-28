@@ -1,8 +1,8 @@
-import React, {useContext} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {PlatformPressable} from '@react-navigation/elements';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets, Edge} from 'react-native-safe-area-context';
 import {Icon} from 'react-native-elements';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator, BottomTabBar} from '@react-navigation/bottom-tabs';
 import {BlurView} from '@react-native-community/blur';
 
 import CardsScreen from '../cards/CardsScreen';
@@ -11,6 +11,10 @@ import RulesScreen from '../rules/RulesScreen';
 
 import styles from '../../styles/TabNavigation';
 import ThemeContext from '../../contexts/ThemeContext';
+import DeviceLayoutContext, {DeviceLayout} from '../../contexts/DeviceLayoutContext';
+import {controlPlacement, railWidth} from '../../lib/duoLayout';
+import useFoldRegion from '../../lib/useFoldRegion';
+import ControlRail from './ControlRail';
 import {Theme} from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
@@ -35,10 +39,35 @@ function TabNavigation(_props: TabNavigationProps) {
     translucentBackgroundColor: 'rgba(0,0,0,0.5)',
   };
 
+  // iPhone Duo (closed, or open in landscape) moves the system's bars into a
+  // vertical strip on one edge; Holocron's tabs and header actions follow it.
+  // Decided from the window's safe-area insets, never from a device name.
+  const insets = useSafeAreaInsets();
+  const fold = useFoldRegion();
+  const placement = controlPlacement(insets);
+  const rail = placement !== 'bottom';
+  const strip = railWidth(insets, placement);
+  const deviceLayout = useMemo<DeviceLayout>(
+    () => ({placement, railWidth: strip, bottomInset: insets.bottom, fold}),
+    [placement, strip, insets.bottom, fold],
+  );
+  // The strip owns its edge; screens keep the other edge (and the top once
+  // their header is hidden).
+  const screenEdges = (withTop: boolean): Edge[] =>
+    rail
+      ? ['top', placement === 'right' ? 'left' : 'right']
+      : withTop ? ['top', 'left', 'right'] : ['left', 'right'];
+
   return (
+    <DeviceLayoutContext.Provider value={deviceLayout}>
     <Tab.Navigator
       initialRouteName="Cards"
+      tabBar={props => rail
+        ? <ControlRail {...props} side={placement as 'left' | 'right'} width={strip}
+            topInset={insets.top} bottomInset={insets.bottom} />
+        : <BottomTabBar {...props} />}
       screenOptions={{
+        tabBarPosition: rail ? (placement as 'left' | 'right') : 'bottom',
         tabBarShowLabel: false,
         // UIKit's vertical tab item remains top-aligned even without labels.
         tabBarIconStyle: {width: 32, height: 32},
@@ -57,7 +86,7 @@ function TabNavigation(_props: TabNavigationProps) {
         name="Cards"
         children={() => (
           <SafeAreaView
-            edges={['left', 'right']}
+            edges={screenEdges(false)}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
@@ -68,7 +97,7 @@ function TabNavigation(_props: TabNavigationProps) {
         options={{
           tabBarLabel: 'Search',
           tabBarButtonTestID: 'tab-cards',
-          headerShown: true,
+          headerShown: !rail,
           headerTransparent: true,
           headerTitle: 'Card Search',
           headerTitleStyle: {
@@ -99,7 +128,7 @@ function TabNavigation(_props: TabNavigationProps) {
         name="Decklists"
         children={() => (
           <SafeAreaView
-            edges={['left', 'right']}
+            edges={screenEdges(false)}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
@@ -108,7 +137,7 @@ function TabNavigation(_props: TabNavigationProps) {
           </SafeAreaView>
         )}
         options={{
-          headerShown: true,
+          headerShown: !rail,
           headerTransparent: true,
           headerTitle: 'Decklists',
           headerTitleStyle: {color: theme?.foregroundColor, fontSize: 17, fontWeight: '600'},
@@ -131,7 +160,7 @@ function TabNavigation(_props: TabNavigationProps) {
         children={() => (
           <SafeAreaView
             testID="rules-safe-area"
-            edges={['top', 'left', 'right']}
+            edges={screenEdges(true)}
             style={{
               flex: 1,
               backgroundColor: theme?.backgroundColor,
@@ -154,6 +183,7 @@ function TabNavigation(_props: TabNavigationProps) {
         }}
       />
     </Tab.Navigator>
+    </DeviceLayoutContext.Provider>
   );
 }
 

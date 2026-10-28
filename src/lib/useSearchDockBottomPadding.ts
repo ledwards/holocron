@@ -1,6 +1,6 @@
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from './useBottomClearance';
 
 /** Keep navigation clearance stable through keyboard dismissal and rotation. */
 export default function useSearchDockBottomPadding(): number {
-  return Math.max(useBottomTabBarHeight(), 58) + 2;
+  return useBottomClearance(58) + 2;
 }

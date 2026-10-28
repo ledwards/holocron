@@ -1,6 +1,7 @@
 import React from 'react';
 import {act, fireEvent, render} from '@testing-library/react-native';
 import RulesScreen from '../RulesScreen';
+import DeviceLayoutContext, {defaultDeviceLayout} from '../../../contexts/DeviceLayoutContext';
 import {RulesDocument, RulesSearchIndex} from '../../../lib/rules/types';
 
 jest.mock('@react-navigation/bottom-tabs', () => ({
@@ -140,6 +141,32 @@ describe('RulesScreen', () => {
     expect(screen.getByTestId('rules-wide-search-input').props.value).toBe('actions');
     fireEvent.press(screen.getByTestId('rules-wide-clear'));
     expect(screen.getByTestId('rules-toc-panel')).toBeTruthy();
+  });
+
+  it('meets a vertical fold: contents end at the fold, the reader starts after it', () => {
+    const fold = {x: 433, y: 0, width: 24, height: 626};
+    const screen = render(
+      <DeviceLayoutContext.Provider value={{...defaultDeviceLayout, fold}}>
+        <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />
+      </DeviceLayoutContext.Provider>,
+    );
+    fireEvent(screen.getByTestId('rules-workspace'), 'layout', {nativeEvent: {layout: {width: 826, height: 626}}});
+    const browser = screen.getByTestId('rules-workspace').props.children[0];
+    expect(browser.props.style.width).toBe(433);
+    expect(browser.props.style.marginRight).toBe(24);
+  });
+
+  it('keeps reading across a horizontal fold (continuous text does not move)', () => {
+    const fold = {x: 0, y: 433, width: 826, height: 24};
+    const screen = render(
+      <DeviceLayoutContext.Provider value={{...defaultDeviceLayout, fold}}>
+        <RulesScreen documentOverride={documentFixture} indexOverride={indexFixture} />
+      </DeviceLayoutContext.Provider>,
+    );
+    fireEvent(screen.getByTestId('rules-workspace'), 'layout', {nativeEvent: {layout: {width: 826, height: 828}}});
+    const browser = screen.getByTestId('rules-workspace').props.children[0];
+    expect(browser.props.style.width).toBe(280);
+    expect(browser.props.style.marginRight).toBe(0);
   });
 });
 

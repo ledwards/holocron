@@ -4,16 +4,20 @@ import TabNavigation from '../TabNavigation';
 import {StyleSheet} from 'react-native';
 
 let mockScreenOptions: any;
+let mockTabBar: any;
+const mockScreenOptionsByName: Record<string, any> = {};
 
 jest.mock('react-native-elements', () => ({
   Icon: () => null,
 }));
 
+let mockInsets = {top: 0, right: 0, bottom: 0, left: 0};
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: (props: any) => {
     const {View} = require('react-native');
     return <View {...props} />;
   },
+  useSafeAreaInsets: () => mockInsets,
 }));
 
 jest.mock('@react-native-community/blur', () => ({
@@ -21,9 +25,11 @@ jest.mock('@react-native-community/blur', () => ({
 }));
 
 jest.mock('@react-navigation/bottom-tabs', () => ({
+  BottomTabBar: () => null,
   createBottomTabNavigator: () => ({
-    Navigator: ({children, screenOptions}: {children: React.ReactNode; screenOptions: any}) => {
+    Navigator: ({children, screenOptions, tabBar}: {children: React.ReactNode; screenOptions: any; tabBar: any}) => {
       mockScreenOptions = screenOptions;
+      mockTabBar = tabBar;
       const ReactLocal = require('react');
       const {View: ViewLocal} = require('react-native');
       return <ViewLocal>{children}</ViewLocal>;
@@ -31,10 +37,13 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
     Screen: ({
       name,
       children,
+      options,
     }: {
       name: string;
       children: (() => React.ReactNode) | React.ReactNode;
+      options: any;
     }) => {
+      mockScreenOptionsByName[name] = options;
       const ReactLocal = require('react');
       const {Text: TextLocal, View: ViewLocal} = require('react-native');
       return (
@@ -98,3 +107,39 @@ it('keeps the fixed tab bar free of keyboard-hide translations during resize', (
 });
 
 jest.mock('@react-navigation/elements', () => ({PlatformPressable: 'Pressable'}));
+
+describe('TabNavigation on iPhone Duo', () => {
+  const tabBarProps = {state: {index: 0, routes: [{key: 'c', name: 'Cards'}]}, descriptors: {c: {options: {}}}, navigation: {}, insets: {}};
+  afterEach(() => {
+    mockInsets = {top: 0, right: 0, bottom: 0, left: 0};
+  });
+
+  it('keeps the bottom bar and headers on a regular iPhone', () => {
+    mockInsets = {top: 62, right: 0, bottom: 34, left: 0};
+    const screen = render(<TabNavigation allCards={[]} expansionSets={[]} allDecklists={[]} />);
+    expect(mockScreenOptions.tabBarPosition).toBe('bottom');
+    expect(mockScreenOptionsByName.Cards.headerShown).toBe(true);
+    expect(mockTabBar(tabBarProps).type.name).not.toBe('ControlRail');
+    expect(screen.getByTestId('rules-safe-area').props.edges).toEqual(['top', 'left', 'right']);
+  });
+
+  it('moves tabs and header actions to a strip on the edge where the system put its own', () => {
+    mockInsets = {top: 0, right: 54, bottom: 20, left: 0};
+    const screen = render(<TabNavigation allCards={[]} expansionSets={[]} allDecklists={[]} />);
+    expect(mockScreenOptions.tabBarPosition).toBe('right');
+    expect(mockTabBar(tabBarProps).type.name).toBe('ControlRail');
+    expect(mockTabBar(tabBarProps).props.side).toBe('right');
+    expect(mockTabBar(tabBarProps).props.width).toBe(64);
+    expect(mockScreenOptionsByName.Cards.headerShown).toBe(false);
+    expect(mockScreenOptionsByName.Decklists.headerShown).toBe(false);
+    // the strip owns the right edge; screens keep the top and the left
+    expect(screen.getByTestId('rules-safe-area').props.edges).toEqual(['top', 'left']);
+  });
+
+  it('follows the system to the left edge (Split View, left app)', () => {
+    mockInsets = {top: 0, right: 0, bottom: 20, left: 54};
+    const screen = render(<TabNavigation allCards={[]} expansionSets={[]} allDecklists={[]} />);
+    expect(mockScreenOptions.tabBarPosition).toBe('left');
+    expect(screen.getByTestId('rules-safe-area').props.edges).toEqual(['top', 'right']);
+  });
+});

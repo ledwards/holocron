@@ -57,6 +57,14 @@ Validation evidence is local in `artifacts/layout-review/`. Use the native `scre
 
 The navigator keyboard-hide animation is disabled: native keyboard coverage handles typing without a second translation that can remain offscreen after a Duo rotation. Keep this behavior protected alongside safe-area ownership.
 
+## iPhone Duo: vertical controls and the fold
+
+Plan and open items: `docs/plans/iphone-duo-controls-and-fold-plan.md`. Apple guidance: [Designing for iPhone Duo](https://developer.apple.com/tutorials/data/design/human-interface-guidelines/designing-for-iphone-duo.md).
+
+- **Vertical control strip.** iPhone Duo moves the system's status bar and bars into a strip on one edge (closed, and open in landscape). `controlPlacement` (`lib/duoLayout.ts`) reads that from the window's safe-area insets — a large inset on ONE side and little at the top — never from a device name; a regular iPhone in landscape has symmetric side insets and keeps the bottom bar. In that mode `TabNavigation` renders `ControlRail` on that edge: the focused screen's `headerLeft` (Back) and `headerRight` (deck mode) at the top, the same three tab icons at the bottom. Headers are hidden, the strip owns its edge's safe area, and screens keep the top and the other edge. Not yet confirmed on the iPhone Duo simulator; if iPhone Duo does not report its strip as an inset, the bottom bar remains.
+- **Bottom clearance.** Read it through `useBottomClearance` (the bottom bar, or only the home-indicator inset beside a strip), never `useBottomTabBarHeight` directly.
+- **Fold.** `useFoldRegion` reads the optional native `HolocronFold` module (not implemented yet; contract in the plan). `usePaneFold` maps the fold into a measured pane. Cards and Decklists meet a vertical fold (browser ends at the fold, the fold stays empty) and stack around a horizontal one (detail above, browser below). Rules meets a vertical fold and keeps reading across a horizontal one, because continuous text does not move. A fold that leaves a side too small is ignored. Flat or closed, nothing changes.
+
 ## Preserve Holocron list rows
 
 Card search and deck card lists use `CardListItem`; the deck browser uses `DecklistListItem`. These retain the original zoomed, right-aligned artwork crop, presenter-specific vertical offsets, translucent text backgrounds, side colors, typography, and quantity treatment. Adaptive navigation changes the press destination, not the row design. Measure the actual pane width for the existing geometry; never replace these rows with generic whole-card thumbnails.

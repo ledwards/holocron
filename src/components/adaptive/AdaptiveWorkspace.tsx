@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
   BackHandler,
 } from 'react-native';
+import usePaneFold from '../../lib/usePaneFold';
 import {useFocusEffect} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
 import ThemeContext from '../../contexts/ThemeContext';
@@ -33,8 +34,11 @@ export default function AdaptiveWorkspace({
 }: Props) {
   const theme = useContext(ThemeContext);
   const window = useWindowDimensions();
-  const [width, setWidth] = useState(window.width);
-  const {split, browserWidth} = workspaceLayout(width, window.fontScale);
+  // On iPhone Duo partly folded, the panes meet at the fold (side by side)
+  // or stack around it (detail above), instead of straddling the crease.
+  const pane = usePaneFold(topInset);
+  const {split, browserWidth, stacked, detailHeight, gap} =
+    workspaceLayout(pane.width, window.fontScale, pane.fold, pane.height);
   useFocusEffect(
     React.useCallback(() => {
       const subscription = BackHandler.addEventListener(
@@ -48,47 +52,66 @@ export default function AdaptiveWorkspace({
       return () => subscription.remove();
     }, [selected, split, onBack]),
   );
+  const browsePane = (
+    <View
+      key="browse"
+      testID="browse-pane"
+      accessibilityElementsHidden={!split && selected}
+      importantForAccessibility={
+        !split && selected ? 'no-hide-descendants' : 'auto'
+      }
+      style={{
+        width: split && !stacked ? browserWidth : '100%',
+        flex: stacked ? 1 : undefined,
+        display: !split && selected ? 'none' : 'flex',
+        borderRightWidth: split && !stacked && !gap ? StyleSheet.hairlineWidth : 0,
+        borderColor: theme?.dividerColor,
+      }}>
+      {typeof browser === 'function' ? browser(split) : browser}
+    </View>
+  );
+  const foldGap = gap > 0 ? (
+    <View
+      key="fold"
+      testID="fold-gap"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={stacked ? {height: gap} : {width: gap}}
+    />
+  ) : null;
+  const detailPane = (
+    <View
+      key="detail"
+      testID="detail-pane"
+      style={{
+        flex: stacked ? undefined : 1,
+        height: stacked ? detailHeight : undefined,
+        minWidth: 0,
+        display: split || selected ? 'flex' : 'none',
+      }}>
+      {!split && selected && showBackButton && (
+        <PaneIconButton
+          testID="adaptive-back"
+          label={`Back to ${title}`}
+          icon="chevron-back"
+          onPress={onBack}
+        />
+      )}
+      {detail}
+    </View>
+  );
   return (
     <View
       testID="adaptive-workspace"
-      onLayout={event => setWidth(event.nativeEvent.layout.width)}
+      ref={pane.ref}
+      onLayout={pane.onLayout}
       style={{
         flex: 1,
         paddingTop: topInset,
-        flexDirection: 'row',
+        flexDirection: stacked ? 'column' : 'row',
         backgroundColor: theme?.backgroundColor,
       }}>
-      <View
-        testID="browse-pane"
-        accessibilityElementsHidden={!split && selected}
-        importantForAccessibility={
-          !split && selected ? 'no-hide-descendants' : 'auto'
-        }
-        style={{
-          width: split ? browserWidth : '100%',
-          display: !split && selected ? 'none' : 'flex',
-          borderRightWidth: split ? StyleSheet.hairlineWidth : 0,
-          borderColor: theme?.dividerColor,
-        }}>
-        {typeof browser === 'function' ? browser(split) : browser}
-      </View>
-      <View
-        testID="detail-pane"
-        style={{
-          flex: 1,
-          minWidth: 0,
-          display: split || selected ? 'flex' : 'none',
-        }}>
-        {!split && selected && showBackButton && (
-          <PaneIconButton
-            testID="adaptive-back"
-            label={`Back to ${title}`}
-            icon="chevron-back"
-            onPress={onBack}
-          />
-        )}
-        {detail}
-      </View>
+      {stacked ? [detailPane, foldGap, browsePane] : [browsePane, foldGap, detailPane]}
     </View>
   );
 }

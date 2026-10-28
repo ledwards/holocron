@@ -8,7 +8,7 @@ import {
   Dimensions,
   Keyboard,
 } from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 import {useHeaderHeight} from '@react-navigation/elements';
 
 import DecklistListItem from './DecklistListItem';
@@ -48,7 +48,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   });
   const theme = useContext<Theme | null>(ThemeContext);
   const allDecklists = useContext(AllDecklistsContext) || [];
-  const tabBarHeight = useBottomTabBarHeight();
+  const bottomClearance = useBottomClearance(58);
   const headerHeight = useHeaderHeight();
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
     );
   }, [theme?.dividerColor]);
 
-  const dockDynamicHeight = 16 + 34 + 56 + Math.max(tabBarHeight, 58) + 2;
+  const dockDynamicHeight = 16 + 34 + 56 + bottomClearance + 2;
   const presentedData = useMemo(
     () => data.map(decklist => new DecklistPresenter(decklist)),
     [data],

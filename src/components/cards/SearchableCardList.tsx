@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext, useRef, useMemo, useCallback} from 'react';
 import {View, ActivityIndicator, Text, Animated, FlatList, Keyboard, Pressable} from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import useBottomClearance from '../../lib/useBottomClearance';
 import {useHeaderHeight} from '@react-navigation/elements';
 
 import AdaptiveWorkspace, {EmptyDetail} from '../adaptive/AdaptiveWorkspace';
@@ -70,7 +70,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   // Get cards from context or use empty array
   const allCardsContext = useContext(AllCardsContext);
   const allCards: Card[] = allCardsContext || [];
-  const tabBarHeight = useBottomTabBarHeight();
+  const bottomClearance = useBottomClearance(58);
   const headerHeight = useHeaderHeight();
 
   // Initialize state on component mount
@@ -280,7 +280,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     16 +
     (query ? 18 + 30 * queryCount + (queryCount > 1 ? 28 : 0) : 34) +
     56 +
-    Math.max(tabBarHeight, 58) +
+    bottomClearance +
     2;
   const contentTopInset = 0;
   const contentBottomInset = dockDynamicHeight + 8;

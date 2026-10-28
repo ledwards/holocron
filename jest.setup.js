@@ -25,6 +25,13 @@ jest.mock(
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
+// Jest has no native window metrics; the library's own mock provides zero
+// insets and renders SafeAreaProvider's children (the real one waits for
+// native insets and would render nothing).
+jest.mock('react-native-safe-area-context', () =>
+  require('react-native-safe-area-context/jest/mock').default,
+);
+
 // Mock BlurView
 jest.mock('@react-native-community/blur', () => ({
   BlurView: 'BlurView',
