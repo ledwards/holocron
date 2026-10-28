@@ -96,6 +96,21 @@ describe('upstream corpus: counts checked against an independent computation', (
     ['forfeit = 0', 27],
     ['ability = 0', 3],
     ['deploy<=2 and side=dark', 301],
+    // symbols, fractions, pi and "a or b" (StatValue.ts)
+    ['power = *', 18],
+    ['power != *', 1441],
+    ['deploy = *', 12],
+    ['deploy = y', 1],
+    ['forfeit = x', 1],
+    ['destiny = pi', 3], // "π" twice, "π or 2π" once
+    ['destiny = iv', 1],
+    ['destiny = 4.5', 1],
+    ['destiny = 0.5', 1],
+    ['destiny = 4', 618], // includes "(4)"
+    ['destiny = 6', 153], // includes "1 or 6"
+    ['destiny = 7', 28], // includes "0 or 7", "7 or 1"
+    ['destiny > 6', 29], // includes those two and "π or 2π"
+    ['destiny != 6', 3508],
   ])('%s → %i', (query, expected) => {
     expect(count(query)).toBe(expected);
   });

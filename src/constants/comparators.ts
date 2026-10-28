@@ -1,36 +1,47 @@
 import Card from '../models/Card';
 import Comparator from '../models/Comparator';
+import {parseStat, statOf} from '../models/StatValue';
 
 /**
- * A card's stat as a number, or undefined when the card has no such stat or
- * its value is not a plain number ("*", "π", "1 or 6"). Numeric comparators
- * match only cards with a number: "power < 1" is about cards that have a
- * power, and "power != 6" is not true of a card with no power at all.
+ * Numeric comparison over parsed stats (models/StatValue). A card with no
+ * such stat never matches.
+ *  - equal: any of the card's values equals any typed value ("1 or 6" = 6),
+ *    or the card's symbol is the typed symbol ("*" = *).
+ *  - not equal: the card has the stat and nothing above holds.
+ *  - order (>, <, ≥, ≤): any card value satisfies it; symbols never do.
  */
-export const statValue = (card: Card, attribute: string): number | undefined => {
-  const raw = card.get(attribute);
-  if (raw === undefined || raw === null || raw === '') {
-    return undefined;
-  }
-  const value = Number(raw);
-  return Number.isFinite(value) ? value : undefined;
-};
-
-const numeric = (test: (stat: number, typed: number) => boolean) =>
+type NumericKind = 'equal' | 'notEqual' | 'order';
+const numeric = (kind: NumericKind, test: (stat: number, typed: number) => boolean) =>
   (card: Card, attribute: string, value: string): boolean => {
-    const stat = statValue(card, attribute);
-    return stat !== undefined && test(stat, parseFloat(value));
+    const stat = statOf(card, attribute);
+    const typed = parseStat(value);
+    if (!stat || !typed) {
+      return false;
+    }
+    if (kind === 'order') {
+      return stat.numbers.some(n => typed.numbers.some(t => test(n, t)));
+    }
+    const equal =
+      typed.symbol !== undefined
+        ? stat.symbol === typed.symbol
+        : stat.numbers.some(n => typed.numbers.includes(n));
+    if (kind === 'equal') {
+      return equal;
+    }
+    // "power != *" is about cards that have a power; "power != 6" about cards
+    // with a numeric power ("*" might be 6).
+    return !equal && (typed.symbol !== undefined || stat.numbers.length > 0);
   };
 
 const EQ_COMPARATOR = new Comparator(
   '=',
-  numeric((stat, typed) => stat === typed),
+  numeric('equal', (stat, typed) => stat === typed),
   ['==', '===', 'equals', 'eq', 'is', 'is exactly'],
 );
 
 const NEQ_COMPARATOR = new Comparator(
   '≠',
-  numeric((stat, typed) => stat !== typed),
+  numeric('notEqual', (stat, typed) => stat === typed),
   [
     '!=',
     '=/=',
@@ -55,7 +66,7 @@ const NEQ_COMPARATOR = new Comparator(
 
 const GT_COMPARATOR = new Comparator(
   '>',
-  numeric((stat, typed) => stat > typed),
+  numeric('order', (stat, typed) => stat > typed),
   [
     'gt',
     'greater than',
@@ -79,7 +90,7 @@ const GT_COMPARATOR = new Comparator(
 
 const LT_COMPARATOR = new Comparator(
   '<',
-  numeric((stat, typed) => stat < typed),
+  numeric('order', (stat, typed) => stat < typed),
   [
     'lt',
     'less than',
@@ -97,7 +108,7 @@ const LT_COMPARATOR = new Comparator(
 
 const GTE_COMPARATOR = new Comparator(
   '≥',
-  numeric((stat, typed) => stat >= typed),
+  numeric('order', (stat, typed) => stat >= typed),
   [
     '>=',
     'gte',
@@ -122,7 +133,7 @@ const GTE_COMPARATOR = new Comparator(
 
 const LTE_COMPARATOR = new Comparator(
   '≤',
-  numeric((stat, typed) => stat <= typed),
+  numeric('order', (stat, typed) => stat <= typed),
   [
     '<=',
     'lte',

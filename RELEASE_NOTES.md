@@ -7,6 +7,8 @@
 - Type searches without spaces: `setcpremiere`, `power>=6`, `sidedarkandtypecstarship`, `gtcbadfeeling`, and `darthvader` in title search all work.
 - `>=`, `<=`, `power 6`, `side light`, `is imperial`, and `cancels c sense` now work as written, and words containing "and" (Commander, Hand, landspeed) no longer break a search.
 - Number searches only match cards that have that stat: `power < 1` no longer lists every Effect and Interrupt, and `power != 6` no longer lists every card.
+- Search for special stat values: `power = *`, `destiny = pi`, `destiny = 4.5`, `forfeit = x`. Cards with two destiny values, like "1 or 6", match either one.
+- The search box keeps your capital letters as you type.
 
 ## 1.2.0
 - Improved layout and navigation spacing across iPhone screen sizes.

@@ -5,6 +5,7 @@ import Comparator from './Comparator';
 import FIELDS from '../constants/fields';
 import {ALL_COMPARATORS} from '../constants/comparators';
 import AliasResolver from './AliasResolver';
+import {isStatValue} from './StatValue';
 import {NUMERIC_COMPARATORS} from '../constants/comparators';
 
 const RUNS_BY_CARDS = new WeakMap<Card[], Map<string, Card[]>>();
@@ -306,9 +307,12 @@ class FilterQuery {
     return !names.includes(text) && names.some(n => n.length > text.length && n.startsWith(text));
   }
 
-  /** Numeric fields take numbers; "po=3" is not power = "o=3". */
+  /**
+   * Numeric fields take stat values: numbers, "½", "pi", or a symbol that
+   * occurs on cards ("*", "x"). "po=3" is not power = "o=3".
+   */
   valueSuitsField(field: Field, value: string): boolean {
-    return !NUMERIC_FIELD_NAMES.has(field.name) || !isNaN(parseFloat(value));
+    return !NUMERIC_FIELD_NAMES.has(field.name) || isStatValue(value);
   }
 
   /**
