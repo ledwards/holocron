@@ -105,11 +105,11 @@ class FilterQuerySet {
       return [];
     }
 
-    const results: Card[][] = this.filterQueries.map(fq => fq.execute(cards));
+    const [first, ...rest] = this.filterQueries.map(fq => fq.execute(cards));
+    const others = rest.map(result => new Set(result.map(card => card.id)));
 
-    return results.reduce((result: Card[], currentArray: Card[]) =>
-      result.filter((obj: Card) => currentArray.some((item: Card) => item.id === obj.id)),
-    );
+    // Cards every clause found, in the first clause's order.
+    return first.filter(card => others.every(ids => ids.has(card.id)));
   }
 }
 

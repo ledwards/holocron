@@ -116,8 +116,8 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
    * Route search to the appropriate function based on search mode
    */
   const searchRouter: SearchCallback = (text: string): void => {
-    text = text.toLowerCase();
-
+    // Keep the text exactly as typed: it is the input's value. Both searches
+    // ignore case themselves (searchCardsByTitle, FilterQuerySet).
     setQuery(text);
 
     switch (state.searchModeIndex) {
