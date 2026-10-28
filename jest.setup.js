@@ -1,4 +1,5 @@
 // jest.setup.js
+/* eslint-env jest, node */
 import 'react-native-gesture-handler/jestSetup';
 import {format} from 'util';
 
