@@ -77,3 +77,38 @@ describe('workspaceLayout with a fold', () => {
     expect(workspaceLayout(626, 1, {axis: 'horizontal', start: 120, size: 24}, 828).stacked).toBe(false);
   });
 });
+
+// Values read from the iPhone Duo simulator (Xcode 27.1, iOS 27.1) with
+// useSafeAreaInsets() and the HolocronFold native module, not estimates.
+describe('measured on the iPhone Duo simulator', () => {
+  it.each([
+    ['closed, portrait (466x678)', insets(0, 84, 34, 0), 'right'],
+    ['closed, landscape with the system strip on the right (678x466)', insets(0, 84, 34, 0), 'right'],
+    ['closed, landscape with the system strip on the left (678x466)', insets(0, 0, 34, 84), 'left'],
+    ['open, flat landscape (951x669)', insets(0, 84, 34, 0), 'right'],
+    ['open, upright (669x951): status bar at the top', insets(82, 0, 34, 0), 'bottom'],
+  ] as const)('%s → %s', (_name, value, expected) => {
+    expect(controlPlacement(value)).toBe(expected);
+  });
+
+  it('keeps the strip exactly as wide as the system strip', () => {
+    expect(railWidth(insets(0, 84, 34, 0), 'right')).toBe(84);
+    expect(railWidth(insets(0, 0, 34, 84), 'left')).toBe(84);
+  });
+
+  it('book posture: the browser ends at the crease and the detail starts after it', () => {
+    const {workspaceLayout} = require('../adaptiveLayout');
+    // Window 951 wide with the 84-point strip on the right leaves an 867-point pane.
+    const fold = foldInPane({x: 455.5, y: 0, width: 40, height: 669}, {x: 0, y: 0, width: 867, height: 669});
+    expect(fold).toEqual({axis: 'vertical', start: 455.5, size: 40});
+    expect(workspaceLayout(867, 1, fold)).toEqual({split: true, browserWidth: 455.5, stacked: false, detailHeight: 0, gap: 40});
+  });
+
+  it('table posture: the detail sits above the crease and the browser below it', () => {
+    const {workspaceLayout} = require('../adaptiveLayout');
+    // Window 669x951; the pane starts below the 82-point status inset.
+    const fold = foldInPane({x: 0, y: 455.5, width: 669, height: 40}, {x: 0, y: 82, width: 669, height: 787});
+    expect(fold).toEqual({axis: 'horizontal', start: 373.5, size: 40});
+    expect(workspaceLayout(669, 1, fold, 787)).toEqual({split: true, browserWidth: 669, stacked: true, detailHeight: 373.5, gap: 40});
+  });
+});

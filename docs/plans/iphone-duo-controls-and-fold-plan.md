@@ -16,12 +16,12 @@ Out: the native fold module (needs Xcode 27.1), App Store work, any redesign of 
 4. Web-rendered screenshots of the real app at iPhone Duo sizes (throwaway build outside the repo). Exit: screenshots of every pose reviewed.
 
 ## Human-required steps
-- Run on the iPhone Duo simulator (Xcode 27.1, Device Hub open/close/rotate/fold) to confirm that iPhone Duo reports the system strip as a one-sided safe-area inset. If it does not, the app keeps the bottom bar (current behaviour) and the placement rule needs another signal.
-- Implement and compile the native fold module (`HolocronFold`, below) on a Mac.
-- Physical-device checks before release.
+- ~~Run on the iPhone Duo simulator to confirm the strip is a one-sided safe-area inset.~~ Done (see Simulator results).
+- ~~Implement and compile the native fold module (`HolocronFold`, below) on a Mac.~~ Done.
+- Physical-device checks before release (still open).
 
-## Native fold module contract (not implemented here)
-`NativeModules.HolocronFold`: `getDivisionRegion(): Promise<{x,y,width,height} | null>` in window points, from `view.reservedRegions(kind: .division)` on the root view; emits `holocronFoldChanged` with the same payload (null when flat or closed). Until it exists, the hook returns null and the panes behave as today.
+## Native fold module contract (implemented in `ios/holocron/HolocronFold.m`)
+`NativeModules.HolocronFold`: `getDivisionRegion(): Promise<{x,y,width,height} | null>` in window points, from `view.reservedRegions(kind: .division)` on the root view; emits `holocronFoldChanged` with the same payload (null when flat or closed). Without the module (Android, older iOS, Jest) the hook returns null and the panes behave as on a flat display. Implementation notes: change notifications come from `UIHingeInteraction` (the reserved-region API has none), and the hinge status gates the result, because the division region stays active when the device is fully open.
 
 ## Validation
 Jest unit/component tests; full unit and e2e suites; web screenshots at 466x678 / 678x466 (outer) and 890x626 / 626x890 (inner, estimated points: Apple publishes pixels only); simulator and device checks above.
@@ -35,3 +35,18 @@ Jest unit/component tests; full unit and e2e suites; web screenshots at 466x678 
 - https://developer.apple.com/tutorials/data/design/human-interface-guidelines/designing-for-iphone-duo.md
 - https://developer.apple.com/videos/play/tech-talks/111461/
 - https://developer.apple.com/videos/play/tech-talks/111463
+
+## Simulator results (iPhone Duo, Xcode 27.1, iOS 27.1)
+Safe-area insets (top / right / bottom / left) read with `useSafeAreaInsets()`:
+
+| Posture | Window (pt) | Insets | Placement |
+| --- | --- | --- | --- |
+| Closed, portrait | 466x678 | 0 / 84 / 34 / 0 | right |
+| Closed, landscape (strip right) | 678x466 | 0 / 84 / 34 / 0 | right |
+| Closed, landscape (strip left) | 678x466 | 0 / 0 / 34 / 84 | left |
+| Open, flat landscape | 951x669 | 0 / 84 / 34 / 0 | right |
+| Open, upright | 669x951 | 82 / 0 / 34 / 0 | bottom |
+
+Partly folded, the division region is 40 points wide, centred: `{x: 455.5, y: 0, width: 40, height: 669}` in landscape (book) and `{x: 0, y: 455.5, width: 669, height: 40}` upright (propped on a table). Hinge angle was about 2.23 rad for Partially Open and pi for Open.
+
+Open items: not reproduced after four attempts, the Cards search dock once floated about 257 points above the bottom in the book posture; the deck-mode icon and the Cards tab use the same list symbol in the strip (see Risks).
