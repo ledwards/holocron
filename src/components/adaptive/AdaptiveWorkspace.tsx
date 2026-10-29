@@ -13,6 +13,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
 import ThemeContext from '../../contexts/ThemeContext';
 import {workspaceLayout} from '../../lib/adaptiveLayout';
+import WorkspaceLayoutContext from '../../contexts/WorkspaceLayoutContext';
 
 interface Props {
   browser: React.ReactNode | ((split: boolean) => React.ReactNode);
@@ -40,6 +41,12 @@ export default function AdaptiveWorkspace({
   const pane = usePaneFold(topInset);
   const {split, browserWidth, stacked, detailHeight, gap} =
     workspaceLayout(pane.width, window.fontScale, pane.fold, pane.height);
+  // The search dock may grow over the detail pane while typing, but never
+  // across a fold.
+  const workspaceLayoutValue = React.useMemo(
+    () => ({dockExpansion: split && !stacked && !gap ? Math.max(0, pane.width - browserWidth) : 0}),
+    [split, stacked, gap, pane.width, browserWidth],
+  );
   useFocusEffect(
     React.useCallback(() => {
       const subscription = BackHandler.addEventListener(
@@ -64,11 +71,14 @@ export default function AdaptiveWorkspace({
       style={{
         width: split && !stacked ? browserWidth : '100%',
         flex: stacked ? 1 : undefined,
+        zIndex: 1,
         display: !split && selected ? 'none' : 'flex',
         borderRightWidth: split && !stacked && !gap ? StyleSheet.hairlineWidth : 0,
         borderColor: theme?.dividerColor,
       }}>
-      {typeof browser === 'function' ? browser(split) : browser}
+      <WorkspaceLayoutContext.Provider value={workspaceLayoutValue}>
+        {typeof browser === 'function' ? browser(split) : browser}
+      </WorkspaceLayoutContext.Provider>
     </View>
   );
   const foldGap = gap > 0 ? (

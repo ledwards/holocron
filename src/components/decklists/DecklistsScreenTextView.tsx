@@ -3,7 +3,6 @@ import {ScrollView, Text} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
 import useBottomClearance from '../../lib/useBottomClearance';
 
-import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenTextViewStyles';
@@ -48,10 +47,6 @@ const DecklistsScreenTextView = ({route, embedded = false}) => {
           {route.params.decklist.plaintext}
         </Text>
       </ScrollView>
-      <DecklistEmptyFooter
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        tabBarHeight={layout.tabBarHeight()}
-      />
     </>
   );
 };

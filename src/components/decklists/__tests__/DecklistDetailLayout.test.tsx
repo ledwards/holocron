@@ -11,7 +11,6 @@ let mockTabHeight = 83;
 jest.mock('@react-navigation/elements', () => ({useHeaderHeight: () => mockHeaderHeight}));
 jest.mock('@react-navigation/bottom-tabs', () => ({useBottomTabBarHeight: () => mockTabHeight}));
 jest.mock('../DecklistsScreenGridItem', () => () => null);
-jest.mock('../DecklistEmptyFooter', () => () => null);
 
 describe('deck detail safe-area layout', () => {
   it.each([[103, 83], [44, 53]])('keeps grid and text outside %s-point header / %s-point tabs', (header, tabs) => {

@@ -10,7 +10,6 @@ import {
 
 import Card from '../../models/Card';
 
-import DecklistEmptyFooter from './DecklistEmptyFooter';
 import CardListItem from '../cards/CardListItem';
 import CardPresenter from '../../presenters/CardPresenter';
 import AllCardsContext from '../../contexts/AllCardsContext';
@@ -157,10 +156,6 @@ const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedde
         maxToRenderPerBatch={10} // Reduce number in each render batch
         updateCellsBatchingPeriod={100} // Increase time between renders
         windowSize={10} // Reduce the window size
-      />
-      <DecklistEmptyFooter
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        tabBarHeight={layout.tabBarHeight()}
       />
     </>
   );

@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {View, Pressable, StyleSheet} from 'react-native';
-import {BlurView} from '@react-native-community/blur';
+import GlassSurface from '../glass/GlassSurface';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import ThemeContext from '../../contexts/ThemeContext';
 
@@ -40,12 +40,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
         borderLeftWidth: side === 'right' ? StyleSheet.hairlineWidth : 0,
         borderRightWidth: side === 'left' ? StyleSheet.hairlineWidth : 0,
       }}>
-      <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType={theme?.name === 'dark' ? 'dark' : 'light'}
-        blurAmount={18}
-        reducedTransparencyFallbackColor={theme?.translucentBackgroundColor}
-      />
+      <GlassSurface style={StyleSheet.absoluteFill} />
       <View testID="control-rail-actions" style={{alignItems: 'center', gap: 6}}>
         {headerLeft?.({tintColor, canGoBack: false})}
         {headerRight?.({tintColor, canGoBack: false})}

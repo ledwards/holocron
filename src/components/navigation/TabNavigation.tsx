@@ -1,4 +1,5 @@
 import React, {useContext, useMemo} from 'react';
+import {StyleSheet} from 'react-native';
 import {PlatformPressable} from '@react-navigation/elements';
 import {SafeAreaView, useSafeAreaInsets, Edge} from 'react-native-safe-area-context';
 import {Icon} from 'react-native-elements';
@@ -15,6 +16,7 @@ import DeviceLayoutContext, {DeviceLayout} from '../../contexts/DeviceLayoutCont
 import {controlPlacement, railWidth} from '../../lib/duoLayout';
 import useFoldRegion from '../../lib/useFoldRegion';
 import ControlRail from './ControlRail';
+import GlassSurface from '../glass/GlassSurface';
 import {Theme} from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
@@ -81,6 +83,9 @@ function TabNavigation(_props: TabNavigationProps) {
           ...styles.tabBarStyle,
         },
         tabBarItemStyle: styles.tabBarItemStyle,
+        // One glass bar for every tab: screens scroll beneath it and none has to
+        // draw (or forget) its own.
+        tabBarBackground: () => <GlassSurface edge="top" style={StyleSheet.absoluteFill} />,
       }}>
       <Tab.Screen
         name="Cards"
@@ -113,7 +118,6 @@ function TabNavigation(_props: TabNavigationProps) {
               reducedTransparencyFallbackColor={theme?.translucentBackgroundColor}
             />
           ),
-          tabBarBackground: () => null,
           tabBarIcon: () => (
             <Icon
               name={'list-outline'}
@@ -144,7 +148,6 @@ function TabNavigation(_props: TabNavigationProps) {
           headerBackground: () => <BlurView style={styles.headerBackground} blurType={theme?.name === 'dark' ? 'dark' : 'light'} blurAmount={16} />,
           tabBarLabel: 'Decklists',
           tabBarButtonTestID: 'tab-decklists',
-          tabBarBackground: () => null,
           tabBarIcon: () => (
             <Icon
               name={'file-tray-full-outline'}
@@ -171,7 +174,6 @@ function TabNavigation(_props: TabNavigationProps) {
         options={{
           tabBarLabel: 'Rules',
           tabBarButtonTestID: 'tab-rules',
-          tabBarBackground: () => null,
           tabBarIcon: () => (
             <Icon
               name={'book-outline'}

@@ -125,3 +125,32 @@ jest.mock('../../decklists/DecklistsScreenTextView', () => ({route}) => {
   const {Text} = require('react-native');
   return <Text>{route.params.decklist.plaintext}</Text>;
 });
+
+it('dismisses the selected card when the search is cleared', () => {
+  const screen = render(
+    <AllCardsContext.Provider value={cards}>
+      <SearchableCardList cards={cards} />
+    </AllCardsContext.Provider>,
+  );
+  resize(screen, 951);
+  fireEvent.changeText(screen.getByTestId('search-input'), 'luke');
+  fireEvent.press(screen.getByTestId('card-item-0'));
+  expect(screen.getByTestId('card-detail')).toBeTruthy();
+
+  fireEvent.changeText(screen.getByTestId('search-input'), '');
+  expect(screen.queryByTestId('card-detail')).toBeNull();
+  expect(screen.getByText('Select a card')).toBeTruthy();
+});
+
+it('keeps the card while the search still has text', () => {
+  const screen = render(
+    <AllCardsContext.Provider value={cards}>
+      <SearchableCardList cards={cards} />
+    </AllCardsContext.Provider>,
+  );
+  resize(screen, 951);
+  fireEvent.changeText(screen.getByTestId('search-input'), 'luke');
+  fireEvent.press(screen.getByTestId('card-item-0'));
+  fireEvent.changeText(screen.getByTestId('search-input'), 'luk');
+  expect(screen.getByTestId('card-detail')).toBeTruthy();
+});

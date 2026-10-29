@@ -1,10 +1,8 @@
 import React, {useContext, useMemo} from 'react';
-import {View, KeyboardAvoidingView, Platform} from 'react-native';
+import {View} from 'react-native';
 import {Icon, Text} from 'react-native-elements';
 import SearchField from '../adaptive/SearchField';
-import {BlurView} from '@react-native-community/blur';
-import {useHeaderHeight} from '@react-navigation/elements';
-import useSearchDockBottomPadding from '../../lib/useSearchDockBottomPadding';
+import SearchDock from '../glass/SearchDock';
 
 import QueryStatusBar from './QueryStatusBar';
 import FilterQuerySet from '../../models/FilterQuerySet';
@@ -51,37 +49,15 @@ const CardSearchFooter = (props: CardSearchFooterProps) => {
     translucentBackgroundColor: 'rgba(0,0,0,0.5)',
   };
 
-  const bottomGlassPadding = useSearchDockBottomPadding();
-  const headerHeight = useHeaderHeight();
   const queryHeight = useMemo(() => {
     const count = props.filterQuerySet.length();
     return props.query ? 18 + 30 * count + (count > 1 ? 28 : 0) : 34;
   }, [props.filterQuerySet, props.query]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'position' : undefined}
-      keyboardVerticalOffset={headerHeight - bottomGlassPadding + 8}
-      style={styles.overlayWrapper}
-      pointerEvents="box-none">
-      <View
-        pointerEvents="box-none"
-        style={{
-          ...styles.glassDockContainer,
-          bottom: 0,
-        }}>
-        <BlurView
-          style={styles.glassDockBlur}
-          blurType={theme.name === 'dark' ? 'dark' : 'light'}
-          blurAmount={18}
-          reducedTransparencyFallbackColor={theme.translucentBackgroundColor}
-        />
-        <View
-          pointerEvents="box-none"
-          style={{
-            ...styles.glassDockContent,
-            paddingBottom: bottomGlassPadding,
-          }}>
+    <SearchDock>
+      {focus => (
+        <>
           <View style={{...styles.statusRowSlot, minHeight: queryHeight}}>
             {!props.query ? (
               <ModeCoachTipComponent theme={theme} searchMode={props.searchMode} />
@@ -101,10 +77,12 @@ const CardSearchFooter = (props: CardSearchFooterProps) => {
             onChangeText={props.searchCallback}
             icon={props.searchMode.icon}
             onModePress={props.toggleSearchMode}
+            onFocus={focus.onFocus}
+            onBlur={focus.onBlur}
           />
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+        </>
+      )}
+    </SearchDock>
   );
 };
 

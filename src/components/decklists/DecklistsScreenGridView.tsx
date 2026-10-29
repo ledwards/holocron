@@ -3,7 +3,6 @@ import {ScrollView, View, Dimensions, StyleSheet, TouchableWithoutFeedback} from
 import {useHeaderHeight} from '@react-navigation/elements';
 import useBottomClearance from '../../lib/useBottomClearance';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
-import DecklistEmptyFooter from './DecklistEmptyFooter';
 
 import layout from '../../constants/layout';
 import styles from '../../styles/DecklistsScreenGridViewStyles';
@@ -157,10 +156,6 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
           })}
         </View>
       </ScrollView>
-      <DecklistEmptyFooter
-        nativeFooterHeight={layout.nativeFooterHeight()}
-        tabBarHeight={layout.tabBarHeight()}
-      />
       <View 
         style={StyleSheet.absoluteFill} 
         pointerEvents="none" 

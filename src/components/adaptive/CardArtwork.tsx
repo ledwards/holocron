@@ -11,6 +11,11 @@ interface Props {
   label: string;
   testID?: string;
 }
+/** A printed card's corner radius is about 5% of its short side. */
+export function cardCornerRadius(imageWidth: number, imageHeight: number): number {
+  return Math.round(Math.min(imageWidth, imageHeight) * 0.05);
+}
+
 /** Position the rotated image within its fitted frame; transforms don't affect layout. */
 export default function CardArtwork(props: Props) {
   // A changed URI gets fresh intrinsic dimensions and loading state.
@@ -42,6 +47,9 @@ function ArtworkImage({
             height: fit.frameHeight,
             alignItems: 'center',
             justifyContent: 'center',
+            // The frame clips as well, whatever the image view does with radius.
+            overflow: 'hidden',
+            borderRadius: cardCornerRadius(fit.frameWidth, fit.frameHeight),
           }}>
           {!loaded && <ActivityIndicator accessibilityLabel="Loading artwork" style={{position: 'absolute'}} />}
           <FastImage
@@ -58,6 +66,7 @@ function ArtworkImage({
             style={{
               width: fit.imageWidth,
               height: fit.imageHeight,
+              borderRadius: cardCornerRadius(fit.imageWidth, fit.imageHeight),
               transform: [{rotate: fit.rotate ? '90deg' : '0deg'}],
             }}
           />

@@ -5,6 +5,7 @@ import AdaptiveWorkspace from '../AdaptiveWorkspace';
 import DeviceLayoutContext, {defaultDeviceLayout} from '../../../contexts/DeviceLayoutContext';
 import {Region} from '../../../lib/duoLayout';
 import useBottomClearance from '../../../lib/useBottomClearance';
+import WorkspaceLayoutContext from '../../../contexts/WorkspaceLayoutContext';
 
 jest.mock('@react-navigation/bottom-tabs', () => ({useBottomTabBarHeight: () => 62}));
 
@@ -68,5 +69,35 @@ describe('AdaptiveWorkspace on a partly folded display', () => {
     const screen = renderWorkspace({x: 0, y: 433, width: 600, height: 24}, 600, 828);
     expect(style(screen.getByTestId('browse-pane')).display).toBe('flex');
     expect(style(screen.getByTestId('detail-pane')).display).toBe('flex');
+  });
+});
+
+describe('where the search dock may grow while typing', () => {
+  const Expansion = () => {
+    const {dockExpansion} = React.useContext(WorkspaceLayoutContext);
+    return <Text testID="dock-expansion">{String(dockExpansion)}</Text>;
+  };
+  const expansion = (fold: Region | null, width: number, height: number) => {
+    const screen = render(
+      <DeviceLayoutContext.Provider value={{...defaultDeviceLayout, fold}}>
+        <AdaptiveWorkspace title="Cards" selected={false} onBack={jest.fn()}
+          browser={<Expansion />} detail={<Text>detail</Text>} />
+      </DeviceLayoutContext.Provider>,
+    );
+    fireEvent(screen.getByTestId('adaptive-workspace'), 'layout', {nativeEvent: {layout: {x: 0, y: 0, width, height}}});
+    return Number(screen.getByTestId('dock-expansion').props.children);
+  };
+
+  it('spans the detail pane when the panes sit side by side', () => {
+    expect(expansion(null, 826, 626)).toBe(826 - 280);
+  });
+
+  it('stays in its pane on a compact width, where it is already full width', () => {
+    expect(expansion(null, 466, 678)).toBe(0);
+  });
+
+  it('never crosses a fold, vertical or horizontal', () => {
+    expect(expansion({x: 433, y: 0, width: 24, height: 626}, 826, 626)).toBe(0);
+    expect(expansion({x: 0, y: 433, width: 626, height: 24}, 626, 828)).toBe(0);
   });
 });

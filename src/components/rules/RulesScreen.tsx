@@ -36,7 +36,7 @@ import {
 import styles from '../../styles/RulesScreenStyles';
 import RulesToc from './RulesToc';
 import RulesDocumentView, {RulesDocumentViewHandle} from './RulesDocumentView';
-import RulesSearchFooter from './RulesSearchFooter';
+import RulesReaderBar, {readerBarSpace} from './RulesReaderBar';
 
 interface RulesScreenProps {
   documentOverride?: RulesDocument;
@@ -284,7 +284,6 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
             flex: 1,
             minWidth: 0,
             opacity: !split && searchOpen ? 0 : 1,
-            paddingBottom: bottomInset,
           }}>
           <View
             style={{
@@ -323,28 +322,17 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
             query={query}
             theme={theme}
             onVisiblePagesChange={handleVisiblePagesChange}
-            bottomInset={16}
+            bottomInset={bottomInset + readerBarSpace(!!query)}
           />
-          <Text
-            testID="rules-visible-pages"
-            style={{
-              textAlign: 'center',
-              padding: 8,
-              fontSize: 13,
-              color: theme.foregroundColor,
-              opacity: 0.65,
-            }}>
-            {visiblePagesLabel}
-          </Text>
-          {!!query && (
-            <RulesSearchFooter
-              query={query}
-              hitProgressLabel={hitProgressLabel}
-              onOpenSearch={() => setSearchOpen(true)}
-              onPrevHit={onPrevHit}
-              onNextHit={onNextHit}
-            />
-          )}
+          <RulesReaderBar
+            pageLabel={visiblePagesLabel}
+            query={query}
+            hitProgressLabel={hitProgressLabel}
+            bottom={bottomInset}
+            onOpenSearch={() => setSearchOpen(true)}
+            onPrevHit={onPrevHit}
+            onNextHit={onNextHit}
+          />
           {showToc && (
             <RulesToc
               entries={rulesDocument.toc}

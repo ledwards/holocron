@@ -119,6 +119,8 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     // Keep the text exactly as typed: it is the input's value. Both searches
     // ignore case themselves (searchCardsByTitle, FilterQuerySet).
     setQuery(text);
+    // An emptied search has nothing to show a card for.
+    if (!text) setSelectedCard(null);
 
     switch (state.searchModeIndex) {
       case 0:

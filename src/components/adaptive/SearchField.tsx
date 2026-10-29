@@ -10,11 +10,13 @@ interface Props {
   onChangeText: (text: string) => void;
   icon?: string;
   onModePress?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 /** A normal-flow input: no animated wrapper or fixed device-size assumptions. */
 export default function SearchField({testID, value, placeholder, onChangeText,
-  icon = 'search-outline', onModePress}: Props) {
+  icon = 'search-outline', onModePress, onFocus, onBlur}: Props) {
   const theme = useContext(ThemeContext);
   const color = theme?.foregroundColor || '#111111';
   return (
@@ -28,6 +30,7 @@ export default function SearchField({testID, value, placeholder, onChangeText,
       <TextInput testID={testID} accessibilityLabel={placeholder} placeholder={placeholder}
         placeholderTextColor={theme?.iconColor || '#666666'} value={value}
         onChangeText={onChangeText} autoCorrect={false} returnKeyType="search"
+        onFocus={onFocus} onBlur={onBlur}
         style={[styles.input, {color}]} />
       {!!value && <Pressable accessibilityRole="button" accessibilityLabel="Clear search"
         testID={`${testID}-clear`} onPress={() => onChangeText('')} style={styles.button}>
