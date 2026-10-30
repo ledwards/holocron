@@ -88,7 +88,7 @@ npx pod-install ios
 npx expo run:ios --configuration Release
 ```
 
-TestFlight: bump `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION` in the Xcode project and `CFBundleShortVersionString`/`CFBundleVersion` in `ios/holocron/Info.plist` (a version App Store Connect has already approved is closed to new builds), sign in under Xcode > Settings > Accounts, then:
+TestFlight: sign in under Xcode > Settings > Accounts, then run the line below. It bumps the build number in the Xcode project (commit that). The version lives only in the project's `MARKETING_VERSION`; bump it once App Store Connect approves a version, since that version then takes no new builds.
 ```bash
 ios/create-archive.sh --upload
 ```

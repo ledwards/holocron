@@ -4,8 +4,11 @@
 #   ./create-archive.sh           build build/ipa/holocron.ipa
 #   ./create-archive.sh --upload  also upload it to App Store Connect (TestFlight)
 #
-# The version and build number come from the Xcode project (MARKETING_VERSION,
-# CURRENT_PROJECT_VERSION) and Info.plist; bump them there before running.
+# The version and build number live only in the Xcode project
+# (MARKETING_VERSION, CURRENT_PROJECT_VERSION); Info.plist reads them from
+# there. --upload bumps the build number first, since App Store Connect never
+# takes the same one twice; commit the change. Bump MARKETING_VERSION yourself
+# once a version is approved (its train then closes to new builds).
 # Uploading uses the Apple account signed in under Xcode > Settings > Accounts.
 
 # Exit on first error
@@ -13,10 +16,16 @@ set -e
 
 cd "$(dirname "$0")"
 
+PROJECT=holocron.xcodeproj/project.pbxproj
 DESTINATION=export
 if [ "$1" == "--upload" ]; then
   DESTINATION=upload
+  BUILD=$(sed -n 's/.*CURRENT_PROJECT_VERSION = \([0-9]*\);.*/\1/p' "$PROJECT" | sort -n | tail -1)
+  sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $((BUILD + 1));/" "$PROJECT"
 fi
+VERSION=$(sed -n 's/.*MARKETING_VERSION = \(.*\);.*/\1/p' "$PROJECT" | head -1)
+BUILD=$(sed -n 's/.*CURRENT_PROJECT_VERSION = \([0-9]*\);.*/\1/p' "$PROJECT" | head -1)
+echo "Holocron ${VERSION} (${BUILD})"
 
 # Clean up
 echo "Cleaning build artifacts..."
