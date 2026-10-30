@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
-import {View, Pressable, StyleSheet, useWindowDimensions} from 'react-native';
-import GlassSurface from '../glass/GlassSurface';
+import {View, Pressable, useWindowDimensions} from 'react-native';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import ThemeContext from '../../contexts/ThemeContext';
 
@@ -37,14 +36,23 @@ export default function ControlRail({state, descriptors, navigation, side, width
   const focused = descriptors[state.routes[state.index].key];
   const {headerLeft, headerRight} = focused.options;
   const tintColor = theme?.foregroundColor;
+  // A soft halo in the background colour keeps the icons readable over
+  // whatever content scrolls beneath the transparent strip.
+  const legible = {
+    shadowColor: theme?.name === 'light' ? '#FFFFFF' : '#000000',
+    shadowOpacity: 0.9,
+    shadowRadius: 4,
+    shadowOffset: {width: 0, height: 0},
+  };
 
   return (
     <View
       testID="control-rail"
       style={{
-        // Floats over the screens (which run beneath it with its width as an
-        // inset) so the glass shows the content under it, as iPhone Duo's own
-        // bars do; an app that sits beside the strip looks letterboxed.
+        // Transparent and floating over the screens (which run beneath it
+        // with its width as an inset), as iPhone Duo's own strip does: only
+        // the controls sit on the content. An app that sits beside the strip,
+        // or paints it, looks letterboxed.
         position: 'absolute',
         top: 0,
         bottom: 0,
@@ -54,17 +62,15 @@ export default function ControlRail({state, descriptors, navigation, side, width
         paddingTop: topInset + stripStatusRoom(window.height),
         paddingBottom: bottomInset + 12,
         alignItems: 'center',
-        borderColor: 'rgba(255,255,255,0.22)',
-        borderLeftWidth: side === 'right' ? StyleSheet.hairlineWidth : 0,
-        borderRightWidth: side === 'left' ? StyleSheet.hairlineWidth : 0,
-      }}>
-      <GlassSurface style={StyleSheet.absoluteFill} />
-      <View testID="control-rail-actions" style={{alignItems: 'center', gap: 6}}>
+      }}
+      // Touches between the controls reach the content underneath.
+      pointerEvents="box-none">
+      <View testID="control-rail-actions" pointerEvents="box-none" style={{alignItems: 'center', gap: 6, ...legible}}>
         {headerLeft?.({tintColor, canGoBack: false})}
         {headerRight?.({tintColor, canGoBack: false})}
       </View>
-      <View style={{flex: 1}} />
-      <View accessibilityRole="tablist" style={{alignItems: 'center', gap: 10}}>
+      <View pointerEvents="none" style={{flex: 1}} />
+      <View accessibilityRole="tablist" pointerEvents="box-none" style={{alignItems: 'center', gap: 10, ...legible}}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];
           const isFocused = state.index === index;

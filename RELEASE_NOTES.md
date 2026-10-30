@@ -1,7 +1,7 @@
 # Release Notes
 
 ## Unreleased
-- iPhone Duo: the side strip is now see-through glass over the app, as Duo-ready apps do, instead of a solid panel beside it, and its Back and view buttons no longer hide under the clock.
+- iPhone Duo: the side strip is now fully transparent over the app, as Duo-ready apps do, instead of a solid panel beside it, and its Back and view buttons no longer hide under the clock.
 - The header is see-through glass again: lists scroll up underneath it.
 - The search box sits right on the tab bar, with no gap.
 - Opened flat, the list and the detail split evenly across the hinge, and opening the phone from a card you were viewing opens straight onto that card.

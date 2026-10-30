@@ -69,3 +69,16 @@ describe('room for the system status items in the strip', () => {
   });
 });
 
+describe('the strip is transparent', () => {
+  it('paints nothing of its own and lets touches between controls through', () => {
+    const {screen} = renderRail();
+    const rail = screen.getByTestId('control-rail');
+    const style = Object.assign({}, ...[rail.props.style].flat());
+    expect(style.backgroundColor).toBeUndefined();
+    expect(style.borderLeftWidth ?? 0).toBe(0);
+    expect(style.borderRightWidth ?? 0).toBe(0);
+    expect(rail.props.pointerEvents).toBe('box-none');
+    expect(screen.UNSAFE_queryAllByProps({blurType: expect.anything()})).toHaveLength(0);
+  });
+});
+
