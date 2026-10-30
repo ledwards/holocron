@@ -93,6 +93,8 @@ TestFlight: sign in under Xcode > Settings > Accounts, then run the line below. 
 ios/create-archive.sh --upload
 ```
 
+App Store review: `scripts/appstore/asc.py` calls the App Store Connect API with the key in `~/.appstoreconnect/private_keys` (needs Python's `cryptography`). The flow: create the version (`POST /v1/appStoreVersions`), attach the build (`PATCH` its `build` relationship), set `whatsNew` on its `appStoreVersionLocalizations`, then `POST /v1/reviewSubmissions`, add a `reviewSubmissionItems` entry for the version, and `PATCH` the submission with `submitted: true`. `Info.plist` declares `ITSAppUsesNonExemptEncryption = false` (standard HTTPS only), so builds need no compliance answer.
+
 Optional screenshot automation:
 ```bash
 cp screenshots/devices.example.json screenshots/devices.json
