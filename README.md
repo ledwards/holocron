@@ -88,6 +88,11 @@ npx pod-install ios
 npx expo run:ios --configuration Release
 ```
 
+TestFlight: bump `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION` in the Xcode project and `CFBundleShortVersionString`/`CFBundleVersion` in `ios/holocron/Info.plist` (a version App Store Connect has already approved is closed to new builds), sign in under Xcode > Settings > Accounts, then:
+```bash
+ios/create-archive.sh --upload
+```
+
 Optional screenshot automation:
 ```bash
 cp screenshots/devices.example.json screenshots/devices.json

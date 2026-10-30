@@ -1,20 +1,33 @@
 #!/bin/bash
+#
+# Archives Holocron for the App Store and exports it.
+#   ./create-archive.sh           build build/ipa/holocron.ipa
+#   ./create-archive.sh --upload  also upload it to App Store Connect (TestFlight)
+#
+# The version and build number come from the Xcode project (MARKETING_VERSION,
+# CURRENT_PROJECT_VERSION) and Info.plist; bump them there before running.
+# Uploading uses the Apple account signed in under Xcode > Settings > Accounts.
 
 # Exit on first error
 set -e
 
 cd "$(dirname "$0")"
 
+DESTINATION=export
+if [ "$1" == "--upload" ]; then
+  DESTINATION=upload
+fi
+
 # Clean up
 echo "Cleaning build artifacts..."
 rm -rf build DerivedData
-rm -rf Pods/Podfile.lock 
 
-# Install pods
+# Install pods (CocoaPods needs a UTF-8 locale)
 echo "Installing pods..."
-pod install
+LANG=en_US.UTF-8 pod install
 
-# Build archive
+# Build archive. Don't pass OTHER_CFLAGS here: a command-line value replaces
+# every pod's own flags and breaks ExpoModulesCore ("module 'React' not found").
 echo "Building archive..."
 xcodebuild clean archive \
   -workspace holocron.xcworkspace \
@@ -22,13 +35,11 @@ xcodebuild clean archive \
   -configuration Release \
   -destination 'generic/platform=iOS' \
   -archivePath build/holocron.xcarchive \
+  -allowProvisioningUpdates \
   CODE_SIGN_STYLE=Automatic \
   DEVELOPMENT_TEAM=6NW646Y6R5 \
   PRODUCT_BUNDLE_IDENTIFIER="com.ledwards.holocron" \
-  CURRENT_PROJECT_VERSION=4 \
-  MARKETING_VERSION=1.1.0 \
   ONLY_ACTIVE_ARCH=NO \
-  OTHER_CFLAGS="-DNS_BLOCK_ASSERTIONS=1" \
   RCT_NO_LAUNCH_PACKAGER=1
 
 # Create export options
@@ -38,15 +49,15 @@ cat > ExportOptionsSimple.plist << EOL
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>app-store</string>
+    <string>app-store-connect</string>
+    <key>destination</key>
+    <string>${DESTINATION}</string>
     <key>teamID</key>
     <string>6NW646Y6R5</string>
     <key>signingStyle</key>
     <string>automatic</string>
     <key>stripSwiftSymbols</key>
     <true/>
-    <key>uploadBitcode</key>
-    <false/>
     <key>uploadSymbols</key>
     <true/>
 </dict>
@@ -54,11 +65,15 @@ cat > ExportOptionsSimple.plist << EOL
 EOL
 
 # Export archive
-echo "Exporting archive to IPA..."
+echo "Exporting archive (${DESTINATION})..."
 xcodebuild -exportArchive \
   -archivePath build/holocron.xcarchive \
   -exportOptionsPlist ExportOptionsSimple.plist \
   -exportPath build/ipa \
   -allowProvisioningUpdates
 
-echo "✅ Archive complete. IPA at: $(pwd)/build/ipa/holocron.ipa"
+if [ "$DESTINATION" == "upload" ]; then
+  echo "✅ Uploaded to App Store Connect. It appears in TestFlight after processing."
+else
+  echo "✅ Archive complete. IPA at: $(pwd)/build/ipa/holocron.ipa"
+fi
