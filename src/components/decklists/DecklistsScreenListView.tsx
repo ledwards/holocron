@@ -1,6 +1,7 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
 import {useHeaderHeight} from '@react-navigation/elements';
 import useBottomClearance from '../../lib/useBottomClearance';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import {
   View,
   ActivityIndicator,
@@ -25,6 +26,8 @@ const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedde
   const flatListRef = useRef<any>(null);
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomClearance();
+  // Rows scroll under the translucent header (and size themselves around the strip).
+  const insets = usePaneInsets();
 
   const [data, setData] = useState<any[]>([]);
   const [state, setState] = useState<{
@@ -108,9 +111,10 @@ const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedde
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
           ...styles.flatListContentContainer,
-          paddingTop: embedded ? 0 : headerHeight,
+          paddingTop: embedded ? insets.top : headerHeight,
           paddingBottom: tabBarHeight + 16,
         }}
+        scrollIndicatorInsets={{top: embedded ? insets.top : headerHeight}}
         data={data}
         renderItem={({item, index}) =>
           item && (
@@ -126,7 +130,7 @@ const DecklistsScreenListView = ({route, embedded = false}: {route: any; embedde
                   animated: true,
                   index: i,
                   // viewPosition: 0.5,
-                  viewOffset: embedded ? 8 : headerHeight + 8,
+                  viewOffset: (embedded ? insets.top : headerHeight) + 8,
                 })
               }
             />

@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import {ScrollView, Text} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
 import useBottomClearance from '../../lib/useBottomClearance';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 
 
 import layout from '../../constants/layout';
@@ -12,6 +13,8 @@ const DecklistsScreenTextView = ({route, embedded = false}) => {
   const theme = useContext(ThemeContext);
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomClearance();
+  // Scrolls under the translucent header; text stays clear of the strip.
+  const insets = usePaneInsets();
 
   return (
     <>
@@ -21,9 +24,12 @@ const DecklistsScreenTextView = ({route, embedded = false}) => {
         contentContainerStyle={{
           ...styles.decklistView,
           backgroundColor: theme.backgroundColor,
-          paddingTop: (embedded ? 0 : headerHeight) + 24,
+          paddingTop: (embedded ? insets.top : headerHeight) + 24,
           paddingBottom: tabBarHeight + 24,
-        }}>
+          paddingLeft: styles.decklistView.padding + insets.left,
+          paddingRight: styles.decklistView.padding + insets.right,
+        }}
+        scrollIndicatorInsets={{top: embedded ? insets.top : headerHeight}}>
         <Text
           style={{
             ...styles.decklistViewTitle,

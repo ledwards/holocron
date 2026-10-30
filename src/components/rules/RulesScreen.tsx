@@ -22,6 +22,7 @@ import documentData from '../../data/rules/rules.document.json';
 import indexData from '../../data/rules/rules.index.json';
 import {PaneIconButton} from '../adaptive/AdaptiveWorkspace';
 import ThemeContext from '../../contexts/ThemeContext';
+import PaneInsetsContext, {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import {Theme} from '../../types/interfaces';
 import {
   buildSearchPreviews,
@@ -107,6 +108,13 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
   const verticalFold = pane.fold?.axis === 'vertical' ? pane.fold : null;
   const {split, browserWidth, gap} = workspaceLayout(pane.width, window.fontScale, verticalFold);
   const bottomInset = useBottomClearance();
+  // The iPhone Duo strip floats over one edge; keep each pane's text and
+  // controls clear of it.
+  const strip = usePaneInsets();
+  const readerInsets = useMemo(
+    () => ({top: 0, left: split ? 0 : strip.left, right: strip.right}),
+    [split, strip.left, strip.right],
+  );
   const theme = useContext<Theme | null>(ThemeContext) || fallbackTheme;
   const [searchOpen, setSearchOpen] = useState(false);
   const [draftQuery, setDraftQuery] = useState<string>('');
@@ -254,6 +262,8 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
             display: browsing ? 'flex' : 'none',
             borderRightWidth: split && !gap ? 0.5 : 0,
             borderColor: theme.dividerColor,
+            paddingLeft: strip.left,
+            paddingRight: split ? 0 : strip.right,
           }}>
           <RulesBrowser
             theme={theme}
@@ -290,6 +300,8 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
               flexDirection: 'row',
               alignItems: 'center',
               paddingHorizontal: 8,
+              marginLeft: readerInsets.left,
+              marginRight: readerInsets.right,
               minHeight: 48,
             }}>
             <PaneIconButton
@@ -315,24 +327,28 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
               onPress={() => setShowToc(value => !value)}
             />
           </View>
-          <RulesDocumentView
-            ref={documentRef}
-            preserveSourceFormatting={rulesDocument.extractionFormat === 'pdf-spans-v1'}
-            sections={rulesDocument.sections}
-            query={query}
-            theme={theme}
-            onVisiblePagesChange={handleVisiblePagesChange}
-            bottomInset={bottomInset + readerBarSpace(!!query)}
-          />
-          <RulesReaderBar
-            pageLabel={visiblePagesLabel}
-            query={query}
-            hitProgressLabel={hitProgressLabel}
-            bottom={bottomInset}
-            onOpenSearch={() => setSearchOpen(true)}
-            onPrevHit={onPrevHit}
-            onNextHit={onNextHit}
-          />
+          <PaneInsetsContext.Provider value={readerInsets}>
+            <View style={{flex: 1, paddingLeft: readerInsets.left, paddingRight: readerInsets.right}}>
+              <RulesDocumentView
+                ref={documentRef}
+                preserveSourceFormatting={rulesDocument.extractionFormat === 'pdf-spans-v1'}
+                sections={rulesDocument.sections}
+                query={query}
+                theme={theme}
+                onVisiblePagesChange={handleVisiblePagesChange}
+                bottomInset={bottomInset + readerBarSpace(!!query)}
+              />
+            </View>
+            <RulesReaderBar
+              pageLabel={visiblePagesLabel}
+              query={query}
+              hitProgressLabel={hitProgressLabel}
+              bottom={bottomInset}
+              onOpenSearch={() => setSearchOpen(true)}
+              onPrevHit={onPrevHit}
+              onNextHit={onNextHit}
+            />
+          </PaneInsetsContext.Provider>
           {showToc && (
             <RulesToc
               entries={rulesDocument.toc}

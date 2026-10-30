@@ -15,6 +15,7 @@ import {searchCardsByTitle} from '../../models/TitleSearch';
 import styles from '../../styles/SearchableCardListStyles';
 import AllCardsContext from '../../contexts/AllCardsContext';
 import ThemeContext from '../../contexts/ThemeContext';
+import PaneInsetsContext, {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import {SearchMode, Theme, SearchCallback, ScrollToIndexFunction} from '../../types/interfaces';
 
 /**
@@ -50,6 +51,10 @@ const fallbackTheme: Theme = {
 const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   // State variables
   const [selectedCard, setSelectedCard] = useState<CardPresenter | null>(null);
+  // The card opened inline on a compact screen (iPhone Duo closed). Opening the
+  // phone into side-by-side panes shows it in the detail pane, so the phone
+  // opens onto the card you were looking at.
+  const [expandedCard, setExpandedCard] = useState<CardPresenter | null>(null);
   const [query, setQuery] = useState<string>('');
   const [data, setData] = useState<Card[]>([]);
   const [filterQuerySet, setFilterQuerySet] = useState<FilterQuerySet>(new FilterQuerySet(''));
@@ -120,7 +125,10 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     // ignore case themselves (searchCardsByTitle, FilterQuerySet).
     setQuery(text);
     // An emptied search has nothing to show a card for.
-    if (!text) setSelectedCard(null);
+    if (!text) {
+      setSelectedCard(null);
+      setExpandedCard(null);
+    }
 
     switch (state.searchModeIndex) {
       case 0:
@@ -174,10 +182,13 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
    * Component to display when the list is empty and no search is performed
    */
   const EmptyListComponent = (): JSX.Element => {
+    const insets = usePaneInsets();
     return (
       <View
         style={{
           height: '100%',
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
           backgroundColor: theme.backgroundColor,
         }}>
         <Text
@@ -211,19 +222,22 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   /**
    * Component to display when a search returns no results
    */
-  const NoResultsListComponent = (): JSX.Element => (
-    <View style={styles.listEmptyContainer}>
-      <Text
-        style={{
-          color: theme.foregroundColor,
-          fontSize: 16,
-          textAlign: 'center',
-          padding: 20
-        }}>
-        No results found
-      </Text>
-    </View>
-  );
+  const NoResultsListComponent = (): JSX.Element => {
+    const insets = usePaneInsets();
+    return (
+      <View style={[styles.listEmptyContainer, {paddingLeft: insets.left, paddingRight: insets.right}]}>
+        <Text
+          style={{
+            color: theme.foregroundColor,
+            fontSize: 16,
+            textAlign: 'center',
+            padding: 20
+          }}>
+          No results found
+        </Text>
+      </View>
+    );
+  };
 
   /**
    * Separator component for list items
@@ -247,7 +261,8 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
       flatListRef.current.scrollToIndex({
         animated: true,
         index: index,
-        viewOffset: 8,
+        // Clear of the translucent header the list scrolls under.
+        viewOffset: headerHeight + 8,
       });
     }
   }, [headerHeight]);
@@ -263,7 +278,9 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
   const renderItem = useCallback((split: boolean) => ({item, index}: {item: CardPresenter; index: number}) => (
     <CardListItem item={item} theme={theme} index={index}
       scrollToIndex={scrollToIndex}
-      onPress={split ? () => {Keyboard.dismiss(); setSelectedCard(item);} : undefined} />
+      onPress={split ? () => {Keyboard.dismiss(); setSelectedCard(item);} : undefined}
+      onExpandedChange={split ? undefined : expanded =>
+        setExpandedCard(current => expanded ? item : current?.id === item.id ? null : current)} />
   ), [theme, scrollToIndex]);
 
   /**
@@ -284,16 +301,16 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
     56 +
     bottomClearance +
     2;
-  const contentTopInset = 0;
+  const detailCard = selectedCard || expandedCard;
   const contentBottomInset = dockDynamicHeight + 8;
 
   return (
     <AdaptiveWorkspace title="Cards" topInset={headerHeight} selected={!!selectedCard}
       onBack={() => setSelectedCard(null)}
-      detail={selectedCard ? <CardDetail card={{id: selectedCard.id, title: selectedCard.displayTitle,
-        imageUrl: selectedCard.displayImageUrl, backImageUrl: selectedCard.displayBackImageUrl,
-        sideways: selectedCard.sideways, subtitle: `${selectedCard.displayExpansionSet} · ${selectedCard.displayType}`}} /> : <EmptyDetail label="Select a card" />}
-      browser={split => <>
+      detail={detailCard ? <CardDetail card={{id: detailCard.id, title: detailCard.displayTitle,
+        imageUrl: detailCard.displayImageUrl, backImageUrl: detailCard.displayBackImageUrl,
+        sideways: detailCard.sideways, subtitle: `${detailCard.displayExpansionSet} · ${detailCard.displayType}`}} /> : <EmptyDetail label="Select a card" />}
+      browser={split => <PaneInsetsContext.Consumer>{insets => <>
       <Animated.FlatList
         // A new list per search mode: rows from the other mode's results must
         // not survive above this mode's empty-state copy.
@@ -301,9 +318,11 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         ref={flatListRef}
         contentContainerStyle={{
           ...styles.flatListContentContainer,
-          paddingTop: contentTopInset,
+          // Rows scroll up under the translucent header.
+          paddingTop: insets.top,
           paddingBottom: contentBottomInset,
         }}
+        scrollIndicatorInsets={{top: insets.top, bottom: contentBottomInset}}
         contentInsetAdjustmentBehavior="never"
         data={presentedData}
         renderItem={renderItem(split)}
@@ -344,7 +363,7 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         searchCallback={searchRouter}
         toggleSearchMode={toggleSearchMode}
       />
-    </>} />
+    </>}</PaneInsetsContext.Consumer>} />
   );
 };
 

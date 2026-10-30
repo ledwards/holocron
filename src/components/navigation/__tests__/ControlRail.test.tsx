@@ -57,3 +57,15 @@ describe('ControlRail', () => {
     expect(navigation.navigate).not.toHaveBeenCalled();
   });
 });
+
+describe('room for the system status items in the strip', () => {
+  const {stripStatusRoom} = require('../ControlRail');
+  it('clears the time and connectivity the system draws in the strip', () => {
+    expect(stripStatusRoom(678)).toBeGreaterThanOrEqual(160); // closed, upright
+    expect(stripStatusRoom(669)).toBeGreaterThanOrEqual(160); // open, landscape
+  });
+  it('keeps only the island clearance where iOS hides the status bar (compact height)', () => {
+    expect(stripStatusRoom(466)).toBeLessThan(60); // closed, landscape
+  });
+});
+

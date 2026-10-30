@@ -4,7 +4,6 @@ import {PlatformPressable} from '@react-navigation/elements';
 import {SafeAreaView, useSafeAreaInsets, Edge} from 'react-native-safe-area-context';
 import {Icon} from 'react-native-elements';
 import {createBottomTabNavigator, BottomTabBar} from '@react-navigation/bottom-tabs';
-import {BlurView} from '@react-native-community/blur';
 
 import CardsScreen from '../cards/CardsScreen';
 import DecklistsScreen from '../decklists/DecklistsScreen';
@@ -17,6 +16,7 @@ import {controlPlacement, railWidth} from '../../lib/duoLayout';
 import useFoldRegion from '../../lib/useFoldRegion';
 import ControlRail from './ControlRail';
 import GlassSurface from '../glass/GlassSurface';
+import PaneInsetsContext, {PaneInsets} from '../../contexts/PaneInsetsContext';
 import {Theme} from '../../types/interfaces';
 import Card from '../../models/Card';
 import ExpansionSet from '../../models/ExpansionSet';
@@ -53,12 +53,25 @@ function TabNavigation(_props: TabNavigationProps) {
     () => ({placement, railWidth: strip, bottomInset: insets.bottom, fold}),
     [placement, strip, insets.bottom, fold],
   );
-  // The strip owns its edge; screens keep the other edge (and the top once
-  // their header is hidden).
+  // The strip floats over the screens' edge like the bottom bar floats over
+  // their foot: screens run beneath it and get its width as an inset, so its
+  // glass blurs real content. They keep the safe area on the other edges.
   const screenEdges = (withTop: boolean): Edge[] =>
     rail
       ? ['top', placement === 'right' ? 'left' : 'right']
       : withTop ? ['top', 'left', 'right'] : ['left', 'right'];
+  const stripInsets = useMemo<PaneInsets>(
+    () => ({top: 0, left: placement === 'left' ? strip : 0, right: placement === 'right' ? strip : 0}),
+    [placement, strip],
+  );
+  const screen = (content: React.ReactNode, withTop: boolean, testID?: string) => (
+    <SafeAreaView
+      testID={testID}
+      edges={screenEdges(withTop)}
+      style={{flex: 1, backgroundColor: theme?.backgroundColor}}>
+      <PaneInsetsContext.Provider value={stripInsets}>{content}</PaneInsetsContext.Provider>
+    </SafeAreaView>
+  );
 
   return (
     <DeviceLayoutContext.Provider value={deviceLayout}>
@@ -89,16 +102,7 @@ function TabNavigation(_props: TabNavigationProps) {
       }}>
       <Tab.Screen
         name="Cards"
-        children={() => (
-          <SafeAreaView
-            edges={screenEdges(false)}
-            style={{
-              flex: 1,
-              backgroundColor: theme?.backgroundColor,
-            }}>
-            <CardsScreen />
-          </SafeAreaView>
-        )}
+        children={() => screen(<CardsScreen />, false)}
         options={{
           tabBarLabel: 'Search',
           tabBarButtonTestID: 'tab-cards',
@@ -110,14 +114,7 @@ function TabNavigation(_props: TabNavigationProps) {
             fontWeight: '600',
             fontSize: 17,
           },
-          headerBackground: () => (
-            <BlurView
-              style={styles.headerBackground}
-              blurType={theme?.name === 'dark' ? 'dark' : 'light'}
-              blurAmount={16}
-              reducedTransparencyFallbackColor={theme?.translucentBackgroundColor}
-            />
-          ),
+          headerBackground: () => <GlassSurface edge="bottom" style={StyleSheet.absoluteFill} />,
           tabBarIcon: () => (
             <Icon
               name={'list-outline'}
@@ -130,22 +127,13 @@ function TabNavigation(_props: TabNavigationProps) {
       />
       <Tab.Screen
         name="Decklists"
-        children={() => (
-          <SafeAreaView
-            edges={screenEdges(false)}
-            style={{
-              flex: 1,
-              backgroundColor: theme?.backgroundColor,
-            }}>
-            <DecklistsScreen />
-          </SafeAreaView>
-        )}
+        children={() => screen(<DecklistsScreen />, false)}
         options={{
           headerShown: !rail,
           headerTransparent: true,
           headerTitle: 'Decklists',
           headerTitleStyle: {color: theme?.foregroundColor, fontSize: 17, fontWeight: '600'},
-          headerBackground: () => <BlurView style={styles.headerBackground} blurType={theme?.name === 'dark' ? 'dark' : 'light'} blurAmount={16} />,
+          headerBackground: () => <GlassSurface edge="bottom" style={StyleSheet.absoluteFill} />,
           tabBarLabel: 'Decklists',
           tabBarButtonTestID: 'tab-decklists',
           tabBarIcon: () => (
@@ -160,17 +148,7 @@ function TabNavigation(_props: TabNavigationProps) {
       />
       <Tab.Screen
         name="Rules"
-        children={() => (
-          <SafeAreaView
-            testID="rules-safe-area"
-            edges={screenEdges(true)}
-            style={{
-              flex: 1,
-              backgroundColor: theme?.backgroundColor,
-            }}>
-            <RulesScreen />
-          </SafeAreaView>
-        )}
+        children={() => screen(<RulesScreen />, true, 'rules-safe-area')}
         options={{
           tabBarLabel: 'Rules',
           tabBarButtonTestID: 'tab-rules',

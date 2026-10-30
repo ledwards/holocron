@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 
 import styles from '../../styles/DecklistListItemStyles';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import {Theme} from '../../types/interfaces';
 
 interface DecklistItem {
@@ -25,7 +26,9 @@ interface DecklistListItemProps {
 const DecklistListItem = (props: DecklistListItemProps) => {
   const window = useWindowDimensions();
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
-  const windowWidth = measuredWidth || window.width;
+  // Full-bleed under the iPhone Duo strip; sized and labelled within the clear part.
+  const insets = usePaneInsets();
+  const windowWidth = Math.max(0, (measuredWidth || window.width) - insets.left - insets.right);
   const fillPercent = 0.55;
 
   const height = props.item.sideways
@@ -42,8 +45,12 @@ const DecklistListItem = (props: DecklistListItemProps) => {
 
   return (
     <View
-      onLayout={event => setMeasuredWidth(event.nativeEvent.layout.width)}
+      onLayout={event => {
+        const width = Math.round(event.nativeEvent.layout.width);
+        setMeasuredWidth(previous => previous === width ? previous : width);
+      }}
       style={{
+        alignSelf: 'stretch',
         height: state.containerHeight,
       }}>
       <ListItem
@@ -83,6 +90,7 @@ const DecklistListItem = (props: DecklistListItemProps) => {
         </View>
         <View
           style={{
+            marginLeft: insets.left,
             opacity: state.labelOpacity,
           }}>
           <ListItem.Content>

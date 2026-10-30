@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, Pressable, StyleSheet} from 'react-native';
+import {View, Pressable, StyleSheet, useWindowDimensions} from 'react-native';
 import GlassSurface from '../glass/GlassSurface';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import ThemeContext from '../../contexts/ThemeContext';
@@ -11,8 +11,17 @@ interface ControlRailProps extends BottomTabBarProps {
   bottomInset: number;
 }
 
-/** Room for the Dynamic Island and status bar at the top of the strip. */
-const SYSTEM_STATUS_HEIGHT = 72;
+/**
+ * Room for the system's own status items (time, connectivity), which iPhone
+ * Duo draws at the top of the strip, down to about 160 points (measured on
+ * the simulator, closed upright). iOS hides them at compact heights (closed,
+ * landscape), where only the Dynamic Island clearance remains. The screen's
+ * actions go below, or the system draws over them.
+ */
+const COMPACT_HEIGHT = 500;
+export function stripStatusRoom(windowHeight: number): number {
+  return windowHeight >= COMPACT_HEIGHT ? 168 : 24;
+}
 
 /**
  * The vertical control strip used where iPhone Duo puts the system's own bars
@@ -24,6 +33,7 @@ const SYSTEM_STATUS_HEIGHT = 72;
  */
 export default function ControlRail({state, descriptors, navigation, side, width, topInset, bottomInset}: ControlRailProps) {
   const theme = useContext(ThemeContext);
+  const window = useWindowDimensions();
   const focused = descriptors[state.routes[state.index].key];
   const {headerLeft, headerRight} = focused.options;
   const tintColor = theme?.foregroundColor;
@@ -32,8 +42,16 @@ export default function ControlRail({state, descriptors, navigation, side, width
     <View
       testID="control-rail"
       style={{
+        // Floats over the screens (which run beneath it with its width as an
+        // inset) so the glass shows the content under it, as iPhone Duo's own
+        // bars do; an app that sits beside the strip looks letterboxed.
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        [side]: 0,
+        zIndex: 10,
         width,
-        paddingTop: topInset + SYSTEM_STATUS_HEIGHT,
+        paddingTop: topInset + stripStatusRoom(window.height),
         paddingBottom: bottomInset + 12,
         alignItems: 'center',
         borderColor: 'rgba(255,255,255,0.22)',

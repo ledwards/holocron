@@ -6,6 +6,7 @@ import {BlurView} from '@react-native-community/blur';
 
 import styles from '../../styles/CardListItemStyles';
 import ThemeContext from '../../contexts/ThemeContext';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import { CardSide } from '../../types/enums';
 import { Theme, ScrollToIndexFunction } from '../../types/interfaces';
 
@@ -27,6 +28,8 @@ export interface CardListItemProps {
   scrollToIndex: ScrollToIndexFunction;
   quantity?: number;
   onPress?: () => void;
+  /** Told when the row opens or closes inline (only rows without onPress). */
+  onExpandedChange?: (expanded: boolean) => void;
   testID?: string;
   flatListRef?: Animated.FlatList<any> | undefined;
   theme?: Theme;
@@ -35,7 +38,10 @@ export interface CardListItemProps {
 const CardListItem = (props: CardListItemProps) => {
   const window = useWindowDimensions();
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
-  const windowWidth = measuredWidth || window.width;
+  // Rows run full-bleed under the iPhone Duo strip; the art and title are
+  // sized and placed within the part of the row the strip leaves clear.
+  const insets = usePaneInsets();
+  const windowWidth = Math.max(0, (measuredWidth || window.width) - insets.left - insets.right);
   const fillPercent = 0.55;
 
   const startingHeight = props.item.sideways
@@ -82,6 +88,21 @@ const CardListItem = (props: CardListItemProps) => {
       minHeight: startingHeight, maxHeight, minWidth: windowWidth * fillPercent,
       maxWidth: windowWidth}));
   }, [windowWidth, startingHeight, props.item.aspectRatio]);
+
+  // Rows open inline only on a compact screen. When the screen widens into
+  // side-by-side panes (iPhone Duo opening) the card moves to the detail pane,
+  // so an open row folds back into the list as the phone opens.
+  const opensDetail = !!props.onPress;
+  useEffect(() => {
+    if (!opensDetail || !state.expanded) return;
+    // Set, not animated: the system already animates the change of display,
+    // and the width re-measure that follows would cut an animation short.
+    state.heightAnim.setValue(state.minHeight);
+    state.widthAnim.setValue(state.minWidth);
+    state.containerHeightAnim.setValue(state.minHeight / 2);
+    state.labelOpacityAnim.setValue(1);
+    setState(previous => ({...previous, expanded: false, showingBack: false}));
+  }, [opensDetail]);
 
   // Use context to get theme if not provided as prop
   const theme = props.theme || useContext(ThemeContext) || {
@@ -144,6 +165,7 @@ const CardListItem = (props: CardListItemProps) => {
       showingBack: needsToFlip,
       expanded: !needsToCollapse,
     });
+    props.onExpandedChange?.(!needsToCollapse);
   };
 
   return (
@@ -179,7 +201,7 @@ const CardListItem = (props: CardListItemProps) => {
                   ...styles.cardListItemExpanded,
                   top: 0 + props.item.offsetY,
                 }
-              : styles.cardListItemCollapsed),
+              : {...styles.cardListItemCollapsed, right: insets.right}),
           }}>
           <FastImage
             source={{
@@ -198,6 +220,7 @@ const CardListItem = (props: CardListItemProps) => {
         </Animated.View>
         <Animated.View
           style={{
+            marginLeft: insets.left,
             opacity: state.labelOpacityAnim,
           }}>
           <ListItem.Content>

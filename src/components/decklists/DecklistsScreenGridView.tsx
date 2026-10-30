@@ -2,6 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import {ScrollView, View, Dimensions, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {useHeaderHeight} from '@react-navigation/elements';
 import useBottomClearance from '../../lib/useBottomClearance';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import DecklistsScreenGridItem from './DecklistsScreenGridItem';
 
 import layout from '../../constants/layout';
@@ -38,6 +39,8 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomClearance();
+  // Scrolls under the translucent header; the cards stay clear of the strip.
+  const insets = usePaneInsets();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
   
@@ -107,9 +110,12 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
           ...styles.scrollView,
-          paddingTop: props.embedded ? 0 : headerHeight,
+          paddingTop: props.embedded ? insets.top : headerHeight,
           paddingBottom: tabBarHeight + 16,
-        }}>
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+        scrollIndicatorInsets={{top: props.embedded ? insets.top : headerHeight}}>
         <View style={{
           flexDirection: 'row',
           flexWrap: 'wrap',
@@ -118,7 +124,7 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
           position: 'relative'
         }}>
           {items.map((item, index) => {
-            const cardWidth = windowWidth / cardsPerRow;
+            const cardWidth = (windowWidth - insets.left - insets.right) / cardsPerRow;
             const aspectRatio = item.aspectRatio || 0.7;
             const cardHeight = cardWidth / aspectRatio;
             

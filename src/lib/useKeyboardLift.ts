@@ -17,17 +17,23 @@ export function keyboardLift(dockBottom: number, keyboardTop: number,
 }
 
 /**
- * Raises a bottom dock above the iOS keyboard. Unlike KeyboardAvoidingView,
- * it measures the dock's real window position each time the keyboard moves
- * (so iPhone Duo posture changes can't leave a stale offset) and always
- * returns to zero when the keyboard hides.
+ * Raises a bottom dock above the iOS keyboard while the dock's own field has
+ * focus (`active`). Unlike KeyboardAvoidingView, it measures the dock's real
+ * window position each time the keyboard moves (so iPhone Duo posture changes
+ * can't leave a stale offset), always returns to zero when the keyboard hides,
+ * and ignores keyboard frames while its field isn't focused: opening or
+ * folding iPhone Duo sends frame changes for no visible keyboard, which once
+ * threw an unfocused dock to the top of the screen.
  */
-export default function useKeyboardLift(clearance: number) {
+export default function useKeyboardLift(clearance: number, active = true) {
   const ref = useRef<View>(null);
   const lift = useRef(new Animated.Value(0)).current;
   const current = useRef(0);
   const clearanceRef = useRef(clearance);
   clearanceRef.current = clearance;
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  const handlers = useRef<{change: (event: KeyboardEvent) => void; move: (to: number, duration: number) => void} | null>(null);
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return undefined;
@@ -38,7 +44,7 @@ export default function useKeyboardLift(clearance: number) {
     };
     const change = ({endCoordinates, duration}: KeyboardEvent) => {
       const windowHeight = Dimensions.get('window').height;
-      if (endCoordinates.screenY >= windowHeight || !ref.current) {
+      if (!activeRef.current || endCoordinates.screenY >= windowHeight || !ref.current) {
         move(0, duration);
         return;
       }
@@ -49,12 +55,26 @@ export default function useKeyboardLift(clearance: number) {
           clearanceRef.current), duration);
       });
     };
+    handlers.current = {change, move};
     const subscriptions = [
       Keyboard.addListener('keyboardWillChangeFrame', change),
       Keyboard.addListener('keyboardWillHide', ({duration}) => move(0, duration)),
     ];
     return () => subscriptions.forEach(subscription => subscription.remove());
   }, [lift]);
+
+  // Focus can arrive after the keyboard's own event: catch up from the
+  // keyboard's current frame. Losing focus always drops the dock.
+  useEffect(() => {
+    const handler = handlers.current;
+    if (!handler) return;
+    const metrics = Keyboard.metrics?.();
+    if (active && metrics) {
+      handler.change({endCoordinates: metrics, duration: 0} as KeyboardEvent);
+    } else if (!active) {
+      handler.move(0, 0);
+    }
+  }, [active]);
 
   return {ref, translateY: lift};
 }

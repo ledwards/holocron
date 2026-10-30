@@ -6,6 +6,7 @@ import DeviceLayoutContext, {defaultDeviceLayout} from '../../../contexts/Device
 import {Region} from '../../../lib/duoLayout';
 import useBottomClearance from '../../../lib/useBottomClearance';
 import WorkspaceLayoutContext from '../../../contexts/WorkspaceLayoutContext';
+import PaneInsetsContext, {PaneInsets, usePaneInsets} from '../../../contexts/PaneInsetsContext';
 
 jest.mock('@react-navigation/bottom-tabs', () => ({useBottomTabBarHeight: () => 62}));
 
@@ -29,9 +30,9 @@ const renderWorkspace = (fold: Region | null, width: number, height: number) => 
 const style = (node: {props: {style: unknown}}) => Object.assign({}, ...[node.props.style].flat());
 
 describe('AdaptiveWorkspace on a partly folded display', () => {
-  it('lays out as before when the display is flat', () => {
+  it('splits evenly when the display is flat', () => {
     const screen = renderWorkspace(null, 826, 626);
-    expect(style(screen.getByTestId('browse-pane')).width).toBe(280);
+    expect(style(screen.getByTestId('browse-pane')).width).toBe(413);
     expect(screen.queryByTestId('fold-gap', {includeHiddenElements: true})).toBeNull();
   });
 
@@ -89,7 +90,18 @@ describe('where the search dock may grow while typing', () => {
   };
 
   it('spans the detail pane when the panes sit side by side', () => {
-    expect(expansion(null, 826, 626)).toBe(826 - 280);
+    expect(expansion(null, 826, 626)).toBe(826 - 413);
+  });
+
+  it('stops at the iPhone Duo strip floating over the detail pane', () => {
+    const screen = render(
+      <PaneInsetsContext.Provider value={{top: 0, left: 0, right: 84}}>
+        <AdaptiveWorkspace title="Cards" selected={false} onBack={jest.fn()}
+          browser={<Expansion />} detail={<Text>detail</Text>} />
+      </PaneInsetsContext.Provider>,
+    );
+    fireEvent(screen.getByTestId('adaptive-workspace'), 'layout', {nativeEvent: {layout: {x: 0, y: 0, width: 951, height: 669}}});
+    expect(Number(screen.getByTestId('dock-expansion').props.children)).toBe(951 - 476 - 84);
   });
 
   it('stays in its pane on a compact width, where it is already full width', () => {
@@ -99,5 +111,53 @@ describe('where the search dock may grow while typing', () => {
   it('never crosses a fold, vertical or horizontal', () => {
     expect(expansion({x: 433, y: 0, width: 24, height: 626}, 826, 626)).toBe(0);
     expect(expansion({x: 0, y: 433, width: 626, height: 24}, 626, 828)).toBe(0);
+  });
+});
+
+describe('panes run under the glass header and strip', () => {
+  const Insets = ({testID}: {testID: string}) => <Text testID={testID}>{JSON.stringify(usePaneInsets())}</Text>;
+  const renderWith = (strip: PaneInsets, width: number, selected = false, fold: Region | null = null, height = 669) => {
+    const screen = render(
+      <DeviceLayoutContext.Provider value={{...defaultDeviceLayout, fold}}>
+        <PaneInsetsContext.Provider value={strip}>
+          <AdaptiveWorkspace title="Cards" topInset={103} selected={selected} onBack={jest.fn()}
+            browser={<Insets testID="browse-insets" />} detail={<Insets testID="detail-insets" />} />
+        </PaneInsetsContext.Provider>
+      </DeviceLayoutContext.Provider>,
+    );
+    fireEvent(screen.getByTestId('adaptive-workspace'), 'layout', {nativeEvent: {layout: {x: 0, y: 0, width, height}}});
+    const read = (id: string) => JSON.parse(screen.getByTestId(id, {includeHiddenElements: true}).props.children);
+    return {screen, browse: read('browse-insets'), detail: read('detail-insets')};
+  };
+
+  it('does not pad the workspace below the header; each pane insets its own content', () => {
+    const {screen, browse, detail} = renderWith({top: 0, left: 0, right: 0}, 826);
+    expect(style(screen.getByTestId('adaptive-workspace')).paddingTop).toBe(0);
+    expect(browse.top).toBe(103);
+    expect(detail.top).toBe(103);
+  });
+
+  it('gives the strip inset only to the pane under the strip', () => {
+    const right = renderWith({top: 0, left: 0, right: 84}, 951);
+    expect(right.browse).toEqual({top: 103, left: 0, right: 0});
+    expect(right.detail).toEqual({top: 103, left: 0, right: 84});
+    const left = renderWith({top: 0, left: 84, right: 0}, 951);
+    expect(left.browse).toEqual({top: 103, left: 84, right: 0});
+    expect(left.detail).toEqual({top: 103, left: 0, right: 0});
+  });
+
+  it('gives a full-width compact pane both strip edges', () => {
+    expect(renderWith({top: 0, left: 0, right: 84}, 466).browse).toEqual({top: 103, left: 0, right: 84});
+  });
+
+  it('lets the compact Back row take the top inset', () => {
+    const {detail} = renderWith({top: 0, left: 0, right: 84}, 466, true);
+    expect(detail).toEqual({top: 0, left: 0, right: 84});
+  });
+
+  it('starts below the header when stacked around a horizontal fold', () => {
+    const {screen, browse} = renderWith({top: 0, left: 0, right: 0}, 669, false, {x: 0, y: 455.5, width: 669, height: 40}, 951);
+    expect(style(screen.getByTestId('adaptive-workspace')).paddingTop).toBe(103);
+    expect(browse.top).toBe(0);
   });
 });

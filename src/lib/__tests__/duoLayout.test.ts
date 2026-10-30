@@ -53,8 +53,8 @@ describe('foldInPane', () => {
 describe('workspaceLayout with a fold', () => {
   const {workspaceLayout} = require('../adaptiveLayout');
 
-  it('without a fold behaves exactly as before', () => {
-    expect(workspaceLayout(826)).toEqual({split: true, browserWidth: 280, stacked: false, detailHeight: 0, gap: 0});
+  it('without a fold splits evenly, or not at all when too narrow', () => {
+    expect(workspaceLayout(826)).toEqual({split: true, browserWidth: 413, stacked: false, detailHeight: 0, gap: 0});
     expect(workspaceLayout(466)).toEqual({split: false, browserWidth: 466, stacked: false, detailHeight: 0, gap: 0});
   });
 
@@ -64,8 +64,8 @@ describe('workspaceLayout with a fold', () => {
   });
 
   it('ignores a vertical fold that would leave a side too narrow', () => {
-    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 200, size: 24}).browserWidth).toBe(280);
-    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 600, size: 24}).browserWidth).toBe(280);
+    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 200, size: 24}).browserWidth).toBe(413);
+    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 600, size: 24}).browserWidth).toBe(413);
   });
 
   it('stacks around a horizontal fold, detail above', () => {
@@ -98,10 +98,18 @@ describe('measured on the iPhone Duo simulator', () => {
 
   it('book posture: the browser ends at the crease and the detail starts after it', () => {
     const {workspaceLayout} = require('../adaptiveLayout');
-    // Window 951 wide with the 84-point strip on the right leaves an 867-point pane.
-    const fold = foldInPane({x: 455.5, y: 0, width: 40, height: 669}, {x: 0, y: 0, width: 867, height: 669});
+    // The panes span the whole 951-point window; the strip floats over them.
+    const fold = foldInPane({x: 455.5, y: 0, width: 40, height: 669}, {x: 0, y: 0, width: 951, height: 669});
     expect(fold).toEqual({axis: 'vertical', start: 455.5, size: 40});
-    expect(workspaceLayout(867, 1, fold)).toEqual({split: true, browserWidth: 455.5, stacked: false, detailHeight: 0, gap: 40});
+    expect(workspaceLayout(951, 1, fold)).toEqual({split: true, browserWidth: 455.5, stacked: false, detailHeight: 0, gap: 40});
+  });
+
+  it('open flat, the divide stays on the hinge: opening from half-open barely moves the list', () => {
+    const {workspaceLayout} = require('../adaptiveLayout');
+    const flat = workspaceLayout(951);
+    expect(flat.browserWidth).toBe(476);
+    // The half-open crease runs 455.5–495.5; the flat divide sits at its centre.
+    expect(Math.abs(flat.browserWidth - (455.5 + 40 / 2))).toBeLessThan(1);
   });
 
   it('table posture: the detail sits above the crease and the browser below it', () => {

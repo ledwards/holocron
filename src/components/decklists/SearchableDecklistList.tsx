@@ -8,6 +8,7 @@ import {
   Dimensions,
   Keyboard,
 } from 'react-native';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import useBottomClearance from '../../lib/useBottomClearance';
 import {useHeaderHeight} from '@react-navigation/elements';
 
@@ -50,6 +51,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   const allDecklists = useContext(AllDecklistsContext) || [];
   const bottomClearance = useBottomClearance(58);
   const headerHeight = useHeaderHeight();
+  const insets = usePaneInsets();
 
   useEffect(() => {
     setState(prevState => ({
@@ -97,7 +99,7 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
   };
 
   const NoResultsListComponent = () => (
-    <View style={styles.listEmptyContainer}>
+    <View style={[styles.listEmptyContainer, {paddingLeft: insets.left, paddingRight: insets.right}]}>
       <Text
         style={{
           color: theme?.foregroundColor,
@@ -156,9 +158,11 @@ const SearchableDecklistList = (props: SearchableDecklistListProps) => {
         contentContainerStyle={{
           ...styles.flatListContentContainer,
           minHeight: Dimensions.get('window').height,
-          paddingTop: props.embedded ? 0 : Math.max(headerHeight - 2, 0),
+          // Rows scroll up under the translucent header.
+          paddingTop: props.embedded ? insets.top : Math.max(headerHeight - 2, 0),
           paddingBottom: dockDynamicHeight + 8,
         }}
+        scrollIndicatorInsets={{top: props.embedded ? insets.top : headerHeight}}
         contentInsetAdjustmentBehavior="never"
         data={presentedData}
         renderItem={renderDecklistItem}

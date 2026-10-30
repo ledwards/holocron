@@ -14,6 +14,7 @@ import {Icon} from 'react-native-elements';
 import ThemeContext from '../../contexts/ThemeContext';
 import {workspaceLayout} from '../../lib/adaptiveLayout';
 import WorkspaceLayoutContext from '../../contexts/WorkspaceLayoutContext';
+import PaneInsetsContext, {PaneInsets, usePaneInsets} from '../../contexts/PaneInsetsContext';
 
 interface Props {
   browser: React.ReactNode | ((split: boolean) => React.ReactNode);
@@ -41,11 +42,31 @@ export default function AdaptiveWorkspace({
   const pane = usePaneFold(topInset);
   const {split, browserWidth, stacked, detailHeight, gap} =
     workspaceLayout(pane.width, window.fontScale, pane.fold, pane.height);
-  // The search dock may grow over the detail pane while typing, but never
-  // across a fold.
+  // Both panes run under the header (and the iPhone Duo strip) and pad their
+  // content by these insets instead, so that chrome stays translucent. Stacked
+  // around a horizontal fold, the workspace simply starts below the header.
+  const strip = usePaneInsets();
+  const sideBySide = split && !stacked;
+  const top = stacked ? 0 : topInset;
+  const browseInsets = React.useMemo<PaneInsets>(
+    () => ({top, left: strip.left, right: sideBySide ? 0 : strip.right}),
+    [top, strip.left, strip.right, sideBySide],
+  );
+  const detailInsets = React.useMemo<PaneInsets>(
+    () => ({top, left: sideBySide ? 0 : strip.left, right: strip.right}),
+    [top, strip.left, strip.right, sideBySide],
+  );
+  const backRow = !split && selected && showBackButton;
+  // The Back row takes the top inset itself; the detail starts below it.
+  const detailContentInsets = React.useMemo<PaneInsets>(
+    () => (backRow ? {...detailInsets, top: 0} : detailInsets),
+    [backRow, detailInsets],
+  );
+  // The search dock may grow over the detail pane while typing (up to the
+  // strip, if any), but never across a fold.
   const workspaceLayoutValue = React.useMemo(
-    () => ({dockExpansion: split && !stacked && !gap ? Math.max(0, pane.width - browserWidth) : 0}),
-    [split, stacked, gap, pane.width, browserWidth],
+    () => ({dockExpansion: sideBySide && !gap ? Math.max(0, pane.width - browserWidth - strip.right) : 0}),
+    [sideBySide, gap, pane.width, browserWidth, strip.right],
   );
   useFocusEffect(
     React.useCallback(() => {
@@ -77,7 +98,9 @@ export default function AdaptiveWorkspace({
         borderColor: theme?.dividerColor,
       }}>
       <WorkspaceLayoutContext.Provider value={workspaceLayoutValue}>
-        {typeof browser === 'function' ? browser(split) : browser}
+        <PaneInsetsContext.Provider value={browseInsets}>
+          {typeof browser === 'function' ? browser(split) : browser}
+        </PaneInsetsContext.Provider>
       </WorkspaceLayoutContext.Provider>
     </View>
   );
@@ -100,16 +123,20 @@ export default function AdaptiveWorkspace({
         minWidth: 0,
         display: split || selected ? 'flex' : 'none',
       }}>
-      {!split && selected && showBackButton && (
-        <PaneIconButton
-          testID="adaptive-back"
-          label={`Back to ${title}`}
-          icon="chevron-back"
-          onPress={onBack}
-        />
+      {backRow && (
+        <View style={{paddingTop: detailInsets.top, paddingLeft: detailInsets.left}}>
+          <PaneIconButton
+            testID="adaptive-back"
+            label={`Back to ${title}`}
+            icon="chevron-back"
+            onPress={onBack}
+          />
+        </View>
       )}
       <PaneReachesBottomContext.Provider value={!stacked}>
-        {detail}
+        <PaneInsetsContext.Provider value={detailContentInsets}>
+          {detail}
+        </PaneInsetsContext.Provider>
       </PaneReachesBottomContext.Provider>
     </View>
   );
@@ -120,7 +147,7 @@ export default function AdaptiveWorkspace({
       onLayout={pane.onLayout}
       style={{
         flex: 1,
-        paddingTop: topInset,
+        paddingTop: stacked ? topInset : 0,
         flexDirection: stacked ? 'column' : 'row',
         backgroundColor: theme?.backgroundColor,
       }}>
@@ -170,6 +197,7 @@ export function PaneButton({
 
 export function EmptyDetail({label}: {label: string}) {
   const theme = useContext(ThemeContext);
+  const insets = usePaneInsets();
   return (
     <View
       style={{
@@ -177,6 +205,9 @@ export function EmptyDetail({label}: {label: string}) {
         justifyContent: 'center',
         alignItems: 'center',
         padding: 32,
+        paddingTop: 32 + insets.top,
+        paddingLeft: 32 + insets.left,
+        paddingRight: 32 + insets.right,
       }}>
       <Text
         style={{

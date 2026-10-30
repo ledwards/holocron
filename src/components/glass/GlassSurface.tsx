@@ -49,7 +49,7 @@ export default function GlassSurface({edge = 'none', radius = 0, style, children
       />
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, {backgroundColor: dark ? 'rgba(12,12,14,0.32)' : 'rgba(255,255,255,0.42)'}]}
+        style={[StyleSheet.absoluteFill, {backgroundColor: dark ? 'rgba(12,12,14,0.24)' : 'rgba(255,255,255,0.28)'}]}
       />
       {children}
     </View>

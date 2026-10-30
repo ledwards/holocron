@@ -21,8 +21,8 @@ describe('useKeyboardLift', () => {
   let remove: jest.Mock;
   let lift: ReturnType<typeof useKeyboardLift>;
 
-  function Dock() {
-    lift = useKeyboardLift(85);
+  function Dock({active = true}: {active?: boolean}) {
+    lift = useKeyboardLift(85, active);
     return <View ref={lift.ref} />;
   }
 
@@ -70,6 +70,24 @@ describe('useKeyboardLift', () => {
     lift.ref.current!.measureInWindow = (callback: any) => callback(0, 700, 390, 144);
     act(() => listeners.keyboardWillChangeFrame({endCoordinates: {screenY: 508}, duration: 0}));
     act(() => listeners.keyboardWillChangeFrame({endCoordinates: {screenY: 2000}, duration: 0}));
+    expect(value()).toBe(0);
+  });
+
+  it('ignores keyboard frames while its field is not focused (iPhone Duo opening)', () => {
+    // Opening the phone sent a frame change with no visible keyboard and threw
+    // the unfocused decklist dock to the top of the screen.
+    render(<Dock active={false} />);
+    lift.ref.current!.measureInWindow = (callback: any) => callback(0, 700, 390, 144);
+    act(() => listeners.keyboardWillChangeFrame({endCoordinates: {screenY: 93}, duration: 0}));
+    expect(value()).toBe(0);
+  });
+
+  it('drops the dock when its field loses focus', () => {
+    const screen = render(<Dock />);
+    lift.ref.current!.measureInWindow = (callback: any) => callback(0, 700, 390, 144);
+    act(() => listeners.keyboardWillChangeFrame({endCoordinates: {screenY: 508}, duration: 0}));
+    expect(value()).toBeLessThan(0);
+    screen.rerender(<Dock active={false} />);
     expect(value()).toBe(0);
   });
 });

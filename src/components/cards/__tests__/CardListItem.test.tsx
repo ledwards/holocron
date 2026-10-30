@@ -145,4 +145,19 @@ describe('CardListItem', () => {
     expect(row.props.style.alignSelf).toBe('stretch');
   });
 
+  it('folds an inline-open row back into the list when the screen widens into panes', () => {
+    const onExpandedChange = jest.fn();
+    const screen = render(<CardListItem item={mockCardItem} index={0}
+      scrollToIndex={mockScrollToIndex} theme={mockTheme} onExpandedChange={onExpandedChange} />);
+    fireEvent.press(screen.getByTestId('card-item-0'));
+    expect(onExpandedChange).toHaveBeenLastCalledWith(true);
+    const label = () => screen.UNSAFE_getAllByType(Animated.View)
+      .find(node => node.props.style?.opacity !== undefined)!.props.style.opacity.__getValue();
+
+    // iPhone Duo opens: the list now opens cards in the detail pane instead.
+    screen.rerender(<CardListItem item={mockCardItem} index={0}
+      scrollToIndex={mockScrollToIndex} theme={mockTheme} onPress={jest.fn()} />);
+    expect(label()).toBe(1);
+    expect(screen.getByText('Test Card')).toBeTruthy();
+  });
 });

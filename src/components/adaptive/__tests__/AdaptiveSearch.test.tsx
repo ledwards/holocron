@@ -177,3 +177,18 @@ it('shows no result rows above the natural-language copy after switching modes',
   expect(listAfter).not.toBe(listBefore);
   expect(listAfter.props.removeClippedSubviews).toBeFalsy();
 });
+
+it('opens onto the card that was open inline when the screen widens (iPhone Duo opening)', () => {
+  const screen = render(
+    <AllCardsContext.Provider value={cards}>
+      <SearchableCardList cards={cards} />
+    </AllCardsContext.Provider>,
+  );
+  resize(screen, 466);
+  fireEvent.changeText(screen.getByTestId('search-input'), 'luke');
+  fireEvent.press(screen.getByTestId('card-item-0'));
+  // Compact: the card opens inline in the list, not as a detail screen.
+  expect(screen.queryByTestId('card-detail')).toBeNull();
+  resize(screen, 951);
+  expect(screen.getByTestId('card-detail-artwork').props.source.uri).toBe('luke.gif');
+});

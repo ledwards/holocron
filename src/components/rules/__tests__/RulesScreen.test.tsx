@@ -165,7 +165,7 @@ describe('RulesScreen', () => {
     );
     fireEvent(screen.getByTestId('rules-workspace'), 'layout', {nativeEvent: {layout: {width: 826, height: 828}}});
     const browser = screen.getByTestId('rules-workspace').props.children[0];
-    expect(browser.props.style.width).toBe(280);
+    expect(browser.props.style.width).toBe(413);
     expect(browser.props.style.marginRight).toBe(0);
   });
 });

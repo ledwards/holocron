@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import ThemeContext from '../../contexts/ThemeContext';
 import GlassSurface from '../glass/GlassSurface';
 import {PaneIconButton} from '../adaptive/AdaptiveWorkspace';
@@ -30,8 +31,9 @@ export default function RulesReaderBar({pageLabel, query, hitProgressLabel, bott
   const theme = useContext(ThemeContext);
   const color = theme?.foregroundColor || '#FFFFFF';
   const searching = !!query;
+  const insets = usePaneInsets();
   return (
-    <View pointerEvents="box-none" style={{position: 'absolute', left: 12, right: 12, bottom: bottom + 8, alignItems: 'center'}}>
+    <View pointerEvents="box-none" style={{position: 'absolute', left: 12 + insets.left, right: 12 + insets.right, bottom: bottom + 8, alignItems: 'center'}}>
       <GlassSurface edge="all" radius={searching ? 24 : 18} style={{alignSelf: searching ? 'stretch' : 'center'}}>
         {searching && (
           <View testID="rules-match-bar" style={{flexDirection: 'row', alignItems: 'center', paddingLeft: 6, paddingRight: 2}}>

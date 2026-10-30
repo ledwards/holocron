@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View, Pressable} from 'react-native';
 import useBottomClearance from '../../lib/useBottomClearance';
+import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import CardArtwork from './CardArtwork';
 
 import {DetailCard} from '../../types/adaptive';
@@ -13,6 +14,7 @@ export default function CardDetail({card}: {card: DetailCard}) {
 }
 function SelectedCard({card}: {card: DetailCard}) {
   const bottom = useBottomClearance();
+  const insets = usePaneInsets();
   const [back, setBack] = useState(false);
   const [size, setSize] = useState({width: 320, height: 500});
   const label = [card.title, card.subtitle].filter(Boolean).join(', ');
@@ -20,7 +22,9 @@ function SelectedCard({card}: {card: DetailCard}) {
     <View
       testID="card-detail"
       onLayout={event => setSize(event.nativeEvent.layout)}
-      style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: MARGIN, paddingBottom: MARGIN + bottom}}>
+      style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: MARGIN,
+        paddingTop: MARGIN + insets.top, paddingLeft: MARGIN + insets.left,
+        paddingRight: MARGIN + insets.right, paddingBottom: MARGIN + bottom}}>
       <Pressable testID="card-flip"
         accessibilityRole={card.backImageUrl ? 'button' : 'image'}
         accessibilityLabel={card.backImageUrl ? `Show ${back ? 'front' : 'back'} of ${card.title}` : label}
@@ -29,8 +33,8 @@ function SelectedCard({card}: {card: DetailCard}) {
           testID="card-detail-artwork"
           uri={back ? card.backImageUrl || card.imageUrl : card.imageUrl}
           sideways={card.sideways}
-          width={Math.max(0, size.width - 2 * MARGIN)}
-          height={Math.max(160, size.height - 2 * MARGIN - bottom)}
+          width={Math.max(0, size.width - 2 * MARGIN - insets.left - insets.right)}
+          height={Math.max(160, size.height - 2 * MARGIN - insets.top - bottom)}
           label={`${card.title}, ${back ? 'back' : 'front'}`}
         />
       </Pressable>
