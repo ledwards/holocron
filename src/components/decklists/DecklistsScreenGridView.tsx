@@ -43,6 +43,8 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
   const insets = usePaneInsets();
   const decklist = props.route.params.decklist;
   const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+  // The cards are laid out in the part of the pane the strip leaves clear.
+  const contentWidth = Math.max(0, windowWidth - insets.left - insets.right);
   
   // Track which card is logically expanded
   const [expandedCardIndex, setExpandedCardIndex] = useState(-1);
@@ -105,7 +107,12 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
     <>
       <ScrollView
         testID="deck-grid"
-        onLayout={event => setWindowWidth(event.nativeEvent.layout.width)}
+        // A pane hidden mid-transition (iPhone Duo opening or closing) lays
+        // out at width 0; keep the last real width rather than size cards to 0.
+        onLayout={event => {
+          const width = event.nativeEvent.layout.width;
+          if (width > 0) setWindowWidth(width);
+        }}
         ref={scrollViewRef}
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
@@ -124,7 +131,7 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
           position: 'relative'
         }}>
           {items.map((item, index) => {
-            const cardWidth = (windowWidth - insets.left - insets.right) / cardsPerRow;
+            const cardWidth = contentWidth / cardsPerRow;
             const aspectRatio = item.aspectRatio || 0.7;
             const cardHeight = cardWidth / aspectRatio;
             
@@ -150,7 +157,7 @@ const DecklistsScreenGridView = (props: DecklistsScreenGridViewProps) => {
                     decklist={decklist}
                     index={index}
                     scrollViewRef={scrollViewRef}
-                    windowWidth={windowWidth}
+                    windowWidth={contentWidth}
                     cardsPerRow={cardsPerRow}
                     isExpanded={expandedCardIndex === index}
                     onCollapseAnimationComplete={handleCollapseComplete}

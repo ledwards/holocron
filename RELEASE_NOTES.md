@@ -6,6 +6,8 @@
 - The search box sits right on the tab bar, with no gap.
 - Opened flat, the list and the detail split evenly across the hinge, and opening the phone from a card you were viewing opens straight onto that card.
 - Fixed the decklist search box jumping to the top of the screen when opening the phone.
+- Fixed a crash when closing the phone with a deck open, and decklist grids now line up within the space beside the strip.
+- Clearer glass: content under the strip, header and tab bar stays recognisable.
 - Fixed stray card rows that could show above the natural-language search help.
 - The search box can no longer get stuck partway up the screen after the keyboard closes.
 - Fixed a layout loop in card rows.

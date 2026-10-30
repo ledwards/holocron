@@ -42,9 +42,11 @@ export default function GlassSurface({edge = 'none', radius = 0, style, children
       ]}>
       <BlurView
         style={StyleSheet.absoluteFill}
-        // Thin materials let colour through (glass); the tint below keeps text legible.
-        blurType={dark ? 'thinMaterialDark' : 'thinMaterialLight'}
-        blurAmount={18}
+        // Ultra-thin material with a small blur radius: content under the
+        // header, tab bar and iPhone Duo strip stays recognisable (glass, not a
+        // frosted panel); the tint below keeps text and icons legible.
+        blurType={dark ? 'dark' : 'light'}
+        blurAmount={3}
         reducedTransparencyFallbackColor={theme?.translucentBackgroundColor}
       />
       <View

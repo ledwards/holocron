@@ -111,7 +111,9 @@ const DecklistsScreenGridItem = ({
   const cardMaxHeight = windowWidth / aspectRatio;
 
   const minScale = 1;
-  const maxScale = cardMaxHeight / cardMinHeight;
+  // Guard the ratio: a zero width (a pane hidden mid-transition) gave NaN,
+  // which crashed the scale interpolation.
+  const maxScale = cardMinHeight > 0 ? cardMaxHeight / cardMinHeight : minScale;
   const scale = useRef(new Animated.Value(minScale)).current;
 
   const initialRelativeLeft = 0;

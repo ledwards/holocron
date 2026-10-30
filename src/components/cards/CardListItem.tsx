@@ -48,46 +48,38 @@ const CardListItem = (props: CardListItemProps) => {
     ? ((windowWidth / props.item.aspectRatio) * fillPercent) / 2.5
     : (windowWidth * props.item.aspectRatio * fillPercent) / 2.5;
 
+  // Geometry is derived from the measured width on every render, not kept in
+  // state: when iPhone Duo opens, every row is re-measured at once, and a
+  // setState per row from an effect chained past React's nested-update limit.
+  const minHeight = startingHeight;
+  const maxHeight = windowWidth * props.item.aspectRatio;
+  const minWidth = windowWidth * fillPercent;
+  const maxWidth = windowWidth;
+
   interface CardListItemState {
     expanded: boolean;
     showingBack: boolean;
-    screenWidth: number;
     heightAnim: Animated.Value;
     widthAnim: Animated.Value;
     containerHeightAnim: Animated.Value;
     labelOpacityAnim: Animated.Value;
-    minHeight: number;
-    maxHeight: number;
-    minWidth: number;
-    maxWidth: number;
-    posY: number;
   }
 
   const [state, setState] = useState<CardListItemState>({
     expanded: false,
     showingBack: false,
-    screenWidth: windowWidth,
-    heightAnim: new Animated.Value(startingHeight),
-    widthAnim: new Animated.Value(windowWidth * fillPercent),
-    containerHeightAnim: new Animated.Value(startingHeight / 2),
+    heightAnim: new Animated.Value(minHeight),
+    widthAnim: new Animated.Value(minWidth),
+    containerHeightAnim: new Animated.Value(minHeight / 2),
     labelOpacityAnim: new Animated.Value(1.0),
-    minHeight: startingHeight,
-    maxHeight: windowWidth * props.item.aspectRatio,
-    minWidth: windowWidth * fillPercent,
-    maxWidth: windowWidth,
-    posY: 0,
   });
 
   // Preserve the original crop geometry, sized to the actual list pane.
   useEffect(() => {
-    const maxHeight = windowWidth * props.item.aspectRatio;
-    state.heightAnim.setValue(state.expanded ? maxHeight : startingHeight);
-    state.widthAnim.setValue(state.expanded ? windowWidth : windowWidth * fillPercent);
-    state.containerHeightAnim.setValue(state.expanded ? maxHeight : startingHeight / 2);
-    setState(previous => ({...previous, screenWidth: windowWidth,
-      minHeight: startingHeight, maxHeight, minWidth: windowWidth * fillPercent,
-      maxWidth: windowWidth}));
-  }, [windowWidth, startingHeight, props.item.aspectRatio]);
+    state.heightAnim.setValue(state.expanded ? maxHeight : minHeight);
+    state.widthAnim.setValue(state.expanded ? maxWidth : minWidth);
+    state.containerHeightAnim.setValue(state.expanded ? maxHeight : minHeight / 2);
+  }, [minHeight, maxHeight, minWidth, maxWidth]);
 
   // Rows open inline only on a compact screen. When the screen widens into
   // side-by-side panes (iPhone Duo opening) the card moves to the detail pane,
@@ -97,9 +89,9 @@ const CardListItem = (props: CardListItemProps) => {
     if (!opensDetail || !state.expanded) return;
     // Set, not animated: the system already animates the change of display,
     // and the width re-measure that follows would cut an animation short.
-    state.heightAnim.setValue(state.minHeight);
-    state.widthAnim.setValue(state.minWidth);
-    state.containerHeightAnim.setValue(state.minHeight / 2);
+    state.heightAnim.setValue(minHeight);
+    state.widthAnim.setValue(minWidth);
+    state.containerHeightAnim.setValue(minHeight / 2);
     state.labelOpacityAnim.setValue(1);
     setState(previous => ({...previous, expanded: false, showingBack: false}));
   }, [opensDetail]);
@@ -131,19 +123,19 @@ const CardListItem = (props: CardListItemProps) => {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(state.heightAnim, {
-            toValue: state.expanded ? state.minHeight : state.maxHeight,
+            toValue: state.expanded ? minHeight : maxHeight,
             duration: t,
             useNativeDriver: false,
             easing: easing,
           }),
           Animated.timing(state.widthAnim, {
-            toValue: state.expanded ? state.minWidth : state.maxWidth,
+            toValue: state.expanded ? minWidth : maxWidth,
             duration: t,
             useNativeDriver: false,
             easing: easing,
           }),
           Animated.timing(state.containerHeightAnim, {
-            toValue: state.expanded ? state.minHeight / 2 : state.maxHeight,
+            toValue: state.expanded ? minHeight / 2 : maxHeight,
             duration: t,
             useNativeDriver: false,
             easing: easing,
@@ -251,7 +243,7 @@ const CardListItem = (props: CardListItemProps) => {
           <View
             style={{
               ...styles.cardListItemQuantityContainer,
-              height: state.minHeight,
+              height: minHeight,
               opacity: state.expanded ? 0 : 1,
             }}>
             <BlurView
