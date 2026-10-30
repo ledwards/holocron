@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
-import {Animated, KeyboardAvoidingView, Platform, View} from 'react-native';
-import {useHeaderHeight} from '@react-navigation/elements';
+import {Animated, View} from 'react-native';
 import GlassSurface from './GlassSurface';
 import DeviceLayoutContext from '../../contexts/DeviceLayoutContext';
 import useExpandingDock from '../../lib/useExpandingDock';
+import useKeyboardLift from '../../lib/useKeyboardLift';
 import useSearchDockBottomPadding from '../../lib/useSearchDockBottomPadding';
 import styles from '../../styles/CardSearchFooterStyles';
 
@@ -20,9 +20,9 @@ interface Props {
  */
 export default function SearchDock({children}: Props) {
   const clearance = useSearchDockBottomPadding();
-  const headerHeight = useHeaderHeight();
   const {placement} = useContext(DeviceLayoutContext);
   const dock = useExpandingDock();
+  const keyboard = useKeyboardLift(clearance);
   // Beside iPhone Duo's vertical strip there is no bar below; the glass then
   // reaches the bottom edge itself.
   const barBelow = placement === 'bottom';
@@ -30,12 +30,10 @@ export default function SearchDock({children}: Props) {
     <Animated.View
       pointerEvents="box-none"
       style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: dock.right}}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'position' : undefined}
-        keyboardVerticalOffset={headerHeight - clearance + 8}
-        style={styles.overlayWrapper}
-        pointerEvents="box-none">
-        <View pointerEvents="box-none">
+      <Animated.View
+        pointerEvents="box-none"
+        style={[styles.overlayWrapper, {transform: [{translateY: keyboard.translateY}]}]}>
+        <View ref={keyboard.ref} testID="search-dock" pointerEvents="box-none">
           <GlassSurface edge="top">
             <View
               pointerEvents="box-none"
@@ -45,7 +43,7 @@ export default function SearchDock({children}: Props) {
           </GlassSurface>
           {barBelow && <View pointerEvents="none" style={{height: clearance}} />}
         </View>
-      </KeyboardAvoidingView>
+      </Animated.View>
     </Animated.View>
   );
 }

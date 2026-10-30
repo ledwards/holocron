@@ -148,8 +148,14 @@ const CardListItem = (props: CardListItemProps) => {
 
   return (
     <Animated.View
-      onLayout={event => setMeasuredWidth(event.nativeEvent.layout.width)}
+      // Size the row from its pane, never from its own art: the art is sized
+      // from this width, so letting it feed back re-measured forever.
+      onLayout={event => {
+        const width = Math.round(event.nativeEvent.layout.width);
+        setMeasuredWidth(previous => previous === width ? previous : width);
+      }}
       style={{
+        alignSelf: 'stretch',
         height: state.containerHeightAnim,
       }}>
       <ListItem

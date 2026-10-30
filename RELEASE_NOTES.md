@@ -1,6 +1,16 @@
 # Release Notes
 
 ## Unreleased
+- Fixed stray card rows that could show above the natural-language search help.
+- The search box can no longer get stuck partway up the screen after the keyboard closes.
+- Fixed a layout loop in card rows.
+
+## 1.2.1
+- iPhone Duo: navigation follows the side strip when closed, and the half-open posture splits the list and the detail across the fold.
+- One glass bar for every screen, including Rules, whose page and search controls now float on glass too.
+- The search box widens across the screen while you type.
+- Card details show just the card, as large as it fits, with rounded corners.
+- Clearing the search closes the card you had open.
 - Card search no longer repeats rows or shows cards left over from an earlier search.
 - Natural-language searches on set, side, type, rarity, icons, and similar fields return the matching cards again (for example `set c premiere`, `side = dark`, `icons c pilot`).
 - Set abbreviations work as search values (`set c p` finds Premiere).

@@ -128,4 +128,21 @@ describe('CardListItem', () => {
     expect(screen.getByText('Test Set • Character • R')).toBeTruthy();
   });
 
+  it('settles on its pane width instead of re-measuring sub-point changes', () => {
+    const screen = render(<CardListItem item={mockCardItem} index={0}
+      scrollToIndex={mockScrollToIndex} theme={mockTheme} />);
+    const row = screen.UNSAFE_getAllByType(Animated.View)[0];
+    const layout = (width: number) => fireEvent(row, 'layout',
+      {nativeEvent: {layout: {width, height: 100, x: 0, y: 0}}});
+    const artWidth = () => screen.UNSAFE_getAllByType(Animated.View)[1]
+      .props.style.width.__getValue();
+
+    layout(400.2);
+    expect(artWidth()).toBeCloseTo(400 * 0.55);
+    layout(400.4);
+    layout(399.8);
+    expect(artWidth()).toBeCloseTo(400 * 0.55);
+    expect(row.props.style.alignSelf).toBe('stretch');
+  });
+
 });

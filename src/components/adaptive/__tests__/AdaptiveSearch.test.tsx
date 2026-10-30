@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React from 'react';
 import {act, fireEvent, render} from '@testing-library/react-native';
+import {FlatList} from 'react-native';
 import SearchableCardList from '../../cards/SearchableCardList';
 import DecklistsScreen from '../../decklists/DecklistsScreen';
 import AllCardsContext from '../../../contexts/AllCardsContext';
@@ -18,13 +19,16 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
   useBottomTabBarHeight: () => 83,
 }));
 jest.mock('../../cards/CardSearchFooter', () => (props: any) => {
-  const {TextInput} = require('react-native');
+  const {Pressable, TextInput, View} = require('react-native');
   return (
-    <TextInput
-      testID="search-input"
-      value={props.query}
-      onChangeText={props.searchCallback}
-    />
+    <View>
+      <TextInput
+        testID="search-input"
+        value={props.query}
+        onChangeText={props.searchCallback}
+      />
+      <Pressable testID="search-mode-toggle" onPress={props.toggleSearchMode} />
+    </View>
   );
 });
 jest.mock('../../decklists/DecklistSearchFooter', () => (props: any) => {
@@ -153,4 +157,23 @@ it('keeps the card while the search still has text', () => {
   fireEvent.press(screen.getByTestId('card-item-0'));
   fireEvent.changeText(screen.getByTestId('search-input'), 'luk');
   expect(screen.getByTestId('card-detail')).toBeTruthy();
+});
+
+it('shows no result rows above the natural-language copy after switching modes', () => {
+  const screen = render(
+    <AllCardsContext.Provider value={cards}>
+      <SearchableCardList cards={cards} />
+    </AllCardsContext.Provider>,
+  );
+  resize(screen, 951);
+  fireEvent.changeText(screen.getByTestId('search-input'), 'luke');
+  expect(screen.getByTestId('card-item-0')).toBeTruthy();
+  const listBefore = screen.UNSAFE_getByType(FlatList);
+
+  fireEvent.press(screen.getByTestId('search-mode-toggle'));
+  expect(screen.queryByTestId('card-item-0')).toBeNull();
+  expect(screen.getByText(/natural language/)).toBeTruthy();
+  const listAfter = screen.UNSAFE_getByType(FlatList);
+  expect(listAfter).not.toBe(listBefore);
+  expect(listAfter.props.removeClippedSubviews).toBeFalsy();
 });

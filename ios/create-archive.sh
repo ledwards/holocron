@@ -42,6 +42,15 @@ xcodebuild clean archive \
   ONLY_ACTIVE_ARCH=NO \
   RCT_NO_LAUNCH_PACKAGER=1
 
+# Hermes ships prebuilt without its dSYM; add React Native's published one so
+# App Store Connect can symbolicate crashes inside the JS engine.
+echo "Adding the Hermes dSYM..."
+RN_VERSION=$(node -p "require('../node_modules/react-native/package.json').version")
+HERMES_DSYM_URL="https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${RN_VERSION}/react-native-artifacts-${RN_VERSION}-hermes-framework-dSYM-release.tar.gz"
+mkdir -p build/hermes-dsym
+curl -sfL "$HERMES_DSYM_URL" | tar -xz -C build/hermes-dsym ./iphoneos/hermes.framework.dSYM
+cp -R build/hermes-dsym/iphoneos/hermes.framework.dSYM build/holocron.xcarchive/dSYMs/
+
 # Create export options
 cat > ExportOptionsSimple.plist << EOL
 <?xml version="1.0" encoding="UTF-8"?>

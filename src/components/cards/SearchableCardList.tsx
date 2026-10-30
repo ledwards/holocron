@@ -295,6 +295,9 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         sideways: selectedCard.sideways, subtitle: `${selectedCard.displayExpansionSet} · ${selectedCard.displayType}`}} /> : <EmptyDetail label="Select a card" />}
       browser={split => <>
       <Animated.FlatList
+        // A new list per search mode: rows from the other mode's results must
+        // not survive above this mode's empty-state copy.
+        key={`cards-${state.searchModeIndex}`}
         ref={flatListRef}
         contentContainerStyle={{
           ...styles.flatListContentContainer,
@@ -326,7 +329,8 @@ const SearchableCardList: React.FC<SearchableCardListProps> = (props) => {
         //
         // Performance settings:
         initialNumToRender={10} // Reduce initial render amount
-        removeClippedSubviews={true} // Unmount components when outside of window
+        // removeClippedSubviews left detached rows drawn on iOS (ghost rows
+        // above the empty state); windowSize already bounds what is mounted.
         maxToRenderPerBatch={10} // Reduce number in each render batch
         updateCellsBatchingPeriod={100} // Increase time between renders
         windowSize={10} // Reduce the window size
