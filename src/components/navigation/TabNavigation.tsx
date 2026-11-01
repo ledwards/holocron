@@ -1,5 +1,5 @@
 import React, {useContext, useMemo} from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, useWindowDimensions} from 'react-native';
 import {PlatformPressable} from '@react-navigation/elements';
 import {SafeAreaView, useSafeAreaInsets, Edge} from 'react-native-safe-area-context';
 import {Icon} from 'react-native-elements';
@@ -12,7 +12,7 @@ import RulesScreen from '../rules/RulesScreen';
 import styles from '../../styles/TabNavigation';
 import ThemeContext from '../../contexts/ThemeContext';
 import DeviceLayoutContext, {DeviceLayout} from '../../contexts/DeviceLayoutContext';
-import {controlPlacement, railWidth} from '../../lib/duoLayout';
+import {controlPlacement, railWidth, headerMetrics} from '../../lib/duoLayout';
 import useFoldRegion from '../../lib/useFoldRegion';
 import ControlRail from './ControlRail';
 import GlassSurface from '../glass/GlassSurface';
@@ -24,8 +24,6 @@ import Decklist from '../../models/Decklist';
 
 const Tab = createBottomTabNavigator();
 
-/** The header is the status-bar inset plus a row just tall enough for its title. */
-const HEADER_TITLE_ROW = 32;
 
 interface TabNavigationProps {
   allCards: Card[];
@@ -48,6 +46,7 @@ function TabNavigation(_props: TabNavigationProps) {
   // vertical strip on one edge; Holocron's tabs and header actions follow it.
   // Decided from the window's safe-area insets, never from a device name.
   const insets = useSafeAreaInsets();
+  const header = headerMetrics(insets.top, useWindowDimensions().width);
   const fold = useFoldRegion();
   const placement = controlPlacement(insets);
   const rail = placement !== 'bottom';
@@ -111,7 +110,9 @@ function TabNavigation(_props: TabNavigationProps) {
           tabBarButtonTestID: 'tab-cards',
           headerShown: !rail,
           headerTransparent: true,
-          headerStyle: {height: insets.top + HEADER_TITLE_ROW},
+          headerStyle: {height: header.height},
+          headerStatusBarHeight: header.statusBarHeight,
+          headerRightContainerStyle: {paddingRight: header.cornerClearance},
           headerTitle: 'Card Search',
           headerTitleStyle: {
             color: theme?.foregroundColor,
@@ -135,7 +136,9 @@ function TabNavigation(_props: TabNavigationProps) {
         options={{
           headerShown: !rail,
           headerTransparent: true,
-          headerStyle: {height: insets.top + HEADER_TITLE_ROW},
+          headerStyle: {height: header.height},
+          headerStatusBarHeight: header.statusBarHeight,
+          headerRightContainerStyle: {paddingRight: header.cornerClearance},
           headerTitle: 'Decklists',
           headerTitleStyle: {color: theme?.foregroundColor, fontSize: 17, fontWeight: '600'},
           headerBackground: () => <GlassSurface edge="bottom" style={StyleSheet.absoluteFill} />,

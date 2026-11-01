@@ -81,3 +81,25 @@ export function foldInPane(fold: Region | null | undefined, pane: Region): PaneF
   }
   return {axis: 'horizontal', start, size: fold.height};
 }
+
+/**
+ * The header's geometry. A wide window that still reports a deep top inset is
+ * iPhone Duo open flat: the system draws its status items stacked in the top
+ * corner, not across the top, so the bar needn't reserve that inset. It is
+ * then only as tall as its title, and its buttons keep clear of the corner.
+ * Everywhere else the bar sits below the status bar as usual.
+ */
+export const HEADER_TITLE_ROW = 32;
+const WIDE_WINDOW = 620;
+const DEEP_TOP_INSET = 60;
+const CORNER_STATUS_WIDTH = 84;
+
+export function headerMetrics(topInset: number, windowWidth: number) {
+  const cornerStatus = windowWidth >= WIDE_WINDOW && topInset >= DEEP_TOP_INSET;
+  const statusBarHeight = cornerStatus ? 0 : topInset;
+  return {
+    statusBarHeight,
+    height: statusBarHeight + HEADER_TITLE_ROW,
+    cornerClearance: cornerStatus ? CORNER_STATUS_WIDTH : 0,
+  };
+}
