@@ -82,3 +82,15 @@ describe('the strip is transparent', () => {
   });
 });
 
+
+describe('lifting the tabs above the full-width bars', () => {
+  const {railBarLift, stripStatusRoom} = require('../ControlRail');
+  it('clears a search dock where there is room (closed, upright; open, flat)', () => {
+    expect(railBarLift(678, stripStatusRoom(678), 34)).toBe(124);
+    expect(railBarLift(669, stripStatusRoom(669), 34)).toBe(124);
+  });
+  it('shrinks to what fits in a short window and never goes negative', () => {
+    expect(railBarLift(466, stripStatusRoom(466), 34)).toBeLessThan(124);
+    expect(railBarLift(200, stripStatusRoom(200), 34)).toBe(0);
+  });
+});

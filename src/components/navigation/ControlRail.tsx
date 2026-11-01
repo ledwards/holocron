@@ -23,6 +23,20 @@ export function stripStatusRoom(windowHeight: number): number {
 }
 
 /**
+ * The search docks and the Rules reader bar run edge to edge, under the strip,
+ * so the tabs ride above them (a dock is about 140 points with the home
+ * indicator) instead of cutting them short. Where the window is too short to
+ * spare it (closed, landscape), the lift shrinks to what fits.
+ */
+const BAR_LIFT = 124;
+const RAIL_ACTIONS_ROOM = 110;
+const RAIL_TABS_HEIGHT = 164;
+export function railBarLift(windowHeight: number, topClearance: number, bottomInset: number): number {
+  const spare = windowHeight - topClearance - bottomInset - 12 - RAIL_TABS_HEIGHT - RAIL_ACTIONS_ROOM;
+  return Math.max(0, Math.min(BAR_LIFT, spare));
+}
+
+/**
  * The vertical control strip used where iPhone Duo puts the system's own bars
  * on one edge (closed, and open in landscape). Top to bottom, as Apple orders
  * it: the focused screen's navigation action (its header's left button, e.g.
@@ -60,7 +74,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
         zIndex: 10,
         width,
         paddingTop: topInset + stripStatusRoom(window.height),
-        paddingBottom: bottomInset + 12,
+        paddingBottom: bottomInset + 12 + railBarLift(window.height, topInset + stripStatusRoom(window.height), bottomInset),
         alignItems: 'center',
       }}
       // Touches between the controls reach the content underneath.

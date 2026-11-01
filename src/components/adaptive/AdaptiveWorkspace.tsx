@@ -62,11 +62,11 @@ export default function AdaptiveWorkspace({
     () => (backRow ? {...detailInsets, top: 0} : detailInsets),
     [backRow, detailInsets],
   );
-  // The search dock may grow over the detail pane while typing (up to the
-  // strip, if any), but never across a fold.
+  // The search dock may grow over the detail pane while typing, but never
+  // across a fold.
   const workspaceLayoutValue = React.useMemo(
-    () => ({dockExpansion: sideBySide && !gap ? Math.max(0, pane.width - browserWidth - strip.right) : 0}),
-    [sideBySide, gap, pane.width, browserWidth, strip.right],
+    () => ({dockExpansion: sideBySide && !gap ? Math.max(0, pane.width - browserWidth) : 0}),
+    [sideBySide, gap, pane.width, browserWidth],
   );
   useFocusEffect(
     React.useCallback(() => {

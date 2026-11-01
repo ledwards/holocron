@@ -357,6 +357,7 @@ const RulesScreen = ({documentOverride, indexOverride}: RulesScreenProps) => {
               collapsedAnchors={collapsedTocAnchors}
               onToggleCollapsed={toggleCollapsed}
               onClose={() => setShowToc(false)}
+              rightInset={strip.right}
             />
           )}
         </View>

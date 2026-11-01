@@ -13,6 +13,8 @@ interface RulesTocProps {
   collapsedAnchors: Set<string>;
   onToggleCollapsed: (anchor: string) => void;
   onClose: () => void;
+  /** Width of the iPhone Duo strip the drawer must stay clear of. */
+  rightInset?: number;
 }
 
 interface TocNode extends TocEntry {
@@ -67,6 +69,7 @@ const RulesToc = ({
   collapsedAnchors,
   onToggleCollapsed,
   onClose,
+  rightInset = 0,
 }: RulesTocProps) => {
   const [query, setQuery] = useState('');
   const tree = useMemo(() => buildTocTree(entries), [entries]);
@@ -115,7 +118,7 @@ const RulesToc = ({
   };
 
   return (
-    <View testID="rules-toc-panel" style={embedded ? {flex: 1} : styles.tocDrawerOverlay}>
+    <View testID="rules-toc-panel" style={embedded ? {flex: 1} : [styles.tocDrawerOverlay, {paddingRight: rightInset}]}>
       {!embedded && <TouchableOpacity
         testID="rules-toc-backdrop"
         style={styles.tocDrawerBackdrop}

@@ -24,6 +24,9 @@ import Decklist from '../../models/Decklist';
 
 const Tab = createBottomTabNavigator();
 
+/** The header is the status-bar inset plus a row just tall enough for its title. */
+const HEADER_TITLE_ROW = 32;
+
 interface TabNavigationProps {
   allCards: Card[];
   expansionSets: ExpansionSet[];
@@ -108,6 +111,7 @@ function TabNavigation(_props: TabNavigationProps) {
           tabBarButtonTestID: 'tab-cards',
           headerShown: !rail,
           headerTransparent: true,
+          headerStyle: {height: insets.top + HEADER_TITLE_ROW},
           headerTitle: 'Card Search',
           headerTitleStyle: {
             color: theme?.foregroundColor,
@@ -131,6 +135,7 @@ function TabNavigation(_props: TabNavigationProps) {
         options={{
           headerShown: !rail,
           headerTransparent: true,
+          headerStyle: {height: insets.top + HEADER_TITLE_ROW},
           headerTitle: 'Decklists',
           headerTitleStyle: {color: theme?.foregroundColor, fontSize: 17, fontWeight: '600'},
           headerBackground: () => <GlassSurface edge="bottom" style={StyleSheet.absoluteFill} />,

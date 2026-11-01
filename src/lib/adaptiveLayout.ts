@@ -6,10 +6,9 @@ const MINIMUM_STACKED_REGION = 200;
 /**
  * All sizes are in points in the available pane, never the physical display.
  *
- * Side by side, the panes split evenly: on iPhone Duo open flat that puts the
- * divide on the hinge, where the half-open fold puts it too, so opening and
- * folding never move the list (it keeps the width it had on the closed
- * display) and the detail simply unfolds beside it.
+ * Side by side, fully open, the list takes a third of the width and the detail
+ * the rest (the list is the narrow side of a list/detail pattern). Half-open,
+ * the fold sets the split instead: one pane on each screen, half and half.
  *
  * With a fold crossing the pane (iPhone Duo partly folded), the panes meet at
  * the fold instead of straddling it: a vertical fold sets the browser width,
@@ -21,7 +20,7 @@ export function workspaceLayout(width: number, fontScale = 1, fold?: PaneFold | 
   const split = width >= minimumBrowser + 340;
   const regular = {
     split,
-    browserWidth: split ? Math.max(Math.round(width / 2), minimumBrowser) : width,
+    browserWidth: split ? Math.max(Math.round(width / 3), minimumBrowser) : width,
     stacked: false,
     detailHeight: 0,
     gap: 0,
