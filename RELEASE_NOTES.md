@@ -1,10 +1,14 @@
 # Release Notes
 
-## Unreleased
+## 1.2.2
+- iPhone Duo: the header is just a title row, and the list and detail panes follow the display: opened flat the list takes about a third (wide enough for its search hint), half-open one pane sits on each screen.
+- iPhone Duo: the search box and Rules page bar run the full width of the screen; the side strip's buttons sit above them, and the Rules contents no longer slide under the clock and wifi.
+- Deck lists show each card's quantity on the left, in a wider badge, in every view.
+- In the Duo side strip, the deck view button shows the current view and opens a menu of Grid, List and Text with a checkmark.
 - iPhone Duo: the side strip is now fully transparent over the app, as Duo-ready apps do, instead of a solid panel beside it, and its Back and view buttons no longer hide under the clock.
 - The header is see-through glass again: lists scroll up underneath it.
 - The search box sits right on the tab bar, with no gap.
-- Opened flat, the list and the detail split evenly across the hinge, and opening the phone from a card you were viewing opens straight onto that card.
+- Opening the phone from a card you were viewing opens straight onto that card.
 - Fixed the decklist search box jumping to the top of the screen when opening the phone.
 - Fixed a crash when closing the phone with a deck open, and decklist grids now line up within the space beside the strip.
 - Clearer glass: content under the strip, header and tab bar stays recognisable.
