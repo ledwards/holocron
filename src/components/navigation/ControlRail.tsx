@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
-import {View, Pressable, useWindowDimensions} from 'react-native';
+import {View, Pressable, StyleSheet, useWindowDimensions} from 'react-native';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import ThemeContext from '../../contexts/ThemeContext';
+import GlassSurface from '../glass/GlassSurface';
 
 interface ControlRailProps extends BottomTabBarProps {
   side: 'left' | 'right';
@@ -31,6 +32,8 @@ export function stripStatusRoom(windowHeight: number): number {
 const BAR_LIFT = 124;
 const RAIL_ACTIONS_ROOM = 110;
 const RAIL_TABS_HEIGHT = 164;
+const ISLAND_RADIUS = 28;
+const ISLAND_PADDING = 6;
 export function railBarLift(windowHeight: number, topClearance: number, bottomInset: number): number {
   const spare = windowHeight - topClearance - bottomInset - 12 - RAIL_TABS_HEIGHT - RAIL_ACTIONS_ROOM;
   return Math.max(0, Math.min(BAR_LIFT, spare));
@@ -51,13 +54,15 @@ export default function ControlRail({state, descriptors, navigation, side, width
   const focused = descriptors[state.routes[state.index].key];
   const {headerLeft, headerRight} = focused.options;
   const tintColor = theme?.foregroundColor;
-  // A soft halo in the background colour keeps the icons readable over
-  // whatever content scrolls beneath the transparent strip.
-  const legible = {
-    shadowColor: theme?.name === 'light' ? '#FFFFFF' : '#000000',
-    shadowOpacity: 0.9,
-    shadowRadius: 4,
-    shadowOffset: {width: 0, height: 0},
+  // Each cluster rides on its own glass island, so icons stay legible over
+  // whatever scrolls beneath the transparent strip. The shadow lifts the island
+  // off the content; GlassSurface clips, so it lives on the wrapper.
+  const island = {
+    borderRadius: ISLAND_RADIUS,
+    shadowColor: '#000000',
+    shadowOpacity: theme?.name === 'light' ? 0.16 : 0.4,
+    shadowRadius: 12,
+    shadowOffset: {width: 0, height: 4},
   };
 
   return (
@@ -83,11 +88,18 @@ export default function ControlRail({state, descriptors, navigation, side, width
       }}
       // Touches between the controls reach the content underneath.
       pointerEvents="box-none">
-      <View testID="control-rail-actions" pointerEvents="box-none" style={{alignItems: 'center', gap: 6, marginBottom: 16, ...legible}}>
-        {headerLeft?.({tintColor, canGoBack: false})}
-        {headerRight?.({tintColor, canGoBack: false})}
-      </View>
-      <View accessibilityRole="tablist" pointerEvents="box-none" style={{alignItems: 'center', gap: 10, ...legible}}>
+      {(headerLeft || headerRight) && (
+        <View testID="control-rail-actions" pointerEvents="box-none" style={[island, {marginBottom: 12}]}>
+          <GlassSurface edge="all" radius={ISLAND_RADIUS} style={StyleSheet.absoluteFill} />
+          <View pointerEvents="box-none" style={{alignItems: 'center', gap: 6, padding: ISLAND_PADDING}}>
+            {headerLeft?.({tintColor, canGoBack: false})}
+            {headerRight?.({tintColor, canGoBack: false})}
+          </View>
+        </View>
+      )}
+      <View accessibilityRole="tablist" pointerEvents="box-none" style={island}>
+        <GlassSurface edge="all" radius={ISLAND_RADIUS} style={StyleSheet.absoluteFill} />
+        <View pointerEvents="box-none" style={{alignItems: 'center', gap: 6, padding: ISLAND_PADDING}}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];
           const isFocused = state.index === index;
@@ -113,6 +125,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
             </Pressable>
           );
         })}
+        </View>
       </View>
     </View>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text} from 'react-native';
-import {fireEvent, render} from '@testing-library/react-native';
+import {fireEvent, render, within} from '@testing-library/react-native';
 import ControlRail from '../ControlRail';
 
 const routes = [{key: 'c', name: 'Cards'}, {key: 'd', name: 'Decklists'}, {key: 'r', name: 'Rules'}];
@@ -31,13 +31,16 @@ describe('ControlRail', () => {
   it("puts the focused screen's Back first, then its mode action, at the top", () => {
     const {screen} = renderRail();
     const actions = screen.getByTestId('control-rail-actions');
-    const ids = actions.props.children.filter(Boolean).map((child: {props: {testID?: string}}) => child.props.testID);
-    expect(ids).toEqual(['adaptive-back', 'deck-mode-toggle']);
+    expect(within(actions).getByTestId('adaptive-back')).toBeTruthy();
+    expect(within(actions).getByTestId('deck-mode-toggle')).toBeTruthy();
+    const order = JSON.stringify(screen.toJSON());
+    expect(order!.indexOf('adaptive-back')).toBeLessThan(order!.indexOf('deck-mode-toggle'));
   });
 
   it('shows no actions when the screen has none', () => {
     const {screen} = renderRail(0, false);
     expect(screen.queryByTestId('adaptive-back')).toBeNull();
+    expect(screen.queryByTestId('control-rail-actions')).toBeNull();
   });
 
   it('keeps the tab test IDs, labels and selected state', () => {
