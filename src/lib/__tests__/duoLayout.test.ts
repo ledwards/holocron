@@ -125,11 +125,11 @@ describe('measured on the iPhone Duo simulator', () => {
 describe('headerMetrics', () => {
   const {headerMetrics} = require('../duoLayout');
   it('is just a title row on a wide window that keeps its status items in the corner', () => {
-    expect(headerMetrics(82, 951)).toEqual({statusBarHeight: 0, height: 32, cornerClearance: 84});
+    expect(headerMetrics(82, 951)).toEqual({statusBarHeight: 0, height: 44, cornerClearance: 84});
   });
   it('sits below the status bar on a phone, and where the inset is shallow', () => {
-    expect(headerMetrics(54, 402)).toEqual({statusBarHeight: 54, height: 86, cornerClearance: 0});
-    expect(headerMetrics(0, 874).height).toBe(32);
-    expect(headerMetrics(24, 1024).height).toBe(56);
+    expect(headerMetrics(54, 402)).toEqual({statusBarHeight: 54, height: 98, cornerClearance: 0});
+    expect(headerMetrics(0, 874).height).toBe(44);
+    expect(headerMetrics(24, 1024).height).toBe(68);
   });
 });

@@ -1,6 +1,9 @@
 import {StyleSheet} from 'react-native';
 import colors from './colors';
 
+/** Width of the deck quantity badge, at the leading edge of the row. */
+export const QUANTITY_WIDTH = 40;
+
 const styles = StyleSheet.create({
   cardListItemContainer: {
     overflow: 'hidden',
@@ -66,8 +69,8 @@ const styles = StyleSheet.create({
   cardListItemQuantityContainer: {
     position: 'absolute',
     top: 0,
-    right: 0,
-    width: '12%',
+    left: 0,
+    width: QUANTITY_WIDTH,
   },
   cardListItemQuantityBlur: {
     width: '100%',

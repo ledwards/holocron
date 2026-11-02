@@ -89,7 +89,7 @@ export function foldInPane(fold: Region | null | undefined, pane: Region): PaneF
  * then only as tall as its title, and its buttons keep clear of the corner.
  * Everywhere else the bar sits below the status bar as usual.
  */
-export const HEADER_TITLE_ROW = 32;
+export const HEADER_TITLE_ROW = 44;
 const WIDE_WINDOW = 620;
 const DEEP_TOP_INSET = 60;
 const CORNER_STATUS_WIDTH = 84;
