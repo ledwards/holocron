@@ -32,7 +32,7 @@ const style = (node: {props: {style: unknown}}) => Object.assign({}, ...[node.pr
 describe('AdaptiveWorkspace on a partly folded display', () => {
   it('gives the list a third when the display is flat', () => {
     const screen = renderWorkspace(null, 826, 626);
-    expect(style(screen.getByTestId('browse-pane')).width).toBe(280);
+    expect(style(screen.getByTestId('browse-pane')).width).toBe(360);
     expect(screen.queryByTestId('fold-gap', {includeHiddenElements: true})).toBeNull();
   });
 
@@ -90,7 +90,7 @@ describe('where the search dock may grow while typing', () => {
   };
 
   it('spans the detail pane when the panes sit side by side', () => {
-    expect(expansion(null, 826, 626)).toBe(826 - 280);
+    expect(expansion(null, 826, 626)).toBe(826 - 360);
   });
 
   it('reaches the edge, under the iPhone Duo strip (the tabs lift above the dock)', () => {
@@ -101,7 +101,7 @@ describe('where the search dock may grow while typing', () => {
       </PaneInsetsContext.Provider>,
     );
     fireEvent(screen.getByTestId('adaptive-workspace'), 'layout', {nativeEvent: {layout: {x: 0, y: 0, width: 951, height: 669}}});
-    expect(Number(screen.getByTestId('dock-expansion').props.children)).toBe(951 - 317);
+    expect(Number(screen.getByTestId('dock-expansion').props.children)).toBe(951 - 360);
   });
 
   it('stays in its pane on a compact width, where it is already full width', () => {

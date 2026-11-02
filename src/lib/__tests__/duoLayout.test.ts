@@ -53,9 +53,9 @@ describe('foldInPane', () => {
 describe('workspaceLayout with a fold', () => {
   const {workspaceLayout} = require('../adaptiveLayout');
 
-  it('without a fold gives the list a third (at least its minimum), or splits not at all when too narrow', () => {
-    expect(workspaceLayout(951)).toEqual({split: true, browserWidth: 317, stacked: false, detailHeight: 0, gap: 0});
-    expect(workspaceLayout(826)).toEqual({split: true, browserWidth: 280, stacked: false, detailHeight: 0, gap: 0});
+  it('without a fold gives the list a third (at least 360, so its hint does not wrap), or splits not at all when too narrow', () => {
+    expect(workspaceLayout(951)).toEqual({split: true, browserWidth: 360, stacked: false, detailHeight: 0, gap: 0});
+    expect(workspaceLayout(826)).toEqual({split: true, browserWidth: 360, stacked: false, detailHeight: 0, gap: 0});
     expect(workspaceLayout(466)).toEqual({split: false, browserWidth: 466, stacked: false, detailHeight: 0, gap: 0});
   });
 
@@ -65,8 +65,8 @@ describe('workspaceLayout with a fold', () => {
   });
 
   it('ignores a vertical fold that would leave a side too narrow', () => {
-    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 200, size: 24}).browserWidth).toBe(280);
-    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 600, size: 24}).browserWidth).toBe(280);
+    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 200, size: 24}).browserWidth).toBe(360);
+    expect(workspaceLayout(826, 1, {axis: 'vertical', start: 600, size: 24}).browserWidth).toBe(360);
   });
 
   it('stacks around a horizontal fold, detail above', () => {
@@ -107,7 +107,7 @@ describe('measured on the iPhone Duo simulator', () => {
 
   it('open flat, the list takes a third; half-open, the crease puts one pane on each screen', () => {
     const {workspaceLayout} = require('../adaptiveLayout');
-    expect(workspaceLayout(951).browserWidth).toBe(317);
+    expect(workspaceLayout(951).browserWidth).toBe(360);
     // The half-open crease runs 455.5–495.5: the list is half the display there.
     const folded = workspaceLayout(951, 1, foldInPane({x: 455.5, y: 0, width: 40, height: 669}, {x: 0, y: 0, width: 951, height: 669}));
     expect(folded.browserWidth).toBe(455.5);
