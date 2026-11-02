@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import {ListItem} from 'react-native-elements';
 import {BlurView} from '@react-native-community/blur';
 
-import styles, {QUANTITY_WIDTH} from '../../styles/CardListItemStyles';
+import styles, {QUANTITY_MARGIN, QUANTITY_WIDTH} from '../../styles/CardListItemStyles';
 import ThemeContext from '../../contexts/ThemeContext';
 import {usePaneInsets} from '../../contexts/PaneInsetsContext';
 import { CardSide } from '../../types/enums';
@@ -213,7 +213,7 @@ const CardListItem = (props: CardListItemProps) => {
         <Animated.View
           style={{
             // The deck quantity sits at the leading edge; the label starts after it.
-            marginLeft: insets.left + (props.quantity ? QUANTITY_WIDTH : 0),
+            marginLeft: insets.left + (props.quantity ? QUANTITY_MARGIN + QUANTITY_WIDTH : 0),
             opacity: state.labelOpacityAnim,
           }}>
           <ListItem.Content>
@@ -244,7 +244,7 @@ const CardListItem = (props: CardListItemProps) => {
           <View
             style={{
               ...styles.cardListItemQuantityContainer,
-              left: insets.left,
+              left: insets.left + QUANTITY_MARGIN,
               height: minHeight,
               opacity: state.expanded ? 0 : 1,
             }}>

@@ -118,7 +118,7 @@ describe('CardListItem', () => {
     const screen = render(<CardListItem item={mockCardItem} index={0} scrollToIndex={mockScrollToIndex}
       theme={mockTheme} quantity={3} />);
     const badge = screen.getByText('3').parent?.parent;
-    expect(badge?.props.style).toMatchObject({left: 0, position: 'absolute'});
+    expect(badge?.props.style).toMatchObject({left: 10, width: 52, position: 'absolute'});
     expect(badge?.props.style.right).toBeUndefined();
   });
   it('preserves the cover crop and presenter offset when opening a detail pane', () => {

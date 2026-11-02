@@ -2,7 +2,9 @@ import {StyleSheet} from 'react-native';
 import colors from './colors';
 
 /** Width of the deck quantity badge, at the leading edge of the row. */
-export const QUANTITY_WIDTH = 40;
+export const QUANTITY_WIDTH = 52;
+/** Space between the row's leading edge and the quantity badge. */
+export const QUANTITY_MARGIN = 10;
 
 const styles = StyleSheet.create({
   cardListItemContainer: {

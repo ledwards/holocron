@@ -38,8 +38,9 @@ export function railBarLift(windowHeight: number, topClearance: number, bottomIn
 
 /**
  * The vertical control strip used where iPhone Duo puts the system's own bars
- * on one edge (closed, and open in landscape). Top to bottom, as Apple orders
- * it: the focused screen's navigation action (its header's left button, e.g.
+ * on one edge (closed, and open in landscape). Grouped at the foot of the
+ * strip, below the system's status items, top to bottom: the focused screen's
+ * navigation action (its header's left button, e.g.
  * Back), its prominent action (the header's right button, e.g. the deck mode),
  * then the tabs at the bottom. Same icons, test IDs and labels as the bottom
  * bar; only their position changes.
@@ -76,14 +77,16 @@ export default function ControlRail({state, descriptors, navigation, side, width
         paddingTop: topInset + stripStatusRoom(window.height),
         paddingBottom: bottomInset + 12 + railBarLift(window.height, topInset + stripStatusRoom(window.height), bottomInset),
         alignItems: 'center',
+        // Actions and tabs sit together at the foot of the strip, well below
+        // the system's status items, which can run deep on some displays.
+        justifyContent: 'flex-end',
       }}
       // Touches between the controls reach the content underneath.
       pointerEvents="box-none">
-      <View testID="control-rail-actions" pointerEvents="box-none" style={{alignItems: 'center', gap: 6, ...legible}}>
+      <View testID="control-rail-actions" pointerEvents="box-none" style={{alignItems: 'center', gap: 6, marginBottom: 16, ...legible}}>
         {headerLeft?.({tintColor, canGoBack: false})}
         {headerRight?.({tintColor, canGoBack: false})}
       </View>
-      <View pointerEvents="none" style={{flex: 1}} />
       <View accessibilityRole="tablist" pointerEvents="box-none" style={{alignItems: 'center', gap: 10, ...legible}}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];

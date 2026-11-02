@@ -32,7 +32,7 @@ export default function DecklistsScreen() {
       headerLeft: selected ? () => <PaneIconButton testID="adaptive-back" icon="chevron-back"
         label="Back to decklists" onPress={() => setSelected(null)} /> : undefined,
       headerRight: !selected ? undefined : menu
-        ? () => <PaneMenuButton testID="deck-mode-menu" label="Deck view" icon="ellipsis-horizontal-circle-outline"
+        ? () => <PaneMenuButton testID="deck-mode-menu" label="Deck view" icon={MODE_OPTIONS.find(option => option.value === mode)?.icon || 'grid-outline'}
             options={MODE_OPTIONS} selected={mode} onSelect={setMode} />
         : () => <PaneIconButton testID="deck-mode-toggle"
             label={`Show ${next} view`}
