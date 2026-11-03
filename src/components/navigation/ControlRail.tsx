@@ -32,11 +32,28 @@ export function stripStatusRoom(windowHeight: number): number {
 const BAR_LIFT = 124;
 const RAIL_ACTIONS_ROOM = 110;
 const RAIL_TABS_HEIGHT = 164;
-const ISLAND_RADIUS = 28;
-const ISLAND_PADDING = 6;
 export function railBarLift(windowHeight: number, topClearance: number, bottomInset: number): number {
   const spare = windowHeight - topClearance - bottomInset - 12 - RAIL_TABS_HEIGHT - RAIL_ACTIONS_ROOM;
   return Math.max(0, Math.min(BAR_LIFT, spare));
+}
+
+/**
+ * The islands line up with the pane iPhone Duo draws behind its own status
+ * items at the top of the strip: 55 points wide, a capsule, 20.5 points in from
+ * the screen edge (measured on the simulator, closed upright). That pane is not
+ * centred in the 84-point strip, so the islands hang from the screen edge too.
+ */
+const ISLAND_WIDTH = 55;
+const ISLAND_EDGE_INSET = 20.5;
+const ISLAND_RADIUS = ISLAND_WIDTH / 2;
+const RAIL_BUTTON_SIZE = 48;
+const ISLAND_PADDING = (ISLAND_WIDTH - RAIL_BUTTON_SIZE) / 2;
+export function islandPlacement(side: 'left' | 'right') {
+  return {
+    width: ISLAND_WIDTH,
+    alignSelf: side === 'right' ? ('flex-end' as const) : ('flex-start' as const),
+    [side === 'right' ? 'marginRight' : 'marginLeft']: ISLAND_EDGE_INSET,
+  };
 }
 
 /**
@@ -58,6 +75,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
   // whatever scrolls beneath the transparent strip. The shadow lifts the island
   // off the content; GlassSurface clips, so it lives on the wrapper.
   const island = {
+    ...islandPlacement(side),
     borderRadius: ISLAND_RADIUS,
     shadowColor: '#000000',
     shadowOpacity: theme?.name === 'light' ? 0.16 : 0.4,
@@ -97,7 +115,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
           </View>
         </View>
       )}
-      <View accessibilityRole="tablist" pointerEvents="box-none" style={island}>
+      <View testID="control-rail-tabs" accessibilityRole="tablist" pointerEvents="box-none" style={island}>
         <GlassSurface edge="all" radius={ISLAND_RADIUS} style={StyleSheet.absoluteFill} />
         <View pointerEvents="box-none" style={{alignItems: 'center', gap: 6, padding: ISLAND_PADDING}}>
         {state.routes.map((route, index) => {
@@ -120,7 +138,7 @@ export default function ControlRail({state, descriptors, navigation, side, width
               accessibilityState={{selected: isFocused}}
               onPress={onPress}
               onLongPress={() => navigation.emit({type: 'tabLongPress', target: route.key})}
-              style={{width: 48, height: 48, borderRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
+              style={{width: RAIL_BUTTON_SIZE, height: RAIL_BUTTON_SIZE, borderRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
               {options.tabBarIcon?.({focused: isFocused, color: tintColor || '#FFFFFF', size: 28})}
             </Pressable>
           );

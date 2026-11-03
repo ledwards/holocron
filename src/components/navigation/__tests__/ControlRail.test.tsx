@@ -86,6 +86,25 @@ describe('the strip is transparent', () => {
 });
 
 
+describe('islands line up with the system status pane', () => {
+  const {islandPlacement} = require('../ControlRail');
+  const flat = (el: {props: {style: unknown}}) => Object.assign({}, ...[el.props.style].flat(Infinity as 1));
+
+  it('matches the pane: 55 points wide, 20.5 points from the strip edge', () => {
+    expect(islandPlacement('right')).toEqual({width: 55, alignSelf: 'flex-end', marginRight: 20.5});
+    expect(islandPlacement('left')).toEqual({width: 55, alignSelf: 'flex-start', marginLeft: 20.5});
+  });
+
+  it('gives the actions and the tabs the same geometry', () => {
+    const {screen} = renderRail();
+    const actions = flat(screen.getByTestId('control-rail-actions'));
+    const tabs = flat(screen.getByTestId('control-rail-tabs'));
+    for (const style of [actions, tabs]) {
+      expect(style).toMatchObject({width: 55, alignSelf: 'flex-end', marginRight: 20.5, borderRadius: 27.5});
+    }
+  });
+});
+
 describe('lifting the tabs above the full-width bars', () => {
   const {railBarLift, stripStatusRoom} = require('../ControlRail');
   it('clears a search dock where there is room (closed, upright; open, flat)', () => {
